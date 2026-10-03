@@ -189,7 +189,7 @@ function U.BuildOptions()
         p.message:SetText(message)
         if ok then p.customID:SetText(""); p.customID:ClearFocus(); U.Rebuild() end
     end)
-    local note = text(p, "Utilities work in combat. Bandages: low health outside combat; private-health alerts are reminders.\nIn combat, 0% fades inactive icons but keeps fixed click areas. Arrange cannot cast.", 24, -675)
+    local note = text(p, "Utilities work in combat. Learned self-buffs, bandages and resource trackers can appear outside combat.\nIn combat, 0% fades inactive icons but keeps fixed click areas. Arrange cannot cast.", 24, -675)
     note:SetWidth(668); note:SetTextColor(0.62, 0.7, 0.8)
     tinsert(UISpecialFrames, "UtilityHelperOptions")
     p:Hide()

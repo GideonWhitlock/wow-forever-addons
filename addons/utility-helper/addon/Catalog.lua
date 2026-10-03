@@ -1,5 +1,5 @@
 local _, U = ...
-U.VERSION = "0.1.14"
+U.VERSION = "0.1.17"
 U.TITLE = "Utility Helper: Forever"
 U.catalog = {}
 -- IDs identify spell families. The spellbook supplies the learned rank and localized name.
@@ -25,6 +25,15 @@ a("HUNTER", 5116, "Concussive Shot", "control", "target")
 a("HUNTER", 5384, "Feign Death", "defensive", "player")
 a("HUNTER", 19263, "Deterrence", "defensive", "player")
 a("HUNTER", 781, "Disengage", "manual", "player", {note = "Use when you need distance or threat relief; behaviour depends on the learned version."})
+local hunterAspects = {13163, 13165, 5118, 13159, 20043, 13161, 34074, 61846}
+a("HUNTER", 13163, "Aspect of the Monkey", "buff", "player", {choiceBuffs = hunterAspects})
+a("HUNTER", 13165, "Aspect of the Hawk", "buff", "player", {choiceBuffs = hunterAspects})
+a("HUNTER", 5118, "Aspect of the Cheetah", "buff", "player", {choiceBuffs = hunterAspects})
+a("HUNTER", 13159, "Aspect of the Pack", "buff", "player", {choiceBuffs = hunterAspects})
+a("HUNTER", 20043, "Aspect of the Wild", "buff", "player", {choiceBuffs = hunterAspects})
+a("HUNTER", 13161, "Aspect of the Beast", "buff", "player", {choiceBuffs = hunterAspects})
+a("HUNTER", 34074, "Aspect of the Viper", "buff", "player", {choiceBuffs = hunterAspects})
+a("HUNTER", 61846, "Aspect of the Dragonhawk", "buff", "player", {choiceBuffs = hunterAspects})
 
 a("PRIEST", 527, "Dispel Magic", "dispel", "friendly", {dispels = {Magic = true}, party = true})
 a("PRIEST", 527, "Dispel Magic (enemy)", "purge", "target", {dispels = {Magic = true}, key = "PRIEST:527:enemy"})
@@ -76,6 +85,8 @@ a("MAGE", 130, "Slow Fall", "falling", "player", {missingAura = true})
 a("MAGE", 1459, "Arcane Intellect", "buff", "friendly", {missingAura = true, outOfCombat = true})
 a("MAGE", 168, "Frost Armor", "buff", "player", {missingAura = true, outOfCombat = true, replacedBy = 7302})
 a("MAGE", 7302, "Ice Armor", "buff", "player", {missingAura = true, outOfCombat = true})
+a("MAGE", 6117, "Mage Armor", "buff", "player")
+a("MAGE", 30482, "Molten Armor", "buff", "player")
 
 a("PALADIN", 498, "Divine Protection", "defensive", "player", {blockedAuras = {25771}, replacedBy = 642})
 a("PALADIN", 642, "Divine Shield", "defensive", "player", {blockedAuras = {25771}})
@@ -89,10 +100,19 @@ a("PALADIN", 2878, "Turn Undead", "creature", "target", {types = {6}})
 a("PALADIN", 1022, "Blessing of Protection", "health", "friendly", {blockedAuras = {25771}, note = "Physical protection; can prevent the ally's physical attacks. Use with care on tanks."})
 a("PALADIN", 1044, "Blessing of Freedom", "manual", "friendly")
 a("PALADIN", 6940, "Blessing of Sacrifice", "manual", "friendly")
-a("PALADIN", 19740, "Blessing of Might", "manual", "friendly", {outOfCombat = true})
-a("PALADIN", 19742, "Blessing of Wisdom", "manual", "friendly", {outOfCombat = true})
-a("PALADIN", 20217, "Blessing of Kings", "manual", "friendly", {outOfCombat = true})
+a("PALADIN", 19740, "Blessing of Might", "buff", "friendly")
+a("PALADIN", 19742, "Blessing of Wisdom", "buff", "friendly")
+a("PALADIN", 20217, "Blessing of Kings", "buff", "friendly")
 a("PALADIN", 7328, "Redemption", "resurrect", "deadfriendly", {outOfCombat = true})
+local paladinAuras = {465, 7294, 19746, 19891, 19888, 19876, 20218, 32223}
+a("PALADIN", 465, "Devotion Aura", "buff", "player", {choiceBuffs = paladinAuras})
+a("PALADIN", 7294, "Retribution Aura", "buff", "player", {choiceBuffs = paladinAuras, incidentalDamage = true})
+a("PALADIN", 19746, "Concentration Aura", "buff", "player", {choiceBuffs = paladinAuras})
+a("PALADIN", 19891, "Fire Resistance Aura", "buff", "player", {choiceBuffs = paladinAuras})
+a("PALADIN", 19888, "Frost Resistance Aura", "buff", "player", {choiceBuffs = paladinAuras})
+a("PALADIN", 19876, "Shadow Resistance Aura", "buff", "player", {choiceBuffs = paladinAuras})
+a("PALADIN", 20218, "Sanctity Aura", "buff", "player", {choiceBuffs = paladinAuras})
+a("PALADIN", 32223, "Crusader Aura", "buff", "player", {choiceBuffs = paladinAuras})
 
 a("ROGUE", 1766, "Kick", "interrupt", "target", {incidentalDamage = true})
 a("ROGUE", 2094, "Blind", "control", "target")
@@ -118,6 +138,10 @@ a("SHAMAN", 8170, "Disease Cleansing Totem", "dispel", "player", {dispels = {Dis
 a("SHAMAN", 131, "Water Breathing", "swimming", "friendly", {missingAura = true})
 a("SHAMAN", 546, "Water Walking", "manual", "friendly")
 a("SHAMAN", 2008, "Ancestral Spirit", "resurrect", "deadfriendly", {outOfCombat = true})
+local shamanShields = {324, 974, 52127}
+a("SHAMAN", 324, "Lightning Shield", "buff", "player", {choiceBuffs = shamanShields, incidentalDamage = true})
+a("SHAMAN", 974, "Earth Shield", "buff", "friendly", {choiceBuffs = shamanShields})
+a("SHAMAN", 52127, "Water Shield", "buff", "player", {choiceBuffs = shamanShields})
 
 a("WARLOCK", 755, "Health Funnel", "pethealth", "pet", {note = "Channels your own health into the pet. Watch your health while using it."})
 a("WARLOCK", 5782, "Fear", "control", "target", {excludeTypes = {6, 9}})
@@ -132,8 +156,15 @@ a("WARLOCK", 7812, "Sacrifice", "health", "player", {petSpell = true, note = "Sa
 a("WARLOCK", 5697, "Unending Breath", "swimming", "friendly", {missingAura = true})
 a("WARLOCK", 687, "Demon Skin", "buff", "player", {missingAura = true, outOfCombat = true, replacedBy = 706})
 a("WARLOCK", 706, "Demon Armor", "buff", "player", {missingAura = true, outOfCombat = true})
-a("WARLOCK", 6201, "Create Healthstone", "manual", "player", {outOfCombat = true})
-a("WARLOCK", 693, "Create Soulstone", "manual", "player", {outOfCombat = true})
+a("WARLOCK", 28176, "Fel Armor", "buff", "player")
+local healthstoneItems = {19013, 19012, 9421, 19011, 19010, 5510, 19009, 19008, 5509, 19007, 19006, 5511, 19005, 19004, 5512}
+local soulstoneItems = {16896, 16895, 16893, 16892, 5232}
+a("WARLOCK", 6201, "Create Healthstone", "missingitem", "player",
+    {outOfCombat = true, restOnly = true, missingItems = healthstoneItems,
+    note = "Shown outside combat when you do not have a Healthstone."})
+a("WARLOCK", 693, "Create Soulstone", "missingitem", "player",
+    {outOfCombat = true, restOnly = true, missingItems = soulstoneItems,
+    note = "Shown outside combat when you do not have a Soulstone."})
 a("WARLOCK", 698, "Ritual of Summoning", "manual", "player", {outOfCombat = true})
 
 a("WARRIOR", 6552, "Pummel", "interrupt", "target", {incidentalDamage = true})
@@ -143,6 +174,9 @@ a("WARRIOR", 5246, "Intimidating Shout", "control", "target")
 a("WARRIOR", 871, "Shield Wall", "defensive", "player")
 a("WARRIOR", 12975, "Last Stand", "defensive", "player")
 a("WARRIOR", 18499, "Berserker Rage", "manual", "player")
+local warriorShouts = {6673, 469}
+a("WARRIOR", 6673, "Battle Shout", "buff", "player", {choiceBuffs = warriorShouts})
+a("WARRIOR", 469, "Commanding Shout", "buff", "player", {choiceBuffs = warriorShouts})
 
 -- Explicit self-heals: fixed self recipient, never redirected by an enemy target.
 a("PRIEST", 2050, "Lesser Heal (self)", "health", "player")
@@ -177,19 +211,37 @@ a("PALADIN", 25899, "Greater Blessing of Sanctuary", "buff", "friendly", {incide
 a("PALADIN", 25895, "Greater Blessing of Salvation", "buff", "friendly", {note = "Reduces threat for the target's class; choose carefully for tanks."})
 a("PALADIN", 25890, "Greater Blessing of Light", "buff", "friendly")
 local buffFamilies = {{1243, 21562}, {976, 27683}, {14752, 27681}, {1126, 21849}, {1459, 23028},
+    {168, 7302, 6117, 30482}, {687, 706, 28176},
     {19740, 25782}, {19742, 25894}, {20217, 25898}, {20911, 25899}, {1038, 25895}, {19977, 25890}}
 local blessingChoices = {19740, 25782, 19742, 25894, 20217, 25898, 20911, 25899, 1038, 25895, 19977, 25890}
 for _, e in ipairs(U.catalog) do
     for _, family in ipairs(buffFamilies) do
         if e.id == family[1] or e.id == family[2] then
             e.rule, e.buffAuras = "buff", family
-            if e.class == "PALADIN" then e.choiceBuffs = blessingChoices end
+            if e.class == "PALADIN" then e.choiceBuffs, e.choiceOwnOnly = blessingChoices, true end
         end
+    end
+    if e.rule == "buff" and e.target == "player" then
+        e.missingAura, e.outOfCombat, e.restOnly, e.selfBuff = true, true, true, true
     end
     if e.rule == "buff" and e.target == "friendly" then
         e.targetedBuff, e.missingAura, e.outOfCombat = true, true, nil
     end
     if e.id == 19742 or e.id == 25894 then e.requiresMana = true end
+end
+
+-- Keep ally buff buttons available in combat, and add independent self versions
+-- to the outside-combat group so a friendly target is never required to maintain yourself.
+local originalCount = #U.catalog
+for index = 1, originalCount do
+    local source = U.catalog[index]
+    if source.rule == "buff" and source.target == "friendly" then
+        local e = {}; for k, v in pairs(source) do e[k] = v end
+        e.key, e.label, e.target = source.key .. ":self", source.label .. " (self)", "player"
+        e.targetedBuff, e.party, e.playerOnly = nil, nil, nil
+        e.missingAura, e.outOfCombat, e.restOnly, e.selfBuff = true, true, true, true
+        U.catalog[#U.catalog + 1] = e
+    end
 end
 
 -- Racial utilities: only learned spells survive the spellbook filter.
@@ -201,6 +253,13 @@ a("ALL", 58984, "Shadowmeld", "manual", "player")
 a("ALL", 20580, "Shadowmeld", "manual", "player", {replacedBy = 58984})
 a("ALL", 20577, "Cannibalize", "manual", "player", {outOfCombat = true})
 
+-- Resource trackers only. Hunter creature tracking is intentionally excluded.
+-- If none is active, every learned option appears so the player can choose one.
+a("ALL", 2383, "Find Herbs", "tracking", "player", {tracking = true, restOnly = true, outOfCombat = true})
+a("ALL", 2580, "Find Minerals", "tracking", "player", {tracking = true, restOnly = true, outOfCombat = true})
+a("ALL", 43308, "Find Fish", "tracking", "player", {tracking = true, restOnly = true, outOfCombat = true})
+a("ALL", 2481, "Find Treasure", "tracking", "player", {tracking = true, restOnly = true, outOfCombat = true})
+
 U.itemGroups = {
     {key = "ITEM:healing", label = "Healing potion", rule = "health", target = "player", icon = 134831,
         -- Strongest classic potion in bags that the character can use.
@@ -208,11 +267,15 @@ U.itemGroups = {
     {key = "ITEM:mana", label = "Mana potion", rule = "mana", target = "player", icon = "Interface\\Icons\\INV_Potion_70",
         items = {13444, 6149, 3827, 3385, 2455}},
     {key = "ITEM:healthstone", label = "Healthstone", rule = "health", target = "player", icon = 135230,
-        items = {19013, 19012, 9421, 19011, 19010, 5510, 19009, 19008, 5509, 19007, 19006, 5511, 19005, 19004, 5512}},
+        items = healthstoneItems},
     {key = "ITEM:soulstone", class = "WARLOCK", label = "Soulstone", rule = "buff", target = "friendly",
         targetedBuff = true, playerOnly = true, missingAura = true, icon = "Interface\\Icons\\Spell_Shadow_SoulGem",
-        buffAuras = {20707, 20762, 20763, 20764, 20765}, items = {16896, 16895, 16893, 16892, 5232},
+        buffAuras = {20707, 20762, 20763, 20764, 20765}, items = soulstoneItems,
         note = "Apply to a living friendly player before death; this stores their resurrection. Create a Soulstone first."},
+    {key = "ITEM:soulstone:self", class = "WARLOCK", label = "Soulstone (self)", rule = "buff", target = "player",
+        missingAura = true, restOnly = true, outOfCombat = true, icon = "Interface\\Icons\\Spell_Shadow_SoulGem",
+        buffAuras = {20707, 20762, 20763, 20764, 20765}, items = soulstoneItems,
+        note = "Apply before combat to store your own resurrection. After death, WoW presents the Soulstone resurrection choice."},
     {key = "ITEM:bandage", label = "Bandage (self)", rule = "health", target = "player",
         restOnly = true, outOfCombat = true, bandage = true, usableSelection = true,
         icon = "Interface\\Icons\\INV_Misc_Bandage_12", blockedAuras = {11196},
@@ -224,5 +287,6 @@ U.ruleLabels = {
     interrupt = "Enemy casting", dispel = "Friendly debuff", purge = "Enemy removable buff",
     creature = "Suitable creature type", control = "Crowd control", combat = "In combat",
     buff = "Missing buff", resurrect = "Dead ally", petdead = "Dead pet", petmissing = "Missing pet",
-    falling = "Falling", swimming = "Swimming", manual = "Manual utility",
+    falling = "Falling", swimming = "Swimming", tracking = "No resource tracker active",
+    missingitem = "Missing conjured item", manual = "Manual utility",
 }

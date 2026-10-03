@@ -1,6 +1,34 @@
 # Utility Helper: Forever
 
-Version **0.1.14** for **WoW: Forever beta 1.60.1**, interface **16001**.
+Version **0.1.17** for **WoW: Forever beta 1.60.1**, interface **16001**.
+
+Warlocks now receive clickable outside-combat reminders to create a Healthstone
+or Soulstone only when that stone is missing from their bags. A separate
+**Soulstone (self)** button appears outside combat when a Soulstone is available
+and the Warlock does not already have Soulstone resurrection protection. After
+death, WoW itself presents the resurrection choice. Creation, self-protection,
+targeted Soulstone use and low-health Healthstone use are separate entries that
+can each be enabled or disabled in `/uh`.
+
+Paladin blessing maintenance distinguishes who applied a blessing. A blessing
+from another Paladin suppresses the duplicate of that same blessing, while the
+Paladin's other learned blessing choices remain available. Once the Paladin
+applies one of their own mutually exclusive blessings, the alternative personal
+blessing reminders clear.
+
+Learned maintenance buffs now appear as clickable outside-combat self-buff
+reminders. This includes level 1 **Demon Skin**, Priest protections, Druid
+buffs, Mage intellect and armor families, Paladin blessings and auras, Hunter
+aspects, Shaman shields, Warlock armor families and Warrior shouts. Friendly
+player/pet buff buttons remain separate. For mutually exclusive families, every
+learned choice appears while none is active; applying one clears the alternatives.
+
+Learned resource-tracking abilities now appear outside combat whenever no
+supported resource tracker is active: **Find Herbs**, **Find Minerals**, **Find
+Fish** and the Dwarf racial **Find Treasure**. Characters with more than one see
+all available choices together. Activating any one removes the whole choice
+group until resource tracking is turned off again. Hunter creature-tracking
+abilities are deliberately excluded.
 
 Rogue abilities that require stealth—Sap, Cheap Shot and Pick Pocket—have been
 removed. Their alerts only became available after entering stealth and then
@@ -56,11 +84,12 @@ The prior fix for ready Scare Beast at 0% inactive visibility was confirmed
 working by the user. This version preserves that fix.
 `/uh why` prints each button's most recent combat check if an alert is missing.
 
-**Combat-only utilities, with bandage reminders outside combat:** the ordinary bar is hidden, its buttons
+**Combat utilities, with self-buffs, resource trackers and bandage reminders outside combat:** the ordinary bar is hidden, its buttons
 are disabled and its keybinds are released. Entering combat enables the fixed
 buttons and their assigned keys through the game's secure state driver. Leaving
 combat disables them again. Arrange mode reveals a preview that cannot cast.
-The minimap button and settings remain available outside combat.
+The separate outside-combat group provides learned self-buffs, resource trackers
+and the low-health bandage reminder. The minimap button and settings remain available outside combat.
 
 An ability's own cooldown and an existing cast/channel suppress
 activation alerts. Mend Pet and Health Funnel cannot restart their own channel
@@ -129,7 +158,8 @@ Helper creates one fixed button for each enabled learned utility. The button's
 spell, recipient rule, keybind and position remain stable through a fight.
 The secure combat state driver enables input and installs utility keybinds on
 combat entry, and disables input and releases those keys on combat exit. The bar
-is hidden outside combat at every opacity setting. The separate bandage reminder
+is hidden outside combat at every opacity setting. The separate outside-combat group
+shows missing learned self-buffs and resource trackers when none is active, while the bandage reminder
 appears only below the health threshold outside combat. On private health its
 clicks, hover input and addon keybind are disabled at all times.
 Other normal game keybinds are available again outside combat. Use your normal action bar for utilities needed
@@ -143,7 +173,7 @@ arbitrary health/cast/debuff checks to show, hide, retarget or reassign secure
 actions during combat. At 0% inactive visibility DURING combat, the fixed click
 areas and keybinds remain usable even though the artwork is invisible. Outside
 combat, ordinary utility buttons and their input are disabled, regardless of opacity.
-The bandage reminder also disappears during combat. On a client with readable
+Self-buffs, resource trackers and the bandage reminder disappear during combat. On a client with readable
 health, its button can accept input only when low health is confirmed outside combat.
 
 - **Bright gold border:** a relevant scenario, subject to range, resources,

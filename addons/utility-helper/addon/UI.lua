@@ -129,7 +129,9 @@ function U.Tooltip(b)
     if e.note then tip:AddLine(e.note, 1, 0.7, 0.3, true) end
     if e.incidentalDamage then tip:AddLine("Utility spell with incidental damage", 1, 0.6, 0.35) end
     tip:AddLine("Key: " .. (U.db.bindings[e.key] or "Unassigned"), 1, 1, 1)
-    tip:AddLine(e.restOnly and "Bandages appear only outside combat at the health threshold. Private-health alerts are reminders; use your normal action bar."
+    tip:AddLine(e.selfBuff and "Learned self-buffs appear outside combat when their buff family is missing."
+        or e.tracking and "Learned resource trackers appear outside combat when no supported resource tracker is active."
+        or e.restOnly and "Bandages appear only outside combat at the health threshold. Private-health alerts are reminders; use your normal action bar."
         or "This button and its keybind work in combat. Bright borders indicate a relevant utility.", 0.7, 0.7, 0.7, true)
     tip:Show()
     -- Apply after native population/OnShow; native alpha may be secret.
@@ -274,8 +276,8 @@ end
 function U.SyncRestButton(b, state)
     if InCombatLockdown() then return end
     local available = U.restRoot:GetAttribute("state-utility") == "rest"
-    -- Only a publicly confirmed threshold may enable protected input. Private
-    -- health controls reminder artwork only, with mouse input and keys disabled.
+    -- Only a publicly confirmed condition may enable protected input. Private
+    -- health controls bandage reminder artwork only, with input disabled.
     local active = available and not U.editing and state == "active" or false
     local reminder = available and not U.editing and state == "display" or false
     if b.restInput ~= active then
@@ -348,7 +350,7 @@ function U.BuildUI()
         for _, b in ipairs(U.buttons) do U.SetProcGlow(b, false) end
     end)
     U.root:SetScript("OnShow", function() U.dirty = true end)
-    -- Separate owner: only the explicitly requested bandage exception works at rest.
+    -- Separate owner for outside-combat self-buffs, bandages and resource trackers.
     -- Its secure transition disables input and releases keys immediately in combat.
     U.restRoot = CreateFrame("Frame", "UtilityHelperRestRoot", UIParent, "SecureHandlerStateTemplate")
     U.restRoot:EnableMouse(false)
@@ -463,6 +465,7 @@ function U.Refresh()
     U.dirty = false
     U.stats.refreshes = U.stats.refreshes + 1
     U.auraCache = {}
+    U.resourceTrackingChecked, U.resourceTrackingActive = nil, nil
     for _, e in ipairs(U.entries) do
         local b = U.byKey[e.key]
         local state, reason, unit, visual = U.Evaluate(e)

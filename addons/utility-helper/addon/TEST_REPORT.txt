@@ -1,7 +1,47 @@
-# Utility Helper: Forever 0.1.14 — verification record
+# Utility Helper: Forever 0.1.17 — verification record
 
-Date: 2 October 2026. Target: WoW: Forever beta, interface 16001.
-Local installed client metadata: 1.60.1.70170.
+Date: 3 October 2026. Target: WoW: Forever beta, interface 16001.
+Local installed client metadata: 1.60.1.70205.
+
+## 0.1.17 Paladin blessing ownership and Warlock stones
+
+Paladin self-buff maintenance preserves source ownership: another Paladin's
+blessing suppresses the duplicate spell but leaves the character's other learned
+blessing choices available. A blessing applied by the character suppresses the
+mutually exclusive self choices.
+
+Create Healthstone and Create Soulstone are now outside-combat actions that
+activate only when no supported tier of the corresponding stone is in the bags.
+A separate outside-combat Soulstone (self) item action applies resurrection
+protection to the Warlock and clears when the protection aura is active. The
+existing selected-friendly-player Soulstone and low-health Healthstone actions
+remain separate. Every action has its own settings entry. `tests/warlock_stones.lua`
+checks inventory transitions, fixed self targeting, aura suppression, the ally
+action and independent configuration. The full Lua 5.1 syntax and behavior suite
+passes.
+
+## 0.1.16 learned self-buffs
+
+All curated maintenance buff families now receive learned-only, clickable
+outside-combat self buttons. A level 1 Warlock with Demon Skin receives the
+alert immediately when the buff is absent. Existing targeted friendly buff
+buttons remain separate. Mutually exclusive families suppress every alternative
+after one choice is active, including Paladin blessings and auras, Hunter
+aspects, Mage armors, Shaman shields, Warlock armors and Warrior shouts.
+`tests/self_buffs.lua` checks level 1 Demon Skin, spell upgrades, self targeting,
+independent keybinds, family suppression, friendly-to-self coverage and secure
+combat shutdown. The full Lua 5.1 syntax and behavior suite passes.
+
+## 0.1.15 resource tracking
+
+Learned Find Herbs, Find Minerals, Find Fish and Dwarf Find Treasure now share
+an outside-combat choice group. When no supported resource tracker is active,
+all learned choices appear with independent clicks and keybinds. Once one is
+active, every choice is removed. Hunter creature tracking is excluded and does
+not suppress the resource choices. `tests/tracking.lua` covers learned filtering,
+simultaneous choices, selected-state suppression, unrelated Hunter tracking,
+mounted/combat shutdown, binding release and unavailable-API failure behavior.
+The full Lua 5.1 syntax and behavior suite passes.
 
 ## 0.1.14 Rogue catalogue correction
 
@@ -72,7 +112,7 @@ upload. The published archive retains its original historical verification text.
 - `tests/friendly_utilities.lua` checks selected living friendly players/pets,
   missing/equivalent buffs, blessings, Wisdom's mana requirement, fixed target
   macros, player resurrection exclusions, own-pet revive and living-player
-  Soulstone protection. The catalogue has 160 spell definitions, plus item groups.
+  Soulstone protection. The catalogue has 161 spell definitions, plus item groups.
   Ordinary resurrection remains unavailable through the combat-only bar outside
   combat; a broader exception awaits the user's preference.
 

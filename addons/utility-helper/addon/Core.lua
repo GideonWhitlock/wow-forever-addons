@@ -285,9 +285,37 @@ function U.TotemActive(e)
     if readable then return false end
 end
 
+function U.ResourceTrackingActive()
+    if U.resourceTrackingChecked then return U.resourceTrackingActive end
+    U.resourceTrackingChecked = true
+    local api = C_Minimap
+    local count = U.Public(api and api.GetNumTrackingTypes)
+    if type(count) ~= "number" then return nil end
+    local watched = {}
+    for _, entry in ipairs(U.availableEntries or {}) do
+        if entry.tracking and entry.name then watched[entry.name] = true end
+    end
+    local readable = true
+    for index = 1, count do
+        local info = U.Public(api.GetTrackingInfo, index)
+        if type(info) ~= "table" or U.Secret(info.name) or U.Secret(info.active) then
+            readable = false
+        elseif info.active and watched[info.name] then
+            U.resourceTrackingActive = true
+            return true
+        end
+    end
+    if readable then
+        U.resourceTrackingActive = false
+        return false
+    end
+end
+
 -- Returns true/false/nil or "display" plus a strictly visual descriptor.
 function U.Condition(e, unit)
-    if not U.Alive("player") or U.Public(UnitOnTaxi, "player") == true or U.Public(IsMounted) == true then return false, "Unavailable while dead, mounted or travelling" end
+    if not U.Alive("player") or U.Public(UnitOnTaxi, "player") == true or U.Public(IsMounted) == true then
+        return false, "Unavailable while dead, mounted or travelling"
+    end
     if e.outOfCombat and InCombatLockdown() then return false, "Outside combat only" end
     if e.bandage then
         -- Both channel suppression and the debuff are explicit for First Aid.
@@ -313,9 +341,11 @@ function U.Condition(e, unit)
         end
         if e.requiresMana and U.Public(UnitPowerMax, unit, 0) == 0 then return false, "This buff requires a mana user" end
         if e.playerOnly and U.Public(UnitIsPlayer, unit) ~= true then return false, "Select a friendly player" end
-        if e.choiceBuffs and U.HasAura(unit, e.choiceBuffs, "HELPFUL", true) == true then
-            return false, "Your blessing is already active; alternatives would replace it"
-        end
+    end
+    if e.choiceBuffs then
+        local choice = U.HasAura(unit, e.choiceBuffs, "HELPFUL", e.choiceOwnOnly)
+        if choice == true then return false, "A mutually exclusive buff is already active" end
+        if choice == nil then return nil, "Buff choice information restricted" end
     end
     if e.rule == "petmissing" then return U.Public(UnitExists, "pet") == false, "Call your pet" end
     if e.rule == "petdead" then return U.Public(UnitExists, "pet") == true and U.Public(UnitIsDead, "pet") == true, "Revive your pet" end
@@ -323,6 +353,17 @@ function U.Condition(e, unit)
         return U.Public(UnitExists, unit) == true and U.Public(UnitCanAssist, "player", unit) == true
             and U.Public(UnitIsPlayer, unit) == true and U.Public(UnitIsDead, unit) == true
             and U.Public(UnitIsGhost, unit) == false, "Resurrect selected ally"
+    end
+    if e.rule == "tracking" then
+        local active = U.ResourceTrackingActive()
+        if active == nil then return nil, "Tracking status unavailable" end
+        return not active, active and "A resource tracker is already active" or "No resource tracker active"
+    end
+    if e.rule == "missingitem" then
+        for _, id in ipairs(e.missingItems or {}) do
+            if U.ItemCount(id) > 0 then return false, "Required conjured item is already in your bags" end
+        end
+        return true, "Conjured item missing from your bags"
     end
     if not U.Alive(unit) then return false, "No living recipient" end
     local hostile = e.rule == "interrupt" or e.rule == "purge" or e.rule == "creature" or e.rule == "control"

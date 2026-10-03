@@ -94,7 +94,7 @@ local function start()
     end
     U.starting = true
     U.Rebuild(); U.started = true; U.starting = nil
-    U.Print("Loaded for " .. U.class .. ". /uh opens settings. Utilities work in combat; bandages alert at low health outside combat. Private-health bandage alerts are reminders; use your normal action bar.")
+    U.Print("Loaded for " .. U.class .. ". /uh opens settings. Utilities work in combat; learned self-buffs, bandages and resource trackers can alert outside combat.")
 end
 local elapsed, lastRefresh = 0, 0
 function U.Tick(_, dt)
@@ -132,7 +132,7 @@ f:SetScript("OnEvent", function(_, event, arg1, arg2)
             "UNIT_HEALTH", "UNIT_POWER_UPDATE", "UNIT_AURA", "PLAYER_TARGET_CHANGED", "PLAYER_FOCUS_CHANGED", "GROUP_ROSTER_UPDATE", "SPELL_UPDATE_COOLDOWN",
             "UNIT_SPELLCAST_START", "UNIT_SPELLCAST_STOP", "UNIT_SPELLCAST_CHANNEL_START", "UNIT_SPELLCAST_CHANNEL_STOP",
             "UNIT_SPELLCAST_SUCCEEDED", "UNIT_SPELLCAST_FAILED", "UNIT_SPELLCAST_INTERRUPTED", "UNIT_SPELLCAST_DELAYED", "UNIT_SPELLCAST_CHANNEL_UPDATE",
-            "UNIT_SPELLCAST_INTERRUPTIBLE", "UNIT_SPELLCAST_NOT_INTERRUPTIBLE", "UI_SCALE_CHANGED"}) do
+            "UNIT_SPELLCAST_INTERRUPTIBLE", "UNIT_SPELLCAST_NOT_INTERRUPTIBLE", "MINIMAP_UPDATE_TRACKING", "UI_SCALE_CHANGED"}) do
             U.RegisterEvent(name)
         end
         f:SetScript("OnUpdate", U.Tick)

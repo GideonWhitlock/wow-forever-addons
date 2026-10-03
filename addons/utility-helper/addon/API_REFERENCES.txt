@@ -1,5 +1,12 @@
 # Forever API references
 
+Version 0.1.15 reads `C_Minimap.GetNumTrackingTypes` and
+`C_Minimap.GetTrackingInfo` to identify whether one of Utility Helper's learned
+resource trackers is active. Matching uses the localized learned spell name.
+The add-on does not add Hunter creature tracking, and unrelated active tracking
+does not suppress profession or Dwarf resource choices. Missing or restricted
+tracking data fails closed.
+
 API snapshots obtained on 27 September 2026 and locally reviewed again on
 28 September. The installed `.build.info` identifies the local
 Forever beta as `1.60.1.70009`. The add-on targets interface `16001`.
