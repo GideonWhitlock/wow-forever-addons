@@ -1,0 +1,13 @@
+## Interface: 16001
+## Title: Utility Helper: Forever
+## Notes: Contextual class utility, emergency recovery, dispels, interrupts and pet care.
+## Author: Roger
+## Version: 0.1.14
+## SavedVariablesPerCharacter: UtilityHelperDB
+## IconTexture: Interface\Icons\INV_Misc_Gear_01
+
+Catalog.lua
+Core.lua
+UI.lua
+Options.lua
+UtilityHelper.lua

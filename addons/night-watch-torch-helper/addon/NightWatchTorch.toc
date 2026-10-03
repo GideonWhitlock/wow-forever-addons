@@ -1,0 +1,11 @@
+## Interface: 16001
+## Title: Night Watch Torch
+## Notes: Offers your carried torch at night or in bad weather when you are safely stationary.
+## Author: Roger
+## Version: 1.0.2
+## SavedVariablesPerCharacter: NightWatchTorchDB
+## IconTexture: Interface\Icons\INV_Torch_Lit
+
+Core.lua
+Minimap.lua
+NightWatchTorch.lua

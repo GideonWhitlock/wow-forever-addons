@@ -1,0 +1,32 @@
+CAMPFIRE STORIES: FOREVER 3.0.2 - TEST EVIDENCE
+27 September 2026. Target: WoW: Forever 1.60.1 / 70009 / Interface 16001.
+
+2,899 simulated Lua 5.1 assertions passed:
+1,038 core/content; 1,543 invariants/migration; 30 emote regressions;
+80 automatic source replies; 208 UI/adapter checks with 21 mocked API calls.
+All 20 complete narratives match credited source witnesses after documented
+formatting and place-name changes. Five deliberate text corruption cases
+(removed ending, inserted prose, wrong place, line order, title) were rejected.
+20 stories; 313 unchanged source messages; 12 restored opening emotes.
+No spoken introduction or generated story premise. Emote-only progression,
+reset/back, failed attempts, text-only and custom personal stories, old-state
+migration and private draft previews are covered. Source replies wait until
+a story line is sent; the emote alone cannot trigger a source claim.
+
+Reply tests cover keyword boundaries, actual sender-to-WHISPER targeting,
+self/wrong-channel/personal-story exclusions, idle/closed/paused/finished
+cancellation, settings and pending cancellation, recipient limits, spacing,
+source authenticity, every reply's 255-byte limit, blocked-API handling,
+no automatic retry and preservation of story position and chat pacing.
+These are simulated API/frame checks, not live-client security/rendering tests.
+
+Earlier owner-operated checks confirmed the existing compact interface,
+readable text, Next line/Reset, a complete telling and personal save/reload.
+The restored emotes, new collection, human-art textures and source whispers
+have not yet been checked live. Full-restart/other-character persistence and
+CurseForge app installation remain unverified. Publication/approval records
+are maintained separately from the immutable package build.
+
+The earlier Error 109 (20-second unresponsive thread) while fighting with the
+addon window closed remains undiagnosed. No crash fix or crash-free claim.
+No game input, live chat or reload was automated during development tests.

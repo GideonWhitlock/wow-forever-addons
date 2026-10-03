@@ -1,0 +1,77 @@
+3.0.2 - 3 October 2026
+- Changed the public and in-game display name to Campfire Stories: Forever.
+- Updated the addon list, windows, settings, minimap tooltip, diagnostics,
+  notices, source replies and public documentation to use the same name.
+- Kept the CampfireStory folder, /campfire commands, saved-data identifiers,
+  CurseForge slug and project ID unchanged for upgrade compatibility.
+- No story, pacing, chat-routing, library or SavedVariables behavior changed.
+
+3.0.0 - 27 September 2026
+- 20 complete human-written public-domain tales replace all 31 old stories.
+- Original wording and endings; documented geography changes; source credits.
+- No generated introductions or premises. Start story shares first source line.
+- Old included active/recovery tales removed; personal library preserved.
+- Human painting replaces generated logo and minimap artwork; see ARTWORK.txt.
+- Private source replies to AI mentions during active included-story tellings;
+  sender only, once per person per login, limited and optional in Settings.
+- 2,622 simulated Lua 5.1 checks plus source-integrity audit passed.
+- New content/automatic whispers not yet live verified. Error 109 unresolved.
+- Normal Release channel and ordinary version; name remains Campfire Stories.
+
+3.0.0-beta.1 — 27 September 2026 (Small Window candidate; not yet submitted)
+- Optional compact, draggable telling window with an exact next-message preview,
+  Start story / Next line, Reset story and Library. Your place and wait are shared.
+- Pick for me selects from the current library/search without repeating choices
+  until the matches run out. Cancelling a switch keeps your place and pick history.
+- Window choice and pick history are session-only; no saved-data schema changes.
+- Kept all 31 shorter horror stories and the existing editor/import/export tools.
+- Tested in simulated Lua 5.1; real-client layout and acceptance remain pending.
+  The earlier Error 109 report remains unresolved; this is not a crash-fix release.
+
+3.0.0-alpha.5 — 26 September 2026 (shorter, sharper stories)
+- Refined all 31 tales from 16 to 12 main lines, with earlier hooks, tighter
+  escalation and more unsettling endings. Main-story word count reduced 31%.
+- Preserved every story ID, title and premise, plus the personal story library.
+- A telling already in progress retains its text and place. Reset story loads
+  the revised edition; an unfinished telling asks before switching editions.
+- Opening pools, pacing settings, interface and saved-data schema unchanged.
+
+3.0.0-alpha.4 — 26 September 2026 (live feedback)
+- Reset story is always beside Start story / Next line; one click returns to
+  a fresh opening without sending, deleting stories or clearing the wait.
+- Smaller 28px circular minimap button overlaps the rim instead of floating
+  beyond it. Dragging, scaling and saved position are retained.
+- The owner confirmed alpha.3 opens and sends its opening in the real client.
+
+3.0.0-alpha.3 — 26 September 2026 (usability fix)
+- Choosing a library story immediately prepares its exact opening preview.
+- One large Start story / Next line button guides the whole telling.
+- Less common controls are grouped under More options; Go is now clearly
+  labelled Preview this line, and vague "Updated privately" notices are gone.
+- Resume story is shown when paused; the ending never restarts automatically.
+- Search and single-line fields no longer have unnecessary scrollbars.
+- Circular minimap button sits outside the actual map size, including scaling.
+- Shared manual sending, pacing, stories and saved-data schema are retained.
+- Simulated regression tests passed; actual-client recheck still required.
+
+3.0.0-alpha.2 — 26 September 2026 (private development alpha)
+- Named the addon Campfire Stories and credited Gideon.
+- Added MIT code and CC BY 4.0 original-content/artwork licences.
+- Kept existing internal folder, command and saved-data names for migration.
+- Prepared new original Campfire Stories project artwork and listing summary.
+
+3.0.0-alpha.1 — 26 September 2026 (private development alpha)
+- Added 30 new original tales and revised The Girl Beyond the Firelight.
+- Added separate random opening action and introduction stages.
+- Added shared dynamic/fixed pacing with UTF-8 counting and byte validation.
+- Added searchable library, personal editor, custom opening groups and safe
+  full-story import/export plus account backup/merge restore.
+- Added minimap access, saved position/visibility and normal addon settings.
+- Preserved legacy per-character settings; new personal library is account-wide.
+- Added client diagnostics, detectable-failure handling and private navigation.
+- No live-client compatibility, successful persistence or public release is
+  claimed yet. See TEST_NOTES.txt and the separate acceptance guide.
+
+2.0.0 — installed baseline
+- One manual story, fixed pacing, optional preview panel and legacy settings.
+- Retained untouched in the local rollback backup and initial Git commit.

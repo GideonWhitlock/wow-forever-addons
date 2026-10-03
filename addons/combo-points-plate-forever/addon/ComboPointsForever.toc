@@ -1,0 +1,9 @@
+## Interface: 16001
+## Title: Combo Points: Forever
+## Author: Roger & Codex
+## Notes: Beautiful class-themed combo points above your target's enemy nameplate.
+## Version: 1.0.6
+## SavedVariablesPerCharacter: ComboPointsForeverDB
+## IconTexture: Interface\AddOns\ComboPointsForever\Media\ComboPoint
+
+ComboPointsForever.lua

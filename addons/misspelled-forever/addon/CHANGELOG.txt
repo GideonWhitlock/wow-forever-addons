@@ -1,0 +1,17 @@
+Misspelled: Forever 1.1.0
+
+- Added a draggable minimap button using the approved project artwork.
+- Left-click opens settings and right-click opens the personal dictionary.
+- Added minimap visibility and position-reset controls.
+- Added /mf minimap and /mf reset commands.
+
+Misspelled: Forever 1.0.0
+
+- First WoW: Forever release.
+- Live spelling checks in Blizzard chat edit boxes.
+- Light-blue highlighting for completed misspelled words.
+- Right-click suggestions, Ignore All and Add to Dictionary actions.
+- Personal dictionary editor and automatic locale selection.
+- Seven included language dictionaries.
+- Standalone package with required Ace3 libraries included.
+- Slash commands: /mf, /misspelledforever and /misspelled.

@@ -1,0 +1,12 @@
+## Interface: 16001
+## Title: Campfire Tooltips
+## Notes: Explains verified camping benefits on world-object tooltips.
+## Author: Campfire Tooltips contributors
+## Version: 1.0.1
+## SavedVariables: CampfireTooltipsDB
+## X-License: GPL-3.0-or-later
+
+Data.lua
+Names.lua
+Core.lua
+Settings.lua

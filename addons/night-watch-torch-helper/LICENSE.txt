@@ -1,0 +1,4 @@
+Copyright (c) 2026 Roger. All rights reserved.
+
+The add-on refers to icons supplied by the World of Warcraft client. Those game
+assets belong to their respective owners and are not bundled in this package.

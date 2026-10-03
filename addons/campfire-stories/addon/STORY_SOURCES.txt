@@ -1,0 +1,139 @@
+CAMPFIRE STORIES: FOREVER — STORY SOURCES
+
+The twenty included story texts are human-written public-domain tales, not ChatGPT-written or AI-generated stories. Sources and changes are listed below. No copyright in these historical texts is claimed by Gideon.
+
+Whitespace is reflowed into chat messages; typographic quotes/dashes are normalised, print emphasis and footnote numbers omitted. Narratives are not abridged or rewritten. No generated story premises or spoken introductions are included. A short roleplay emote from the earlier addon is restored at the explicit owner request, separately from these sourced narratives. Start story sends that action; the next manual click begins the original text.
+
+The Golden Arm
+Joseph Jacobs (collector)
+English Fairy Tales (1890)
+https://www.gutenberg.org/ebooks/7439
+Complete tale. Restore the missing initial T in the Gutenberg transcription; the printed drop capital is visible in the Wikisource transcription: https://en.wikisource.org/wiki/English_Fairy_Tales/The_Golden_Arm .
+
+The Hand of Glory
+William Henderson (collector)
+Notes on the Folk-lore of the Northern Counties of England and the Borders; as reproduced in The Haunters & The Haunted, edited by Ernest Rhys
+https://www.gutenberg.org/ebooks/17953
+Complete third narrative in chapter XLIX, beginning One dark night. The two other variants, editorial comparisons and closing geographic source note are not part of this telling. Henderson introduces the following narrations as communicated by S. Baring-Gould.
+
+The Dead Mother
+W. R. S. Ralston (translator)
+Russian Folk-Tales (1873), reprinted as Russian Fairy Tales
+https://www.gutenberg.org/ebooks/22373
+Complete tale translated by Ralston from the Afanasyev collection. Footnote numbers are omitted; the translator's parenthetical words are retained.
+
+Frau Trude
+Brothers Grimm; Margaret Hunt (translator)
+Household Tales (1884 translation), no. 43
+https://www.gutenberg.org/ebooks/5314
+Complete tale.
+
+The Coffin-Lid
+W. R. S. Ralston (translator)
+Russian Folk-Tales (1873), reprinted as Russian Fairy Tales
+https://www.gutenberg.org/ebooks/22373
+Complete tale translated by Ralston from the Afanasyev collection. No place-name or wording substitutions.
+
+Sarah Polgrain
+Robert Hunt (collector)
+Popular Romances of the West of England (1865); text as reprinted in The Haunters & The Haunted
+https://www.gutenberg.org/ebooks/17953
+Complete tale; place names only are substituted. The Rhys chapter heading says William Hunt, but the tale also appears in Robert Hunt's Popular Romances: https://www.globalgreyebooks.com/online-ebooks/robert-hunt_popular-romances-of-the-west-of-england_complete-text.html . This is folklore relocated for roleplay, not an assertion of an actual event or official Warcraft lore.
+Place substitution: Ludgvan -> Moonbrook
+Place substitution: Bodmin -> Stormwind
+Place substitution: Yorkshire -> Westfall
+Place substitution: Penzance -> Booty Bay
+Place substitution: Mediterranean -> Great Sea
+Place substitution: the Land's End -> Longshore
+Place substitution: Churchtown -> Moonbrook
+
+The Headless Princess
+W. R. S. Ralston (translator)
+Russian Folk-Tales (1873), reprinted as Russian Fairy Tales
+https://www.gutenberg.org/ebooks/22373
+Complete tale translated by Ralston. Numeric footnote references are omitted; the translator's bracketed words are retained.
+
+The Warlock
+W. R. S. Ralston (translator)
+Russian Folk-Tales (1873), reprinted as Russian Fairy Tales
+https://www.gutenberg.org/ebooks/22373
+Complete tale translated by Ralston. Numeric footnote references are omitted; the translator's bracketed words are retained.
+
+The Shroud
+W. R. S. Ralston (translator)
+Russian Folk-Tales (1873), reprinted as Russian Fairy Tales
+https://www.gutenberg.org/ebooks/22373
+Complete tale translated by Ralston. Numeric footnote references are omitted; the translator's bracketed words are retained.
+
+The Two Corpses
+W. R. S. Ralston (translator)
+Russian Folk-Tales (1873), reprinted as Russian Fairy Tales
+https://www.gutenberg.org/ebooks/22373
+Complete tale translated by Ralston. Numeric footnote references are omitted; the translator's bracketed words are retained.
+
+Mr. Miacca
+Joseph Jacobs (collector)
+English Fairy Tales (1890)
+https://www.gutenberg.org/ebooks/7439
+Complete tale.
+
+The Master and His Pupil
+Joseph Jacobs (collector)
+English Fairy Tales (1890)
+https://www.gutenberg.org/ebooks/7439
+Complete tale.
+Place substitution: Yorkshire -> Duskwood
+
+The Rose-Tree
+Joseph Jacobs (collector)
+English Fairy Tales (1890)
+https://www.gutenberg.org/ebooks/7439
+Complete tale.
+
+The Death Sign
+Lady Wilde (collector)
+Ancient Legends, Mystic Charms & Superstitions of Ireland (1887; 1919 edition)
+https://www.gutenberg.org/ebooks/61436
+Complete tale.
+
+The Dead Hand
+Lady Wilde (collector)
+Ancient Legends, Mystic Charms & Superstitions of Ireland (1887; 1919 edition)
+https://www.gutenberg.org/ebooks/61436
+Complete tale.
+
+The Dead Soldier
+Lady Wilde (collector)
+Ancient Legends, Mystic Charms & Superstitions of Ireland (1887; 1919 edition)
+https://www.gutenberg.org/ebooks/61436
+Complete tale.
+Place substitution: Shannon -> Southfury River
+Place substitution: Athlone -> Orgrimmar
+
+The Lady Witch
+Lady Wilde (collector)
+Ancient Legends, Mystic Charms & Superstitions of Ireland (1887; 1919 edition)
+https://www.gutenberg.org/ebooks/61436
+Complete tale.
+Place substitution: Joyce County -> Duskwood
+Place substitution: Spanish -> Dalaran
+
+The Fairy Changeling
+Lady Wilde (collector)
+Ancient Legends, Mystic Charms & Superstitions of Ireland (1887; 1919 edition)
+https://www.gutenberg.org/ebooks/61436
+Complete tale.
+
+The Dance of the Dead
+Lady Wilde (collector)
+Ancient Legends, Mystic Charms & Superstitions of Ireland (1887; 1919 edition)
+https://www.gutenberg.org/ebooks/61436
+Complete first narrative in this chapter, from the November introduction to the death of the woman. Separate subsequent accounts of a black lamb and a boating omen are not included.
+Place substitution: Shark Island -> Fenris Isle
+
+The Demon Cat
+Lady Wilde (collector)
+Ancient Legends, Mystic Charms & Superstitions of Ireland (1887; 1919 edition)
+https://www.gutenberg.org/ebooks/61436
+Complete fisherman-family narrative. The introduction referring to a different preceding chapter and the two separate following cat anecdotes are not included.
+Place substitution: Connemara -> Westfall

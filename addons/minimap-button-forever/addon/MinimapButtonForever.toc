@@ -1,0 +1,11 @@
+## Interface: 16001
+## Title: Minimap Button: Forever
+## Author: Gideon
+## Notes: Organises add-on minimap buttons into a movable horizontal or vertical bar.
+## Version: 1.0.14
+## SavedVariablesPerCharacter: MinimapButtonForeverDB
+## IconTexture: Interface\Icons\INV_Misc_PocketWatch_01
+
+Core.lua
+UI.lua
+MinimapButtonForever.lua

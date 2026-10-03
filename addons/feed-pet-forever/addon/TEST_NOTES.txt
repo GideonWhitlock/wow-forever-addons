@@ -1,0 +1,38 @@
+OPTIONAL LIVE CHECKLIST - build 1.60.1.70170
+
+Version 1.0.2 corrects the displayed title only. The feeding workflow was
+owner-tested and accepted for 1.0.0; these remain optional diagnostic checks.
+
+1. Enable the addon on a hunter who knows Feed Pet. /fpf opens settings.
+   The minimap button should also open settings on left-click, toggle layout
+   preview on right-click, and move around the rim when dragged. Verify its
+   position persists through /reload and /fpf minimap off/on hides/restores it.
+   Unlock, drag, resize, click Done. /reload should preserve position and size.
+   /fpf test nofood previews the red crossed-out icon; /fpf lock finishes.
+2. With a living, present, unhappy or content pet, stand out of combat with
+   suitable food. The Feed Pet icon should flash. Its tooltip names a food.
+3. Left-click once. Exactly one item should be consumed by Feed Pet, and
+   the pet should gain its feeding effect. The icon should hide during that
+   effect and remain hidden when the pet reaches happy status.
+4. Move/sort food in your bags; the next click should still feed suitable food.
+   Test eating the last suitable food. On the next needed feed, NO FOOD should
+   appear; clicking that warning must not cast anything. Buying suitable food
+   should restore the feeding button when feeding is needed.
+5. Check a second pet family with a different diet. Unsuitable items must not
+   be selected. Check that the lowest-level food still accepted by the native
+   API really feeds this beta pet; report any client rejection with /fpf status.
+6. Verify no alert while happy, in player combat, in pet-only combat, pet dead,
+   dismissed, player dead/ghost, mounted, or riding a griffin/wyvern taxi.
+   When normal conditions return, the correct alert should return.
+7. Try Shift-drag/wheel and layout preview. They must not consume food.
+   Enter combat while previewing; the preview should disappear and stay locked.
+8. Check for Lua errors or "action blocked" messages after combat and feeding.
+   Include /fpf status output and the exact error when reporting a problem.
+
+AUTOMATED COVERAGE
+Lua 5.1: eligibility/visibility, native food predicate, bag cache invalidation,
+bag-slot revalidation on click, food exhaustion, no-food mode, locked/uncached
+items, extra equipped bags versus bank exclusion, feeding-effect suppression,
+repeated clicks, drag/size controls, settings repair, combat reload, unsupported
+APIs and no protected-frame writes in simulated lockdown.
+The test doubles do not reproduce WoW's native secure execution or rendering.

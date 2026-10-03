@@ -1,0 +1,11 @@
+## Interface: 16001
+## Title: Feed Pet: Forever
+## Author: Gideon
+## Notes: A movable pet happiness reminder with one-click feeding and a no-food warning.
+## Version: 1.0.2
+## SavedVariablesPerCharacter: FeedPetForeverDB
+## IconTexture: Interface\Icons\Ability_Hunter_BeastTraining
+
+Core.lua
+UI.lua
+FeedPetForever.lua

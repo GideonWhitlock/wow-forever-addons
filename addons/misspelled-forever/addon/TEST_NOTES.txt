@@ -1,0 +1,23 @@
+MISSPELLED: FOREVER - LIVE TEST CHECKLIST
+
+1. Enable the add-on, log in, and confirm there are no Lua errors. Confirm the new
+   parchment-and-quill minimap button is visible.
+2. Left-click the minimap button and confirm settings open. Right-click it and
+   confirm the personal dictionary opens. Drag it around the minimap, reload, and
+   confirm its position is retained. Test the visibility checkbox and /mf reset.
+3. Open chat and type: "This is a sentnce ". Confirm "sentnce" turns light blue
+   after the trailing space is entered.
+4. Right-click "sentnce" and choose "sentence". Confirm only that word changes.
+5. Send the corrected message. Confirm the recipient sees plain text without colour
+   codes and the game remains connected.
+6. Type a genuine custom name followed by a space. Right-click it and choose
+   Add to Dictionary. Retype it and confirm it is no longer highlighted.
+7. Enter /mf dictionary, remove that test word, reload, and confirm it is flagged.
+8. Enter /mf, switch between enGB and enUS, reload, and confirm the selected
+   dictionary is retained.
+9. Paste a message containing an item link and ordinary words. Correct a misspelling
+   without damaging the item link, then send it.
+10. Test party, guild and whisper chat edit boxes and confirm checking works in each.
+11. If WIM is installed, repeat correction and sending from a WIM message box.
+
+Live game interaction is intentionally still required for the checks above.

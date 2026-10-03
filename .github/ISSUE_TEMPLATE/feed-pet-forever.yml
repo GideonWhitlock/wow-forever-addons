@@ -1,0 +1,73 @@
+name: "Feed Pet: Forever issue"
+description: "Report a problem with the Feed Pet: Forever addon for WoW: Forever."
+title: "[Feed Pet: Forever] "
+labels:
+  - "addon: Feed Pet Forever"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a Feed Pet: Forever problem. Remove account names, private installation paths, authentication details, and unrelated personal information before submitting.
+
+  - type: input
+    id: addon-version
+    attributes:
+      label: Addon version
+      description: Enter the Feed Pet: Forever version shown by `/fpf status` or the AddOns list.
+      placeholder: "1.0.2"
+    validations:
+      required: true
+
+  - type: input
+    id: forever-version
+    attributes:
+      label: WoW: Forever version and build
+      description: Include both the version and build number when available.
+      placeholder: "1.60.1.70205"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Describe the starting state and the exact actions that trigger the problem.
+      placeholder: |
+        1. Summon a hunter pet...
+        2. Place suitable food in a carried bag...
+        3. Wait for the pet to become content...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+      description: What did you expect Feed Pet: Forever to do?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+      description: What happened instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: other-addons
+    attributes:
+      label: Other relevant addons
+      description: List addons that affect bags, action buttons, pets, minimaps, or the UI. Write "None" if you tested without other addons.
+    validations:
+      required: true
+
+  - type: textarea
+    id: status-and-errors
+    attributes:
+      label: Redacted status and errors
+      description: Paste `/fpf status` output and any exact Lua or blocked-action error. Remove account names, character names, private paths, authentication details, and unrelated personal information.
+      render: text
+    validations:
+      required: false

@@ -1,0 +1,28 @@
+## Interface: 16001
+## Title: Misspelled: Forever
+## Author: Gideon; based on Misspelled by Nathan Pieper
+## Notes: Checks spelling as you type, highlights mistakes, and offers right-click corrections.
+## Version: 1.1.0
+## SavedVariables: MisspelledForeverDB
+## IconTexture: Interface\AddOns\MisspelledForever\Media\MinimapIcon
+## Category-enUS: Chat
+## X-Category: Chat
+## X-License: GPL-2.0-or-later
+
+embeds.xml
+Localization\Includes.xml
+
+UTF8\utf8data.lua
+UTF8\utf8.lua
+
+Dict\Dic_enUS.lua
+Dict\Dic_enGB.lua
+Dict\Dic_deDE.lua
+Dict\Dic_esES.lua
+Dict\Dic_frFR.lua
+Dict\DIC_itIT.lua
+Dict\Dic_ruRU.lua
+WordDict.lua
+Misspelled.lua
+MinimapButton.lua
+Misspelled.xml

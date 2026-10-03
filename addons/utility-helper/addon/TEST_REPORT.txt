@@ -1,0 +1,245 @@
+# Utility Helper: Forever 0.1.14 — verification record
+
+Date: 2 October 2026. Target: WoW: Forever beta, interface 16001.
+Local installed client metadata: 1.60.1.70170.
+
+## 0.1.14 Rogue catalogue correction
+
+Sap, Cheap Shot and Pick Pocket have been removed from the Rogue catalogue.
+These entries require stealth and therefore appeared only after stealth was
+already activated, then disappeared when stealth broke. A regression check
+confirms that all three entries remain absent when their spells are learned.
+
+## 0.1.13 punctuation correction
+
+The visible title is now **Utility Helper: Forever** in the TOC, settings,
+minimap tooltip, bar caption and chat prefix. Internal folder, frame and
+SavedVariables identifiers remain `UtilityHelper` for compatibility. The
+minimap regression verifies the requested title and the full suite passes.
+
+## 0.1.11 change — complete
+
+New profiles now default Inactive visibility to 0%. The settings regression
+checks a fresh profile at 0%, all adjustable visibility endpoints, and confirms
+that a previously saved 37% choice survives settings loading unchanged. The full
+Lua 5.1 syntax and behavior suite passes. This is a default-only change; it does
+not migrate or overwrite existing characters' saved visibility values.
+
+## Current acceptance — complete, repeat plan stopped
+
+The owner confirmed **"This works fine"** in turn
+`01a0e91f-f2e8-7d91-96ae-38952b4d1e33` after the requested bandage visibility
+checks; the assistant explicitly said nothing else was needed for this fix.
+The coordinator later relayed the owner's explicit statement that all five
+addons are already tested and cleared. Utility Helper 0.1.10 is accepted.
+
+The subsequently proposed repeat test plan is stopped. Unverified edge cases
+below are nonblocking disclosures, not pending owner work or release gates.
+Before proposing a retest, read current owner messages and evidence; an accepted
+case is reopened only for a relevant code/client change, credible new issue or
+explicit request. Owner reports WoW logged out and quit after control stopped.
+This update changes local records only, with no new tests, PC control, rebuild or
+upload. The published archive retains its original historical verification text.
+
+## Completed
+
+- `tests/september24_audit.lua` adds 57 checks for shield refresh/Weakened Soul,
+  unreadable and secret blocking auras, Forbearance, private-health display,
+  learned ranks, own localized totem identity, active pet bank/range/usability,
+  and direct spell/item cooldown APIs. Before the fix it reproduced four failures:
+  shield refresh was suppressed; unavailable Weakened Soul, secret blocking aura
+  fields and unavailable Forbearance incorrectly allowed active alerts.
+  All 57 checks pass after the correction, together with the full existing suite
+  and Lua 5.1 syntax checks. No cooldown implementation was changed: supplied
+  native Cooldown Manager bugs are not proof of a direct API failure.
+  Separate native priest/paladin/pet evidence is unrecorded and nonblocking; see the dated
+  maintenance report for scope, source provenance and remaining catalogue gaps.
+
+- `tests/bandages_selfheals.lua` checks strongest usable bandage selection,
+  the 50% readable health boundary, visible outside-combat mouse/key input,
+  immediate secure combat shutdown before polling, isolated binding owners,
+  Recently Bandaged, current casts/channels, actual cooldowns, unavailable data,
+  mounted states, skill changes, bag changes, disable/restore and disabled previews.
+  Private-health scenarios now test native display output at 100%, 51%, 50% and
+  49%, at each of 0%, 22% and 100% inactive visibility. Only 50% and below renders
+  the icon and border. Every such reminder has disabled mouse input and no addon
+  keybind, clears prior hover state, and is removed on combat entry. Options say
+  Use action bar, reject reminder binding capture, and preserve dormant saved keys.
+  Display API failure leaves transparent artwork and no input. The mock resolves
+  opaque alpha only in its simulated renderer, never in addon logic.
+  Four healing classes' new learned self-heals have
+  fixed player targets, resource/cast/cooldown checks and GCD-only visibility.
+- `tests/friendly_utilities.lua` checks selected living friendly players/pets,
+  missing/equivalent buffs, blessings, Wisdom's mana requirement, fixed target
+  macros, player resurrection exclusions, own-pet revive and living-player
+  Soulstone protection. The catalogue has 160 spell definitions, plus item groups.
+  Ordinary resurrection remains unavailable through the combat-only bar outside
+  combat; a broader exception awaits the user's preference.
+
+- `tests/proc_glow.lua` checks native-template start/loop/stop transitions,
+  no animation replay or allocation on repeated refreshes, native secret alpha
+  containment, cooldown suppression, static-border setting, preview resizing,
+  combat reentry, ancestor-hide cleanup and missing-template pulse fallback.
+  Artwork itself is supplied by the client and is not rendered by the Lua mock.
+- `tests/gcd_visibility.lua` checks that GCD-only alerts stay visible at 0% idle
+  opacity with secret numerical timers, that isOnGCD is captured in its documented
+  event context, and that polling retains the captured value. Actual cooldowns,
+  unavailable spells, casts, target/resource restrictions and item cooldowns
+  still suppress alerts. Missing or unexpected secret GCD flags are not trusted.
+- All existing automated suites pass with the updated GCD expectation.
+
+- `tests/forever_cooldowns.lua` reproduced the 0.1.5 regression before the fix:
+  in combat against a beast with public `isActive=false` and secret timer values,
+  the ready Scare Beast icon incorrectly retained alpha 0. After the fix the same
+  event/polling scenario produces full icon/border opacity. The checks also cover
+  actual cooldown start/end, held cooldowns, different creature types, ongoing
+  casts/channels, existing fear, Mend Pet, unexpected secret/missing flags, legacy
+  numeric timing, last-combat diagnostics and unchanged combat-only input.
+  This is a reproduced code defect matching the reported symptom, not a native
+  recording of the exact boar fight. The user subsequently confirmed the fix worked.
+
+- `tests/combat_only.lua` executes the actual registered secure-state snippet
+  against mock frame handles. It checks hidden/disabled mouse and buttons plus
+  released bindings outside combat, disabled arrangement previews, enabled combat
+  input, combat exit without a display tick, no reopened preview, addon disable,
+  death transitions, rebinding and removed abilities. The mock still cannot prove
+  native secure execution or taint behavior.
+- `tests/readiness.lua` checks actual cooldown suppression/expiration, GCD visibility, current
+  player/pet casts/channels, prompt channel event refreshes, existing Scare Beast,
+  item cooldowns and conservative unknown readiness. A fixed native macro guards
+  Mend Pet and Health Funnel against restarting the same channel.
+
+- Lua 5.1 syntax compilation of all five add-on Lua files.
+- 17 behavioural scenario suites passed in `tests/behavior.lua`.
+- Combat-reload construction deferral passed in `tests/combat_load.lua`.
+- All nine class catalogues loaded, built action buttons, configured settings,
+  evaluated conditions and refreshed through simulated combat in `tests/classes.lua`.
+- Missing native display API fallback passed in `tests/missing_api.lua`.
+- `tests/tooltips.lua` verifies that invisible inactive spells/items have no
+  visible tooltip, activation/deactivation updates a stationary hover, visible
+  inactive icons and arrangement retain readable tooltips, native display alpha
+  handles restricted health/mana/cast values, and the shared game tooltip is
+  unaffected. Secure actions and keybinds remain fixed in simulated combat.
+- `tests/display_options.lua` verifies compact grid wrapping, whole-grid dragging,
+  switching layouts without losing individual placements, 0/37/100% visibility
+  persistence, simultaneous alerts, unchanged combat actions/positions/bindings,
+  native health/mana and interruptibility opacity, and closing arrangement with
+  settings. Icons, hover art, labels and cooldowns share the same faded parent.
+- Recovery icons match the selected item in the action bar and settings; item
+  replacement remains deferred during combat. Empty/missing-icon mana slots use
+  a blue fallback. These are covered by the display-options regression checks.
+- Reproduced the reported 0.1.1 startup error by making the harness reject
+  `LEARNED_SPELL_IN_TAB`. That event is removed in 0.1.2.
+- `tests/event_compatibility.lua` checks startup with and without the native
+  event validator, rejection of an additional optional event, continued event
+  subscriptions, minimap creation and learning a utility via `SPELLS_CHANGED`.
+- A synchronous spell-data event reproduced recursive UI rebuilding in 0.1.0
+  (depth 2 for a single nested event). The same regression passes in 0.1.1;
+  startup cannot re-enter itself or create duplicate minimap controls.
+- `tests/event_storm.lua` sends thousands of metadata/unit events, verifies
+  unrelated/cached updates cause no catalogue rebuilds, checks cached item reads,
+  and proves a burst becomes one deferred rebuild. Disabled polling stops;
+  combat defers the single queued rebuild until combat ends.
+- `tests/minimap.lua` checks independent early creation, settings/arrangement
+  clicks, dragging, accidental click suppression, combat handling and saved position.
+- All 160 catalogue definitions have unique stable identities and valid rules.
+- ZIP contents and checksums are verified by `tools/build.py`; only add-on code,
+  the table of contents and the user guide are packaged.
+
+Scenario coverage includes:
+
+- Scare Beast and a healing potion active simultaneously at the health threshold;
+  humanoid versus beast form, and unavailable creature identity.
+- Independent health, mana and pet-health thresholds, including a native curve
+  boundary at 50% and a separate 51% check.
+- Living/dead pets, existing Mend Pet, the active pet's learned spells, and a
+  changed pet during combat.
+- Correct helpful versus harmful aura filters and dispel types, inaccessible
+  aura data and fixed party recipients.
+- Normal casts and channels with their differing interruptibility return positions;
+  native display-only handling of secret interruptibility.
+- Readable range, usability and cooldown restrictions; secret cooldown display.
+- Learned spell rank replacement, upgraded dispels and unlearned-spell filtering.
+- Conflicting and duplicate keybinds, explicit replacement and restoration of
+  the underlying game binding.
+- Secure frames reject prohibited changes during simulated combat. Spell/item
+  identities, positions and bindings are preserved until combat ends.
+- Potion exhaustion during combat defers replacement; a new item is selected
+  after combat. Independent recovery buttons remain separate.
+- Settings creation, hiding and restoring abilities, size changes, and closure
+  of editing overlays at combat entry.
+- Custom rule validation, duplicate prevention, removal and correct focus targeting.
+- Dead, mounted and taxi states suppress suggestions.
+
+## What these checks do not prove
+
+The user confirmed the 0.1.6 Scare Beast fix at 0% inactive visibility.
+The user observed the 0.1.8 bandage icon at 100% health and rejected that fallback.
+The owner has confirmed the corrected bandage threshold display and accepted
+the release. Separately recorded native evidence for every First Aid interaction
+and expanded class scenario is absent; this is not a pending testing request.
+The requested fully clickable low-health-only bandage remains limited by the beta:
+private health may drive native presentation but cannot choose protected input.
+Detailed native recordings of every animated-outline size/intensity and GCD
+scenario are not available; do not infer exhaustive coverage from acceptance.
+`/uh why` reports the most recent public decision/reason without secret values.
+
+Detailed native evidence for every secure mouse/binding transition and
+pet-healing channel variant is not recorded here. Those details are nonblocking
+disclosures; the owner has cleared the addon and no repeat check is scheduled.
+
+The harness implements only the parts of the WoW API used by the add-on.
+It represents secret values with objects that reject arithmetic/comparisons;
+this does **not** fully reproduce native secret scalars, taint, secure click
+execution, protected anchors or native display rendering. A mock pass is not
+proof of live beta compatibility or successful spell casting.
+
+The user supplied a live screenshot of a 0.1.0 execution-time warning (Count 100,
+27 September 2026 at 11:07:02). Its stack was empty. The recursive event path
+was reproduced in the harness; that is evidence of a real defect, not definitive
+proof that it was the only cause of this specific native warning. Live confirmation
+isolating that fix from every possible cause is not separately recorded; this is
+not a task to reopen the accepted startup behavior absent a credible new issue.
+
+The user then supplied a native 0.1.1 startup error at 11:20:46 identifying
+`LEARNED_SPELL_IN_TAB` as unknown. Version 0.1.2 removes it and guards all event
+registration. The exact failure is covered by the harness; live confirmation
+of that error's removal was followed by the user's "All looks good" report and
+screenshots showing the settings and working utility bar. This supports successful
+startup, but does not establish every combat scenario or a long-running timeout test.
+The user then supplied a 0.1.3 screenshot showing a tooltip over an invisible
+Mend Pet button. Version 0.1.4 addresses that defect with a dedicated tooltip
+whose opacity follows the alert. Exhaustive combat/all-class native coverage is
+not recorded. The owner's acceptance stands; no routine repeat tests are pending.
+
+This project task performed no agent-driven in-game checks, controlled no live
+character, initiated no combat and used no consumables. Owner acceptance and
+coordinator-reported activity are attributed separately. Publication is recorded separately.
+The source references establish API contracts, not a complete Forever spell DB.
+
+## Nonblocking evidence limits — not an execution checklist
+
+The former thirteen-step native checklist is retired following owner acceptance.
+No repeated startup, bandage or other accepted checks are pending. Detailed
+native recordings are not available for every class, restricted aura case,
+secure-input/taint transition, pet swap, learned rank, consumable tier, target
+immunity, proc-size setting or combat-reload variant. These are disclosures of
+recorded evidence limits, not requirements to exhaustively exercise those cases.
+
+The confirmed bandage display behavior and owner clearance remain valid. The
+current beta's private-health reminder limitation is still disclosed accurately;
+acceptance does not imply a health-gated clickable button was implemented.
+Only a relevant code/client change, credible new issue or explicit request may
+justify reopening an accepted case. See LIVE-TEST-PLAN-2026-09-28.md for the stop
+record and standing character/control restrictions.
+
+Run the portable tests with Python and the `lupa` package:
+
+```text
+python development/tools/verify.py --lupa-path <optional-existing-package-directory>
+python development/tools/build.py
+```
+
+For this run, the bundled Python runtime used the already present Lua 5.1
+binding in the Feed Pet project's test dependencies. Those dependencies and
+that project were read only and are not included in the release package.

@@ -1,0 +1,22 @@
+MINIMAP BUTTON FOREVER - LIVE TEST CHECKLIST
+
+1. Install the add-on and log in with at least two other add-ons that have
+   minimap buttons. Confirm their buttons appear beside the gold controller.
+2. Left-click the gold controller. Confirm the collected icons appear. Click it
+   again and confirm they disappear while the gold controller remains visible.
+3. Right-click the controller. Confirm the settings window opens.
+4. Select vertical layout, change size and spacing, and hide the background.
+   Confirm each setting takes effect immediately and size changes only here.
+5. Collapse the collected icons, then hold Alt and drag the gold controller.
+   Confirm the single controller moves. Open the icons and confirm they appear
+   from its new location, which remains after /reload and relogging.
+6. Enter combat. Confirm settings, collection and Alt-drag do not make protected
+   changes. Leave combat and confirm the bar updates again.
+7. In settings, clear "Organise add-on minimap buttons". Confirm collected
+   buttons return to their original minimap positions. Enable it again.
+8. Load another add-on after login or click Scan buttons. Confirm its eligible
+   minimap button joins the bar without a reload.
+9. Confirm normal left-click, right-click and tooltip behaviour still works on
+   every collected button.
+10. Confirm Blizzard zoom, tracking, mail, clock, queue and difficulty controls
+    stay on the minimap.

@@ -1,0 +1,65 @@
+# Forever API references
+
+API snapshots obtained on 27 September 2026 and locally reviewed again on
+28 September. The installed `.build.info` identifies the local
+Forever beta as `1.60.1.70009`. The add-on targets interface `16001`.
+
+The supplied [24 September beta notes](https://eu.forums.blizzard.com/en/wow/t/wow-forever-beta-development-notes-%E2%80%93-updated-24-september/631316)
+allow Power Word: Shield to replace an existing shield when Weakened Soul is
+absent. Version 0.1.10 removes the existing-shield exclusion and requires readable
+absence of blocking debuffs. Secret aura fields still return unknown; private
+health still controls native presentation only. This baseline review does not
+establish that those notes postdate version 0.1.9.
+
+The native Cooldown Manager's listed tracking limitations do not establish a
+failure of the direct spell/item APIs. Utility Helper does not use that manager.
+No timer is guessed and no global readiness bypass was added. The local Item API
+snapshot specifies non-nil numerical cooldown timers and a boolean enabled flag;
+the Spell API explicitly permits no result, which is handled as unknown. Native
+pet/Healthstone cooldown correctness remains an in-game verification gap.
+
+The `references/` directory contains snapshots of Blizzard's generated API
+documentation and FrameXML from the Gethe mirror's `forever` branch, read to
+establish the interface contracts. They are reference material, not shipped code.
+
+- [Unit API](https://github.com/Gethe/wow-ui-source/blob/forever/Interface/AddOns/Blizzard_APIDocumentationGenerated/UnitDocumentation.lua): `UnitHealth` is secret; `UnitHealthPercent` and `UnitPowerPercent` accept display curves; creature identity, casts and power have context-dependent secrecy.
+- [Aura API](https://github.com/Gethe/wow-ui-source/blob/forever/Interface/AddOns/Blizzard_APIDocumentationGenerated/UnitAuraDocumentation.lua): unit aura access and potentially secret dispel/aura fields.
+- [Spell API](https://github.com/Gethe/wow-ui-source/blob/forever/Interface/AddOns/Blizzard_APIDocumentationGenerated/SpellDocumentation.lua): current spell information, usability, range, cooldown restrictions.
+- [Shared spell structures](https://github.com/Gethe/wow-ui-source/blob/forever/Interface/AddOns/Blizzard_APIDocumentationGenerated/SpellSharedDocumentation.lua): `SpellCooldownInfo.isEnabled` and `.isActive` are documented `NeverSecret`, even when numeric cooldown timing is restricted. Since 0.1.6 these public flags determine cooldown readiness before considering the legacy readable-timer fallback. Secret numbers still feed only the native cooldown display.
+- The same shared structure documents `isOnGCD` as NeverSecret but reliable only while handling `SPELL_UPDATE_COOLDOWN`. Since 0.1.7, that handler snapshots the flag for the current utility spells; display polling consumes the snapshot to keep GCD-only alerts visible. Missing/restricted flags do not override actual cooldown suppression.
+- [Native proc template](https://github.com/Gethe/wow-ui-source/blob/forever/Interface/AddOns/Blizzard_ActionBar/Shared/ActionButtonSpellAlerts.xml) and [its lifecycle](https://github.com/Gethe/wow-ui-source/blob/forever/Interface/AddOns/Blizzard_ActionBar/Shared/ActionButtonSpellAlerts.lua): `ActionButtonSpellAlertTemplate` contains the client's start/loop flipbooks and animation groups. Utility Helper creates its own child instance outside combat, under the native threshold-alpha frame. It scales the outline with the icon, runs the start animation only on activation, then loops; secret display conditions use the loop directly. Hiding stops both groups. No per-frame Lua animation or global action-bar manager is used. Missing templates fall back to the older pulse.
+- [Item API](https://github.com/Gethe/wow-ui-source/blob/forever/Interface/AddOns/Blizzard_APIDocumentationGenerated/ItemDocumentation.lua): `GET_ITEM_INFO_RECEIVED` is synchronous. Spell API documentation also marks `SPELL_TEXT_UPDATE` and `SPELL_DATA_LOAD_RESULT` synchronous. Their handlers must not recursively rebuild from inside metadata queries.
+- The same Item API documents `C_Item.GetItemIconByID`, used to match recovery icons to their selected items. The empty mana slot uses `Interface\\Icons\\INV_Potion_70`, the [Minor Mana Potion icon](https://www.wowhead.com/classic-ptr/item=2455/minor-mana-potion).
+- [Spellbook API](https://github.com/Gethe/wow-ui-source/blob/forever/Interface/AddOns/Blizzard_APIDocumentationGenerated/SpellBookDocumentation.lua): learned spell ranks, player/pet banks and pet spell usability.
+- [Event validation API](https://github.com/Gethe/wow-ui-source/blob/forever/Interface/AddOns/Blizzard_APIDocumentationGenerated/EventUtilsDocumentation.lua): `C_EventUtils.IsEventValid` checks event availability on the running client. Event registration uses this check plus a guarded fallback. `SPELLS_CHANGED` handles learned-spell refresh; the unsupported `LEARNED_SPELL_IN_TAB` event is removed.
+- [Secure action implementation](https://github.com/Gethe/wow-ui-source/blob/forever/Interface/AddOns/Blizzard_FrameXML/SecureTemplates.lua): spell/item/macro action types and button press handling. Secure action assignments are made only outside combat.
+- [Script-region input API](https://github.com/Gethe/wow-ui-source/blob/forever/Interface/AddOns/Blizzard_APIDocumentationGenerated/SimpleScriptRegionAPIDocumentation.lua): mouse input setters are protected and do not accept secret values.
+- [Button API](https://github.com/Gethe/wow-ui-source/blob/forever/Interface/AddOns/Blizzard_APIDocumentationGenerated/SimpleButtonAPIDocumentation.lua): enabled state is protected.
+- [Secure state driver](https://github.com/Gethe/wow-ui-source/blob/forever/Interface/AddOns/Blizzard_RestrictedAddOnEnvironment/SecureStateDriver.lua) and [restricted frame handles](https://github.com/Gethe/wow-ui-source/blob/forever/Interface/AddOns/Blizzard_RestrictedAddOnEnvironment/RestrictedFrames.lua): pre-registered macro conditions may enable/disable buttons, mouse input and override bindings through `Enable`, `Disable`, `EnableMouse`, `ClearBindings` and `SetBindingClick`. Utility Helper uses combat state only for this switching, never health/cooldown/aura values.
+- [Display curve API](https://github.com/Gethe/wow-ui-source/blob/forever/Interface/AddOns/Blizzard_APIDocumentationGenerated/CurveUtilDocumentation.lua): native scalar/boolean display evaluation.
+- [Curve objects](https://github.com/Gethe/wow-ui-source/blob/forever/Interface/AddOns/Blizzard_APIDocumentationGenerated/LuaCurveObjectAPIDocumentation.lua): native curve points and evaluation.
+
+The Feed Pet Forever project was read for local client conventions and the
+existing modern UI template work. No files in that project were changed.
+
+Version 0.1.8 adds a separate secure owner for the out-of-combat bandage button.
+Its pre-registered combat/mount/death state driver immediately hides/disables the
+button and releases only that owner's keys. Outside combat, readable item, aura
+and cast information can determine input. Secret health values never do:
+`UnitHealth` and `UnitHealthPercent` declare `SecretReturns=true`, including
+outside combat. Version 0.1.8's always-visible manual fallback was rejected by
+the user. Since 0.1.9, private health controls both bandage artwork and border via
+native curves with zero inactive alpha, while input and addon keys stay disabled.
+This is a reminder, not a clickable threshold-gated action. Readable health may
+still enable the button outside combat. Display API failure leaves no artwork
+or live click area. Secret alpha is never inspected to choose input or visibility.
+`C_Item.IsUsableItem` filters bandage tiers against native usability; guarded
+`SKILL_LINES_CHANGED` refreshes selection when First Aid improves. Recently
+Bandaged is aura 11196. Standard bandage item IDs checked against Classic item
+data: 1251, 2581, 3530, 3531, 6450, 6451, 8544, 8545, 14529 and 14530. Native
+First Aid behavior remains a required in-game check, not established by mocks.
+
+The spell catalogue uses established class spell families and runtime learned
+spell checks. It is not an extracted, complete Forever spell database. New or
+renamed beta spells may require catalogue changes. Do not infer full spell or
+encounter coverage from API compatibility.

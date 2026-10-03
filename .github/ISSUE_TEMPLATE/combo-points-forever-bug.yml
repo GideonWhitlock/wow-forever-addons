@@ -1,0 +1,90 @@
+name: "Combo Points: Forever bug report"
+description: "Report a reproducible problem with Combo Points: Forever."
+title: "[Combo Points: Forever] "
+labels:
+  - "addon: combo-points-forever"
+  - "bug"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Combo Points: Forever. Please remove account names, character names, local paths, tokens, and other private information before submitting.
+
+  - type: input
+    id: addon-version
+    attributes:
+      label: Add-on version
+      description: The version shown in the AddOns list or release filename.
+      placeholder: "1.0.6"
+    validations:
+      required: true
+
+  - type: input
+    id: forever-version
+    attributes:
+      label: "WoW: Forever version and build"
+      description: Include both the game version and build number when available.
+      placeholder: "1.60.1 build 70205"
+    validations:
+      required: true
+
+  - type: input
+    id: class-spec
+    attributes:
+      label: Character class and specialization
+      placeholder: "Rogue — Combat"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: List the smallest reliable sequence that shows the problem.
+      placeholder: |
+        1. Enable enemy nameplates.
+        2. Target a hostile unit with a visible nameplate.
+        3. Generate one combo point.
+        4. Observe...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+      description: What should have happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+      description: What happened instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: other-addons
+    attributes:
+      label: Other relevant add-ons
+      description: List nameplate, unit-frame, combo-point, or UI add-ons that were enabled. State whether the issue also occurs with them disabled.
+      placeholder: "None, or add-on names and versions"
+
+  - type: textarea
+    id: errors
+    attributes:
+      label: Redacted error text
+      description: Paste relevant Lua errors or logs after removing account names, character names, local paths, tokens, and other private information.
+      render: text
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Final checks
+      options:
+        - label: I enabled enemy nameplates and confirmed that the target's nameplate was visible.
+          required: true
+        - label: I removed private information from the report and error text.
+          required: true

@@ -1,0 +1,29 @@
+1.0.2 - 2026-10-02
+- Corrected the displayed addon title to Feed Pet: Forever.
+- Kept the FeedPetForever folder, saved settings and slash commands unchanged.
+- Feeding behavior is unchanged.
+
+1.0.1 - 2026-10-02
+- Changed the displayed addon title to Feed Pet; Forever.
+- Kept the FeedPetForever folder, saved settings and slash commands unchanged.
+- Feeding behavior is unchanged.
+
+1.0.0 - 2026-09-27
+- Published as a Release under the original title Feed Pet Forever.
+- Includes the feeding reminder, no-food warning and draggable minimap button.
+- Version and release metadata updated; feeding behavior is unchanged.
+
+1.0.0-alpha.2 - 2026-09-26
+- Added a draggable minimap button with the Feed Pet spell icon.
+- Left-click opens settings; right-click toggles the nonfeeding layout preview.
+- Added a minimap visibility setting and /fpf minimap on/off.
+- Minimap position saves per character and adjusts to minimap size and scale.
+- Drag updates run only while dragging; settings remain protected in combat.
+
+1.0.0-alpha.1 - 2026-09-26
+- Initial Forever 1.60.1 release candidate for local testing.
+- Flashing Feed Pet button for unhappy/content hunter pets.
+- Native pet-food eligibility and secure one-click bag-slot feeding.
+- Separate optional NO FOOD warning.
+- Combat, death, absent pet, taxi/mount, and active feeding suppression.
+- Per-character movement, size and alert settings; settings window and /fpf.

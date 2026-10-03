@@ -1,0 +1,94 @@
+1.0.14 - 2026-10-03
+- Restores collected add-on buttons when the bar is opened during combat, fixing
+  empty slots left by add-ons that hide their own minimap button on combat entry.
+- Keeps eligible non-protected buttons visible if their owning add-on tries to
+  hide them again while the combat bar is expanded.
+
+1.0.13 - 2026-10-03
+- Left-clicking the controller can now show or hide the prepared icon bar while
+  the character is in combat.
+- Prepositions collected icons outside combat so combat toggling only changes
+  the visibility of existing frames and does not perform protected layout work.
+- Excludes protected buttons from collection to keep the combat toggle safe.
+
+1.0.12 - 2026-10-02
+- Removed all artificial brightness overlays.
+- Moved the bar backdrop onto a dedicated lower frame and placed collected
+  buttons on a guaranteed higher frame level.
+- Temporarily disables LibDBIcon's fixed frame-level lock while collected so
+  original icon artwork renders in front of the bar, restoring it on release.
+
+1.0.11 - 2026-10-02
+- Added a circular full-spectrum light layer to Questie and Leatrix Plus so
+  genuinely black and dark-grey source pixels are visibly lifted.
+
+1.0.10 - 2026-10-02
+- Strengthened the Questie and Leatrix Plus artwork boost to two full additive
+  passes and matched both native and Leatrix-created wrapper button names.
+
+1.0.9 - 2026-10-02
+- Added a targeted additive artwork boost for Questie and Leatrix Plus, whose
+  source icon artwork contains deliberately dark pixels unaffected by opacity.
+- Leaves every other add-on icon and every Blizzard minimap control unchanged.
+
+1.0.8 - 2026-10-02
+- Neutralises LibDBIcon's retained mouseover-fade animation while buttons are
+  collected, fixing dim Questie and Leatrix Plus icons.
+- Keeps both the button frame and its icon texture at full opacity and colour.
+- Restores the original fade and texture state when a button is released.
+
+1.0.7 - 2026-10-02
+- Recognises the newer Minimap.ZoomIn and Minimap.ZoomOut Blizzard frame
+  objects and returns them to the minimap if previously collected.
+- Forces collected add-on icon textures to full colour as well as full opacity.
+
+1.0.6 - 2026-10-02
+- Limited collection to buttons created by installed add-ons; Blizzard minimap
+  controls remain in their original positions.
+- Prevented mouseover-only LibDBIcon fading from dimming collected buttons.
+- Reclaims collected buttons when another organiser tries to move them outside
+  the bar.
+
+1.0.5 - 2026-10-02
+
+- Excluded Questie objective markers and respected the standard MBB_Ignore list
+  used by add-ons to identify map pins that are not launcher buttons.
+- Added recursive minimap-container discovery plus direct UIParent candidates so
+  launcher buttons nested inside modern minimap wrappers can be collected.
+- Added the day/night clock, tracking, world-map and zoom buttons shown in the
+  supplied examples to the set of collectable minimap controls.
+
+1.0.4 - 2026-10-02
+
+- Kept the gold controller fixed when the collected button bar opens or changes
+  orientation.
+- Horizontal bars now expand right from the left half of the screen and left
+  from the right half.
+- Vertical bars now expand down from the top half of the screen and up from the
+  bottom half.
+
+1.0.3 - 2026-10-02
+
+- Replaced whole-bar frame movement with direct cursor tracking in UI-scaled
+  coordinates, eliminating the remaining edge-of-screen drag offset.
+- Removed whole-bar screen clamping so a wide button collection cannot pull
+  the controller away from the cursor near the edge.
+
+1.0.2 - 2026-10-02
+
+- Prevented automatic button scans and layout refreshes from resetting the bar
+  while it is being Alt-dragged, so it stays with the mouse until released.
+
+1.0.1 - 2026-10-02
+
+- Corrected the add-on display name to "Minimap Button: Forever".
+
+1.0.0 - 2026-10-02
+- Initial WoW: Forever 1.60.1 test release.
+- Collects add-on minimap buttons into a horizontal or vertical bar.
+- Left-clicking the controller shows or hides the collected minimap icons.
+- Right-clicking the controller opens settings.
+- Alt-dragging moves the controller and the location from which icons open.
+- Adds size, spacing, orientation, background, rescan and reset settings.
+- Preserves collected buttons' original parent, position, size, scale and layer
+  so disabling collection can return them to the minimap.

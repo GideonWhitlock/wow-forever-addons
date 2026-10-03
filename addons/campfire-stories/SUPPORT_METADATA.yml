@@ -1,0 +1,12 @@
+addon_name: "Campfire Stories: Forever"
+addon_slug: campfire-stories
+addon_folder: CampfireStory
+current_version: 3.0.2
+game_flavour: "WoW: Forever"
+game_version: "1.60.1"
+interface: 16001
+issue_template: campfire-stories.yml
+issue_title_prefix: "[Campfire Stories: Forever]"
+issue_label: "addon: campfire-stories"
+curseforge_project_id: 1713436
+curseforge_slug: campfire-stories

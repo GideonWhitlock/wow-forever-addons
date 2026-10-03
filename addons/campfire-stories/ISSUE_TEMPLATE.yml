@@ -1,0 +1,90 @@
+name: Campfire Stories: Forever issue
+description: Report a reproducible problem with the Campfire Stories: Forever addon.
+title: "[Campfire Stories: Forever] "
+labels:
+  - "addon: campfire-stories"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a problem. Please remove account details, private story text, SavedVariables contents, access tokens and other personal information before submitting.
+
+  - type: input
+    id: addon-version
+    attributes:
+      label: Campfire Stories: Forever version
+      description: Open Help > Client diagnostics or check the AddOns screen.
+      placeholder: "3.0.2"
+    validations:
+      required: true
+
+  - type: input
+    id: wow-version
+    attributes:
+      label: WoW: Forever version and build
+      description: Use /campfire debug and copy only the client version, build and interface lines.
+      placeholder: "1.60.1, build 70205, Interface 16001"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: List the shortest reliable sequence, including the selected story, audience and relevant setting where applicable.
+      placeholder: |
+        1. Open Campfire Stories: Forever.
+        2. Select ...
+        3. Click ...
+        4. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+    validations:
+      required: true
+
+  - type: textarea
+    id: other-addons
+    attributes:
+      label: Other relevant addons
+      description: List addons that affect chat, roleplay, minimaps, windows or SavedVariables. Say "None known" if unsure.
+    validations:
+      required: true
+
+  - type: textarea
+    id: errors
+    attributes:
+      label: Redacted errors or diagnostics
+      description: Paste the exact Lua error, WoW error number or relevant diagnostics. Remove names, account details, paths, SavedVariables and private story text.
+      render: text
+
+  - type: dropdown
+    id: reproducibility
+    attributes:
+      label: How often does it happen?
+      options:
+        - Every time
+        - Sometimes
+        - Once
+        - Unknown
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I removed personal information, account details and private story or SavedVariables content.
+          required: true

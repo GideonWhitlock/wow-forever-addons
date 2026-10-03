@@ -1,0 +1,86 @@
+name: "Minimap Button: Forever issue"
+description: "Report a reproducible problem with Minimap Button: Forever"
+title: "[Minimap Button: Forever] "
+labels:
+  - "addon:minimap-button-forever"
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a problem. Remove account details, character names,
+        server addresses and other private information before submitting.
+
+  - type: input
+    id: addon_version
+    attributes:
+      label: Add-on version
+      description: The Minimap Button: Forever version shown by `/mbf status`.
+      placeholder: "1.0.14"
+    validations:
+      required: true
+
+  - type: input
+    id: forever_version
+    attributes:
+      label: WoW: Forever build/version
+      description: Include both the client version and interface number when available.
+      placeholder: "WoW: Forever 1.60.1, interface 16001"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: List the shortest reliable sequence that causes the problem.
+      placeholder: |
+        1. Log in with...
+        2. Open the bar...
+        3. Enter combat...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+      description: What should have happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result
+      description: What happened instead?
+    validations:
+      required: true
+
+  - type: textarea
+    id: other_addons
+    attributes:
+      label: Other relevant add-ons
+      description: List minimap, button-organiser or UI add-ons involved, with versions if known.
+      placeholder: "Questie 12.0.3; Leatrix Plus ..."
+
+  - type: textarea
+    id: errors
+    attributes:
+      label: Redacted errors or blocked-action messages
+      description: Paste the complete error after removing private identifiers. Use a code block if possible.
+      render: text
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: Additional context
+      description: Add screenshots or notes that help reproduce the issue. Redact private information first.
+
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I removed account details, character names, server addresses and other private information.
+          required: true
+
