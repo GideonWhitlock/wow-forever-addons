@@ -387,6 +387,19 @@ function U.Condition(e, unit)
     end
     if e.totem and U.TotemActive(e) == true then return false, "Totem already active" end
     local rule = e.rule
+    if rule == "manahealth" then
+        if U.Public(UnitPowerMax, unit, 0) == 0 then return false, "Recipient has no mana" end
+        local lowMana = U.Low(unit, true, U.db.mana)
+        local lowHealth = U.Low(unit, false, U.db.health)
+        local label = "Mana at or below " .. U.db.mana .. "% and health above " .. U.db.health .. "%"
+        if lowMana == false then return false, label end
+        if lowHealth == true then return false, label end
+        if lowMana ~= nil and lowHealth ~= nil then return lowMana and not lowHealth, label end
+        if C_CurveUtil and C_CurveUtil.CreateCurve and UnitPowerPercent and UnitHealthPercent then
+            return "display", label, {unit = unit, dual = true, manaThreshold = U.db.mana, healthThreshold = U.db.health}
+        end
+        return nil, "The game is not exposing both health and mana needed for this alert"
+    end
     if rule == "health" or rule == "defensive" or rule == "pethealth" or rule == "mana" then
         if rule == "defensive" and not InCombatLockdown() then return false, "Defensive for combat" end
         local mana, threshold = rule == "mana", U.db[rule == "defensive" and "health" or rule]
@@ -504,4 +517,19 @@ function U.VisualValue(visual, curve, low, high)
         return U.Call(C_CurveUtil and C_CurveUtil.EvaluateColorValueFromBoolean, visual.boolean, high, low)
     elseif visual.mana then return U.Call(UnitPowerPercent, visual.unit, 0, false, curve)
     else return U.Call(UnitHealthPercent, visual.unit, false, curve) end
+end
+
+function U.DualVisualValues(visual, idle)
+    local manaKey = "dual-mana:" .. tostring(visual.manaThreshold) .. ":" .. tostring(idle)
+    local healthKey = "dual-health:" .. tostring(visual.healthThreshold)
+    if not U.curves[manaKey] then
+        U.curves[manaKey] = {U.MakeCurve(visual.manaThreshold, 1, idle), U.MakeCurve(visual.manaThreshold, 1, 0)}
+    end
+    if not U.curves[healthKey] then U.curves[healthKey] = U.MakeCurve(visual.healthThreshold, 0, 1) end
+    local manaCurves = U.curves[manaKey]
+    local okA, manaAlpha = U.Call(UnitPowerPercent, visual.unit, 0, false, manaCurves[1])
+    local okG, manaGlow = U.Call(UnitPowerPercent, visual.unit, 0, false, manaCurves[2])
+    local okH, healthGate = U.Call(UnitHealthPercent, visual.unit, false, U.curves[healthKey])
+    if okA and okG and okH then return true, manaAlpha, manaGlow, healthGate end
+    return false
 end

@@ -1,5 +1,16 @@
 # Utility Helper: Forever changelog
 
+## 0.1.18
+
+- Added learned-only Life Tap for Warlocks. It appears when mana is at or below
+  the configured mana threshold and health is above the configured health
+  threshold.
+- Added **Low mana + safe health** to the custom utility activation rules.
+- Added **Find Spell ID**. Arm the picker, then click a recognized learned spell
+  in the spellbook to fill the Extra spell ID field automatically.
+- The picker uses temporary non-casting overlays and turns itself off after a
+  spell is selected.
+
 ## 0.1.17
 
 - Create Healthstone and Create Soulstone now appear outside combat only while

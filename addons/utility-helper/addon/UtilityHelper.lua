@@ -49,7 +49,7 @@ function U.Command(message)
         U.Print("/uh settings | unlock | lock | size 46 | idle 0..100 | health 50 | mana 50 | pethealth 50 | list | status | why [number]")
         U.Print("/uh bind <button number> <KEY> [replace] | unbind <number> | hide <number> | restore | enable | disable")
         U.Print("/uh add <spellID> <rule> <recipient> [Magic,Curse,Poison,Disease] | remove <spellID>")
-        U.Print("Rules: health, mana, pethealth, interrupt, dispel, purge, control, buff, manual. Recipients: player, friendly, target, pet, focus, party1..4, raid1..40.")
+        U.Print("Rules: health, mana, manahealth, pethealth, interrupt, dispel, purge, control, buff, manual. Recipients: player, friendly, target, pet, focus, party1..4, raid1..40.")
         return
     end
     if InCombatLockdown() then U.Print("Change settings after combat."); return end
@@ -104,6 +104,7 @@ function U.Tick(_, dt)
     if not U.db or U.pausedForError then return end
     local now = GetTime()
     if not InCombatLockdown() then
+        if U.UpdateSpellPicker and U.options and U.options.pickingSpell then U.UpdateSpellPicker() end
         if not U.minimap then U.BuildMinimap() end
         if U.pending and now >= (U.rebuildAt or 0) then
             if not U.started then start() else U.Rebuild() end
@@ -159,6 +160,7 @@ f:SetScript("OnEvent", function(_, event, arg1, arg2)
         U.editing, U.preview = false, false
         if U.handle then U.handle:Hide() end
         if U.options then U.options:Hide() end
+        if U.StopSpellPicker then U.StopSpellPicker() end
         for _, b in ipairs(U.buttons) do b.editor:Hide(); b.number:SetAlpha(0) end
         if U.StopMinimapDrag then U.StopMinimapDrag() end
     end

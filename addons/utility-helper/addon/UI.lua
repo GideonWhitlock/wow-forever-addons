@@ -421,6 +421,7 @@ function U.UpdateCooldown(b)
 end
 function U.Render(b, state, reason, unit, visual)
     b.reason, b.lastState = reason, state
+    b:SetAlpha(1)
     if InCombatLockdown() then b.combatState, b.combatReason = state, reason end
     b.status:SetText(state == "unknown" and "?" or b.entry.target:match("^party") or "")
     if b.entry.target:match("^party") then b.status:SetText(b.entry.target:gsub("party", "P")) end
@@ -429,6 +430,15 @@ function U.Render(b, state, reason, unit, visual)
     local alpha, glow = idle, 0
     if U.editing or U.preview then alpha, glow = 1, 1
     elseif state == "active" then alpha, glow = 1, 1
+    elseif state == "display" and visual and visual.dual then
+        local okDual, manaAlpha, manaGlow, healthGate = U.DualVisualValues(visual, idle)
+        if okDual then
+            -- Effective opacity is the product of the protected button's health
+            -- gate and its child's mana gate. Secret values are never inspected.
+            b:SetAlpha(healthGate); b.art:SetAlpha(manaAlpha); b.glow:SetAlpha(manaGlow)
+            b.tooltipVisible, b.tooltipAlpha = false, 0
+            alpha = nil
+        else b.status:SetText("?") end
     elseif state == "display" and visual then
         local threshold = visual.threshold or 50
         local key = tostring(threshold) .. ":" .. tostring(idle)

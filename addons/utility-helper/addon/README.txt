@@ -1,6 +1,19 @@
 # Utility Helper: Forever
 
-Version **0.1.17** for **WoW: Forever beta 1.60.1**, interface **16001**.
+Version **0.1.18** for **WoW: Forever beta 1.60.1**, interface **16001**.
+
+**Life Tap** is now a built-in Warlock utility. It highlights when mana is at
+or below the configured mana threshold and health is above the configured
+health threshold—50% for both by default. Its own cooldown, usability and
+current cast checks still apply.
+
+Custom utilities no longer require manually researching a spell ID. Select
+**Find Spell ID**, open the spellbook, then hover and click a learned spell;
+the picker fills the spell ID and turns itself off. If a spellbook layout cannot
+be covered directly, hovering the spell and selecting the finder button again
+uses the last hovered spell. The new **Low mana + safe health** custom rule uses
+the same health and mana sliders, which makes the Life Tap condition available
+for other learned abilities as well.
 
 Warlocks now receive clickable outside-combat reminders to create a Healthstone
 or Soulstone only when that stone is missing from their bags. A separate

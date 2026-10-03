@@ -1,5 +1,5 @@
 local _, U = ...
-U.VERSION = "0.1.17"
+U.VERSION = "0.1.18"
 U.TITLE = "Utility Helper: Forever"
 U.catalog = {}
 -- IDs identify spell families. The spellbook supplies the learned rank and localized name.
@@ -157,6 +157,8 @@ a("WARLOCK", 5697, "Unending Breath", "swimming", "friendly", {missingAura = tru
 a("WARLOCK", 687, "Demon Skin", "buff", "player", {missingAura = true, outOfCombat = true, replacedBy = 706})
 a("WARLOCK", 706, "Demon Armor", "buff", "player", {missingAura = true, outOfCombat = true})
 a("WARLOCK", 28176, "Fel Armor", "buff", "player")
+a("WARLOCK", 1454, "Life Tap", "manahealth", "player",
+    {note = "Use when mana is at or below the mana threshold and health is above the health threshold."})
 local healthstoneItems = {19013, 19012, 9421, 19011, 19010, 5510, 19009, 19008, 5509, 19007, 19006, 5511, 19005, 19004, 5512}
 local soulstoneItems = {16896, 16895, 16893, 16892, 5232}
 a("WARLOCK", 6201, "Create Healthstone", "missingitem", "player",
@@ -283,7 +285,8 @@ U.itemGroups = {
         note = "Only at the health threshold outside combat. When health is private this is a reminder: use the bandage from your normal action bar."},
 }
 U.ruleLabels = {
-    health = "Low health", pethealth = "Pet low health", mana = "Low mana", defensive = "Low health in combat",
+    health = "Low health", pethealth = "Pet low health", mana = "Low mana",
+    manahealth = "Low mana + safe health", defensive = "Low health in combat",
     interrupt = "Enemy casting", dispel = "Friendly debuff", purge = "Enemy removable buff",
     creature = "Suitable creature type", control = "Crowd control", combat = "In combat",
     buff = "Missing buff", resurrect = "Dead ally", petdead = "Dead pet", petmissing = "Missing pet",

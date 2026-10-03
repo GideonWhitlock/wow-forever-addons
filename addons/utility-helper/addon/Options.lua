@@ -67,6 +67,118 @@ function U.StopCapture()
     if not p then return end
     p.capture = nil; p:EnableKeyboard(false); p:SetPropagateKeyboardInput(true)
 end
+
+local function pickerSpell(button)
+    local api = _G.ClassicUIForeverAPI
+    local id = api and api.SpellOnButton and U.Public(api.SpellOnButton, button)
+    if type(id) == "number" then return id end
+    local ok, direct = pcall(function() return button.spellID or button.spellId end)
+    if ok and type(direct) == "number" and not U.Secret(direct) then return direct end
+    local okSlot, slot, bank = pcall(function()
+        local value = button.slot or button.spellBookItemSlot
+        local name = button.GetName and button:GetName()
+        if not value and type(name) == "string" and name:find("SpellButton", 1, true) then value = button:GetID() end
+        return value, button.bank or 0
+    end)
+    if okSlot and type(slot) == "number" and C_SpellBook then
+        local info = U.Public(C_SpellBook.GetSpellBookItemInfo, slot, bank)
+        if type(info) == "table" and not U.Secret(info.spellID) then return info.spellID end
+    end
+end
+
+function U.StopSpellPicker(message)
+    local p = U.options
+    if not p then return end
+    p.pickingSpell, p.hoverSpellID = nil, nil
+    if p.findSpell then p.findSpell:SetText("Find Spell ID") end
+    for _, overlay in pairs(U.pickerOverlays or {}) do overlay:Hide() end
+    if message then p.message:SetText(message) end
+end
+
+function U.SelectPickedSpell(id)
+    local p = U.options
+    if not p or not p.pickingSpell or type(id) ~= "number" or U.Secret(id) then return false end
+    U.BuildSpellIndex()
+    local learned = U.ResolveSpell(id, false)
+    if not learned then
+        p.message:SetText("That icon is not a learned player spell. Choose another spell.")
+        return false
+    end
+    p.customID:SetText(tostring(learned.id))
+    U.StopSpellPicker("Selected " .. learned.name .. " (spell ID " .. learned.id .. "). Choose its rule and recipient, then Add utility.")
+    if p:IsShown() then p:Show() end
+    return true
+end
+
+local function pickerOverlay(button, id)
+    U.pickerOverlays = U.pickerOverlays or {}
+    local overlay = U.pickerOverlays[button]
+    if not overlay then
+        overlay = CreateFrame("Button", nil, UIParent)
+        overlay:SetFrameStrata("TOOLTIP"); overlay:EnableMouse(true)
+        overlay:SetScript("OnEnter", function(self)
+            local spellID = self.spellID
+            if not spellID then return end
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT"); GameTooltip:SetSpellByID(spellID); GameTooltip:Show()
+            local p = U.options
+            if p and p.pickingSpell then
+                p.hoverSpellID = spellID
+                p.findSpell:SetText("Select " .. (U.SpellName(spellID) or "spell"))
+            end
+        end)
+        overlay:SetScript("OnLeave", function() GameTooltip:Hide() end)
+        overlay:SetScript("OnClick", function(self) U.SelectPickedSpell(self.spellID) end)
+        U.pickerOverlays[button] = overlay
+    end
+    overlay.spellID = id
+    overlay:ClearAllPoints(); overlay:SetAllPoints(button); overlay:Show()
+end
+
+local function scanPickerFrame(frame, seen, depth)
+    if not frame or seen[frame] or depth > 7 then return end
+    seen[frame] = true
+    local id = pickerSpell(frame)
+    if id and U.ResolveSpell(id, false) then pickerOverlay(frame, id) end
+    local ok, children = pcall(function() return {frame:GetChildren()} end)
+    if ok then for _, child in ipairs(children) do scanPickerFrame(child, seen, depth + 1) end end
+end
+
+function U.UpdateSpellPicker()
+    local p = U.options
+    if not p or not p.pickingSpell or InCombatLockdown() then return end
+    for _, overlay in pairs(U.pickerOverlays or {}) do overlay:Hide() end
+    local seen = {}
+    scanPickerFrame(_G.ForeverClassicUISpellBook, seen, 0)
+    scanPickerFrame(_G.PlayerSpellsFrame, seen, 0)
+    scanPickerFrame(_G.SpellBookFrame, seen, 0)
+    for i = 1, 24 do
+        local button = _G["ForeverClassicUISpellButton" .. i] or _G["SpellButton" .. i]
+        if button then
+            local id = pickerSpell(button)
+            if id and U.ResolveSpell(id, false) then pickerOverlay(button, id) end
+        end
+    end
+end
+
+function U.StartSpellPicker()
+    local p = U.options
+    if not p or InCombatLockdown() then return end
+    if p.pickingSpell then
+        if p.hoverSpellID then U.SelectPickedSpell(p.hoverSpellID)
+        else U.StopSpellPicker("Spell finder cancelled.") end
+        return
+    end
+    U.BuildSpellIndex()
+    p.pickingSpell = true
+    p.findSpell:SetText("Cancel finder")
+    p.message:SetText("Open the spellbook, hover a learned spell and click it. Click this button again to use the last hovered spell.")
+    local api = _G.ClassicUIForeverAPI
+    if api and api.Open then U.Call(api.Open, "spellBook")
+    elseif _G.ToggleSpellBook then U.Call(ToggleSpellBook, "spell")
+    elseif _G.TogglePlayerSpellsFrame then U.Call(TogglePlayerSpellsFrame, 1) end
+    U.UpdateSpellPicker()
+end
+
 function U.ToggleOptions()
     if InCombatLockdown() then U.Print("Open settings after combat."); return end
     if not U.options then U.BuildOptions() end
@@ -75,6 +187,17 @@ end
 function U.BuildOptions()
     local p = CreateFrame("Frame", "UtilityHelperOptions", UIParent, "BackdropTemplate")
     U.options = p; p.rows, p.sliders, p.checks = {}, {}, {}
+    if not U.pickerTooltipHook and GameTooltip and GameTooltip.HookScript then
+        local ok = pcall(GameTooltip.HookScript, GameTooltip, "OnTooltipSetSpell", function(tip)
+            if not U.options or not U.options.pickingSpell or not tip.GetSpell then return end
+            local _, id = tip:GetSpell()
+            if type(id) == "number" and not U.Secret(id) and U.ResolveSpell(id, false) then
+                U.options.hoverSpellID = id
+                U.options.findSpell:SetText("Select " .. (U.SpellName(id) or "spell"))
+            end
+        end)
+        U.pickerTooltipHook = ok
+    end
     p:SetSize(720, 724); p:SetPoint("CENTER"); p:SetFrameStrata("DIALOG")
     p:SetClampedToScreen(true); p:EnableMouse(true); p:SetMovable(true); p:RegisterForDrag("LeftButton")
     p:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8X8", edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 14})
@@ -171,25 +294,27 @@ function U.BuildOptions()
     end)
     p:SetScript("OnHide", function()
         U.StopCapture()
+        U.StopSpellPicker()
         if U.editing and not InCombatLockdown() then U.SetEditing(false) end
     end)
-    p.customID = edit(p, 30, -635, 92, "Extra spell ID")
-    local rules = {"manual", "health", "mana", "pethealth", "interrupt", "dispel", "purge", "control", "buff"}
+    p.customID = edit(p, 165, -635, 92, "Extra spell ID")
+    local rules = {"manual", "health", "mana", "manahealth", "pethealth", "interrupt", "dispel", "purge", "control", "buff"}
     local targets = {"player", "friendly", "target", "pet", "party1", "party2", "party3", "party4", "focus"}
     p.customRule, p.customTarget = 1, 1
-    button(p, "Rule: Manual utility", 139, -635, 207, function(b)
+    p.findSpell = button(p, "Find Spell ID", 25, -635, 125, function() U.StartSpellPicker() end)
+    button(p, "Rule: Manual utility", 274, -635, 190, function(b)
         p.customRule = p.customRule % #rules + 1; b:SetText("Rule: " .. U.ruleLabels[rules[p.customRule]])
     end)
-    button(p, "Recipient: player", 361, -635, 178, function(b)
+    button(p, "Recipient: player", 479, -635, 125, function(b)
         p.customTarget = p.customTarget % #targets + 1; b:SetText("Recipient: " .. targets[p.customTarget])
     end)
-    button(p, "Add utility", 554, -635, 130, function()
+    button(p, "Add", 614, -635, 70, function()
         local id = tonumber(p.customID:GetText())
         local ok, message = U.AddCustom(id, rules[p.customRule], targets[p.customTarget])
         p.message:SetText(message)
         if ok then p.customID:SetText(""); p.customID:ClearFocus(); U.Rebuild() end
     end)
-    local note = text(p, "Utilities work in combat. Learned self-buffs, bandages and resource trackers can appear outside combat.\nIn combat, 0% fades inactive icons but keeps fixed click areas. Arrange cannot cast.", 24, -675)
+    local note = text(p, "Find Spell ID lets you click a learned spell in the spellbook. Low mana + safe health uses the mana and health sliders.\nIn combat, 0% fades inactive icons but keeps fixed click areas. Arrange cannot cast.", 24, -675)
     note:SetWidth(668); note:SetTextColor(0.62, 0.7, 0.8)
     tinsert(UISpecialFrames, "UtilityHelperOptions")
     p:Hide()

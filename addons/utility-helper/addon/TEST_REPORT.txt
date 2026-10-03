@@ -1,7 +1,24 @@
-# Utility Helper: Forever 0.1.17 — verification record
+# Utility Helper: Forever 0.1.18 — verification record
 
 Date: 3 October 2026. Target: WoW: Forever beta, interface 16001.
 Local installed client metadata: 1.60.1.70205.
+
+## 0.1.18 Life Tap and spell picker
+
+Life Tap is a learned-only Warlock utility using the new `manahealth` condition.
+It activates at or below the mana threshold only while health is above the
+health threshold. When the client keeps both values private, two nested native
+display curves combine the low-mana and safe-health gates without reading,
+comparing or performing arithmetic on secret values.
+
+The custom utility panel now includes Find Spell ID. While armed, it places
+temporary non-casting click overlays over recognized spellbook buttons; clicking
+a learned spell fills the ID and removes the overlays. Tooltip capture provides
+a fallback for other spellbook layouts. The new Low mana + safe health rule is
+also available to custom entries and uses the existing health and mana sliders.
+`tests/life_tap.lua` covers the threshold boundaries, native private-value path,
+picker selection and custom rule creation. The full Lua 5.1 syntax and behavior
+suite passes.
 
 ## 0.1.17 Paladin blessing ownership and Warlock stones
 
