@@ -12,6 +12,7 @@ Source, release notes and issue reporting for Roger's World of Warcraft: Forever
 | Combo Points Plate: Forever | 1.0.6 | [README](addons/combo-points-plate-forever/README-section.md) · [Changelog](addons/combo-points-plate-forever/CHANGELOG.md) |
 | Minimap Button: Forever | 1.0.14 | [README](addons/minimap-button-forever/README.md) · [Changelog](addons/minimap-button-forever/CHANGELOG.md) |
 | Misspelled: Forever | 1.1.0 | [README](addons/misspelled-forever/README.md) · [Changelog](addons/misspelled-forever/CHANGELOG.md) |
+| Totem Tooltip: Forever | 1.0.0 | [README](addons/totem-tooltip-forever/README.md) · [Changelog](addons/totem-tooltip-forever/CHANGELOG.md) |
 
 Use the repository's issue forms to report a problem. Choose the form for the affected add-on and include its version, the WoW: Forever version and build, clear reproduction steps, expected and actual behaviour, relevant add-ons, and a redacted error message when available.
 

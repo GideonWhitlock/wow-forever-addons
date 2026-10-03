@@ -1,0 +1,10 @@
+## Interface: 16001
+## Title: Totem Tooltip: Forever
+## Notes: Hover over any player's totem to see the buff, debuff, or effect it supplies.
+## Author: Roger
+## Version: 1.0.0
+## SavedVariables: TotemTooltipForeverDB
+## IconTexture: Interface\Icons\Spell_Nature_StoneClawTotem
+## X-License: All Rights Reserved
+
+TotemTooltipForever.lua

@@ -1,0 +1,45 @@
+name: Totem Tooltip Forever issue
+description: Report a problem with Totem Tooltip: Forever
+title: "[Totem Tooltip: Forever] "
+labels:
+  - "addon: totem-tooltip-forever"
+body:
+  - type: input
+    id: addon-version
+    attributes:
+      label: Add-on version
+    validations:
+      required: true
+  - type: input
+    id: game-version
+    attributes:
+      label: WoW: Forever version and build
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: other-addons
+    attributes:
+      label: Other relevant add-ons
+  - type: textarea
+    id: errors
+    attributes:
+      label: Redacted error text
+      description: Remove account names, character names, local paths, tokens and other private information.

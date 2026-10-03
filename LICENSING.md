@@ -10,5 +10,6 @@ This repository contains several separate add-ons. It does not apply one reposit
 - Combo Points Plate: Forever: no public open-source licence has been established. Treat it as all rights reserved unless the owner adds a licence.
 - Minimap Button: Forever: MIT for source code. Promotional artwork reuse rights require separate confirmation.
 - Misspelled: Forever: GPL-2.0-or-later; preserve the bundled licence and upstream attribution.
+- Totem Tooltip: Forever: all rights reserved unless the owner later adds a public licence.
 
 World of Warcraft names, icons and other game assets remain the property of their respective owners. Runtime references to client assets do not place those assets under an add-on licence.

@@ -1,0 +1,4 @@
+Copyright (c) 2026 Roger. All rights reserved.
+
+This add-on may be downloaded and used through its official distribution pages.
+Redistribution, modification, or inclusion in other packages requires prior permission.
