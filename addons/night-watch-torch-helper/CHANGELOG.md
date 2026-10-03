@@ -1,6 +1,6 @@
 # Changelog
 
-All released versions of Night Watch Torch Helper are listed here. The in-game add-on name is **Night Watch Torch**.
+All released versions of Night Watch Torch Helper: Forever are listed here. The in-game add-on name is **Night Watch Torch**.
 
 ## [1.0.2] — 2026-09-27
 
@@ -41,4 +41,3 @@ All released versions of Night Watch Torch Helper are listed here. The in-game a
 - Added a temporary manual dim-area option for visual fog or darkness not reported by the game.
 - Added movement, combat, mount, taxi, vehicle, falling, swimming, casting and channeling gates.
 - Added secure combat hiding and disarming without automatic item use.
-

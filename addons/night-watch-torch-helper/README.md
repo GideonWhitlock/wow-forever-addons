@@ -1,6 +1,6 @@
-# Night Watch Torch Helper
+# Night Watch Torch Helper: Forever
 
-Night Watch Torch Helper offers a movable **Light torch** button when Night Watchman's Torch can be used safely. The add-on appears as **Night Watch Torch** in WoW's AddOns list.
+Night Watch Torch Helper: Forever offers a movable **Light torch** button when Night Watchman's Torch can be used safely. The add-on appears as **Night Watch Torch** in WoW's AddOns list.
 
 The reminder appears only when:
 
@@ -30,7 +30,7 @@ The released source, package and installed files were last checked against Forev
 
 ### CurseForge
 
-Install **Night Watch Torch Helper** for the WoW: Forever game flavour. Enable **Night Watch Torch** in the character-selection AddOns list.
+Install **Night Watch Torch Helper: Forever** for the WoW: Forever game flavour. Enable **Night Watch Torch** in the character-selection AddOns list.
 
 ### Manual installation
 
@@ -80,4 +80,3 @@ Settings are saved per character. The temporary dim-area option clears on a zone
 - [Changelog]({{NIGHT_WATCH_TORCH_CHANGELOG_URL}})
 
 When reporting an issue, remove account details, access tokens, private chat, personal file paths and any other information you do not want published.
-

@@ -8,7 +8,7 @@ Source, release notes and issue reporting for Roger's World of Warcraft: Forever
 | Feed Pet Forever | 1.0.2 | [README](addons/feed-pet-forever/README.md) · [Changelog](addons/feed-pet-forever/CHANGELOG.md) |
 | Campfire Stories | 3.0.1 | [README](addons/campfire-stories/README_SECTION.md) · [Changelog](addons/campfire-stories/CHANGELOG.md) |
 | Utility Helper: Forever | 0.1.14 | [README](addons/utility-helper/README.md) · [Changelog](addons/utility-helper/CHANGELOG.md) |
-| Night Watch Torch Helper | 1.0.2 | [README](addons/night-watch-torch-helper/README.md) · [Changelog](addons/night-watch-torch-helper/CHANGELOG.md) |
+| Night Watch Torch Helper: Forever | 1.0.2 | [README](addons/night-watch-torch-helper/README.md) · [Changelog](addons/night-watch-torch-helper/CHANGELOG.md) |
 | Combo Points Plate: Forever | 1.0.6 | [README](addons/combo-points-plate-forever/README-section.md) · [Changelog](addons/combo-points-plate-forever/CHANGELOG.md) |
 | Minimap Button: Forever | 1.0.14 | [README](addons/minimap-button-forever/README.md) · [Changelog](addons/minimap-button-forever/CHANGELOG.md) |
 | Misspelled: Forever | 1.1.0 | [README](addons/misspelled-forever/README.md) · [Changelog](addons/misspelled-forever/CHANGELOG.md) |
