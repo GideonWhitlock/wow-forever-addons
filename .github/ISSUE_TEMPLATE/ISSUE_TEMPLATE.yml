@@ -21,7 +21,7 @@ body:
   - type: input
     id: wow-version
     attributes:
-      label: WoW: Forever version and build
+      label: "WoW: Forever version and build"
       description: Use /campfire debug and copy only the client version, build and interface lines.
       placeholder: "1.60.1, build 70205, Interface 16001"
     validations:
