@@ -1,0 +1,120 @@
+name: Bug report
+description: Report a problem with Thanks for Buffing: Forever
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a problem. Please do not include account details, private chat, or other sensitive information.
+
+  - type: input
+    id: addon-version
+    attributes:
+      label: Addon version
+      description: The version shown in the AddOns list or release filename.
+      placeholder: "1.0.1"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: wow-client
+    attributes:
+      label: WoW client
+      options:
+        - WoW Forever
+        - Retail
+        - Mists of Pandaria Classic
+        - Burning Crusade Classic
+        - Classic Era
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: wow-build
+    attributes:
+      label: Full WoW version and build
+      description: This is visible on the login screen, for example 1.60.1.70205.
+      placeholder: "1.60.1.70205"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: grouped
+    attributes:
+      label: Were you in a party, dungeon group, or raid?
+      options:
+        - "No"
+        - "Yes"
+        - Unsure
+    validations:
+      required: true
+
+  - type: dropdown
+    id: combat
+    attributes:
+      label: Were you in combat when the buff was applied or the whisper was due?
+      options:
+        - "No"
+        - "Yes"
+        - Unsure
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      description: What did you expect the addon to do?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: What happened instead? Mention whether other ordinary whispers were delayed.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Log in while solo and out of combat.
+        2. Have another player cast ...
+        3. Wait at least 10 seconds.
+    validations:
+      required: true
+
+  - type: textarea
+    id: debug-output
+    attributes:
+      label: Debug output
+      description: Enable `/tftbf debug`, reproduce the issue, and paste only the addon's local debug lines.
+      render: text
+
+  - type: textarea
+    id: errors
+    attributes:
+      label: Error or blocked-action message
+      description: Paste the exact error text, if one appeared. A screenshot may be attached instead.
+
+  - type: textarea
+    id: addons
+    attributes:
+      label: Other relevant addons
+      description: List chat, aura, combat-log, or UI-security addons that were enabled.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Final checks
+      options:
+        - label: I reloaded the UI and confirmed the problem still occurs.
+          required: true
+        - label: I have not included account details, private chat, or other sensitive information.
+          required: true
