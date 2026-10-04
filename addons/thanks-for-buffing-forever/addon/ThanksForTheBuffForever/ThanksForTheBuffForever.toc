@@ -1,0 +1,7 @@
+## Interface: 16001, 120100, 50504, 20506, 11509
+## Title: Thanks for Buffing: Forever
+## Notes: Naturally thanks players who buff you with a private whisper.
+## Version: 1.0.1
+## SavedVariables: ThanksForTheBuffForeverDB
+
+ThanksForTheBuffForever.lua

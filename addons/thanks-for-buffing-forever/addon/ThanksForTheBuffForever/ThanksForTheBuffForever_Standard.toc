@@ -1,0 +1,7 @@
+## Interface: 120100
+## Title: Thanks for Buffing: Forever
+## Notes: Naturally thanks players who buff you with a private whisper.
+## Version: 1.0.1
+## SavedVariables: ThanksForTheBuffForeverDB
+
+ThanksForTheBuffForever.lua
