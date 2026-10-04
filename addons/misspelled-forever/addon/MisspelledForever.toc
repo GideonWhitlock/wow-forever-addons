@@ -1,6 +1,6 @@
 ## Interface: 16001
 ## Title: Misspelled: Forever
-## Author: Gideon; based on Misspelled by Nathan Pieper
+## Author: Gideon Whitlock; based on Misspelled by Nathan Pieper
 ## Notes: Checks spelling as you type, highlights mistakes, and offers right-click corrections.
 ## Version: 1.1.0
 ## SavedVariables: MisspelledForeverDB

@@ -1,6 +1,6 @@
 # WoW: Forever add-ons
 
-Source, release notes and issue reporting for Roger's World of Warcraft: Forever add-ons.
+Source, release notes and issue reporting for Gideon Whitlock's World of Warcraft: Forever add-ons.
 
 | Add-on | Current prepared version | Documentation |
 |---|---:|---|

@@ -1,6 +1,6 @@
 ## Interface: 16001
 ## Title: Feed Pet: Forever
-## Author: Gideon
+## Author: Gideon Whitlock
 ## Notes: A movable pet happiness reminder with one-click feeding and a no-food warning.
 ## Version: 1.0.2
 ## SavedVariablesPerCharacter: FeedPetForeverDB

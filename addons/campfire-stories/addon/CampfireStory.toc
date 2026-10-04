@@ -1,6 +1,6 @@
 ## Interface: 16001
 ## Title: Campfire Stories: Forever
-## Author: Gideon
+## Author: Gideon Whitlock
 ## Notes: Human-written campfire horror, a personal library and manual storytelling.
 ## Version: 3.0.2
 ## SavedVariables: CampfireStoryLibraryDB

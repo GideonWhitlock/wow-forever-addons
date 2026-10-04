@@ -1,6 +1,6 @@
 ## Interface: 16001
 ## Title: Minimap Button: Forever
-## Author: Gideon
+## Author: Gideon Whitlock
 ## Notes: Organises add-on minimap buttons into a movable horizontal or vertical bar.
 ## Version: 1.0.14
 ## SavedVariablesPerCharacter: MinimapButtonForeverDB
