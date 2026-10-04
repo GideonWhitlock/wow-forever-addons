@@ -1,8 +1,8 @@
-name: Bug report
-description: Report a problem with Thanks for Buffing: Forever
-title: "[Bug]: "
+name: "Thanks for Buffing: Forever bug report"
+description: "Report a problem with Thanks for Buffing: Forever."
+title: "[Thanks for Buffing: Forever] "
 labels:
-  - bug
+  - "bug"
 body:
   - type: markdown
     attributes:
