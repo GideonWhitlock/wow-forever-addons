@@ -2,6 +2,12 @@
 
 This changelog records the numbered releases of the current human-written story collection. Retired prerelease files containing the replaced generated collection are intentionally omitted.
 
+## 3.0.3 — 4 October 2026
+
+- Replaced the small, text-heavy project artwork with a clear campfire-and-book icon that remains readable in compact CurseForge views.
+- Updated the addon-list and minimap textures to use the matching circular campfire-and-book icon.
+- Made no changes to stories, pacing, chat routing, the personal library or SavedVariables behavior.
+
 ## 3.0.2 — 3 October 2026
 
 - Changed the public and in-game display name to **Campfire Stories: Forever**.

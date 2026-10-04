@@ -1,5 +1,5 @@
-name: Campfire Stories: Forever issue
-description: Report a reproducible problem with the Campfire Stories: Forever addon.
+name: "Campfire Stories: Forever issue"
+description: "Report a reproducible problem with the Campfire Stories: Forever addon."
 title: "[Campfire Stories: Forever] "
 labels:
   - "addon: campfire-stories"
@@ -12,9 +12,9 @@ body:
   - type: input
     id: addon-version
     attributes:
-      label: Campfire Stories: Forever version
+      label: "Campfire Stories: Forever version"
       description: Open Help > Client diagnostics or check the AddOns screen.
-      placeholder: "3.0.2"
+      placeholder: "3.0.3"
     validations:
       required: true
 

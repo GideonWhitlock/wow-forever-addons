@@ -1,7 +1,7 @@
 addon_name: "Campfire Stories: Forever"
 addon_slug: campfire-stories
 addon_folder: CampfireStory
-current_version: 3.0.2
+current_version: 3.0.3
 game_flavour: "WoW: Forever"
 game_version: "1.60.1"
 interface: 16001
