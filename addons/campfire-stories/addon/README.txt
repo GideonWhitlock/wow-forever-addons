@@ -1,5 +1,5 @@
-CAMPFIRE STORIES: FOREVER 3.0.2
-By Gideon. WoW: Forever 1.60.1 (build 70009), Interface 16001.
+CAMPFIRE STORIES: FOREVER 3.0.3
+By Gideon. WoW: Forever 1.60.1 (assessed build 70205), Interface 16001.
 
 QUICK START
 1. Left-click the campfire minimap button or type /campfire ui.

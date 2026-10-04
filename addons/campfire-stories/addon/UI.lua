@@ -478,7 +478,7 @@ function U:Init(engine)
     self.engine=engine
     if Minimap then
         local b=CreateFrame("Button","CampfireStoryMinimapButton",Minimap:GetParent() or UIParent); self.minimap=b; b:SetSize(28,28); b:SetFrameStrata("MEDIUM"); b:SetFrameLevel(Minimap:GetFrameLevel()+5)
-        b:SetNormalTexture("Interface\\AddOns\\CampfireStory\\Media\\CampfireHomer"); b:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
+        b:SetNormalTexture("Interface\\AddOns\\CampfireStory\\Media\\CampfireBook"); b:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
         b:RegisterForClicks("LeftButtonUp","RightButtonUp"); b:RegisterForDrag("LeftButton")
         b:SetScript("OnClick",function(_,which) if b.dragged then b.dragged=false; return end; if which=="RightButton" then self:ShowPage("settings") else self:Toggle() end end)
         b:SetScript("OnEnter",function() if GameTooltip then GameTooltip:SetOwner(b,"ANCHOR_LEFT"); GameTooltip:AddLine("Campfire Stories: Forever"); GameTooltip:AddLine("Left-click: open or close",1,1,1); GameTooltip:AddLine("Right-click: settings",1,1,1); GameTooltip:AddLine("Drag: reposition",1,1,1); GameTooltip:Show() end end)

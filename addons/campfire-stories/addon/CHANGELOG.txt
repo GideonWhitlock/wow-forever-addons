@@ -1,3 +1,8 @@
+3.0.3 - 4 October 2026
+- Replaced the small, text-heavy project artwork with a clear campfire-and-book icon.
+- Updated the addon-list and minimap textures to use a matching circular icon.
+- No story, pacing, chat-routing, library or SavedVariables behavior changed.
+
 3.0.2 - 3 October 2026
 - Changed the public and in-game display name to Campfire Stories: Forever.
 - Updated the addon list, windows, settings, minimap tooltip, diagnostics,

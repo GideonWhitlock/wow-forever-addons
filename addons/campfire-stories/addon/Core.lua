@@ -1,7 +1,7 @@
 -- Pure Lua 5.1 logic. Only Engine:SendNext can invoke the injected chat API.
 local _, ns = ...
 local C = {}; ns.Core = C
-C.VERSION = "3.0.2"
+C.VERSION = "3.0.3"
 C.SCHEMA = 3
 C.CHAT_BYTES = 255
 C.DEFAULTS = { mode="dynamic", fixed=5, preparation=1, rate=12, minimum=2, maximum=20, scale=1 }

@@ -1,5 +1,5 @@
-CAMPFIRE STORIES: FOREVER 3.0.2 - TEST EVIDENCE
-27 September 2026. Target: WoW: Forever 1.60.1 / 70009 / Interface 16001.
+CAMPFIRE STORIES: FOREVER 3.0.3 - TEST EVIDENCE
+4 October 2026. Target: WoW: Forever 1.60.1 / 70205 / Interface 16001.
 
 2,899 simulated Lua 5.1 assertions passed:
 1,038 core/content; 1,543 invariants/migration; 30 emote regressions;
@@ -22,10 +22,12 @@ These are simulated API/frame checks, not live-client security/rendering tests.
 
 Earlier owner-operated checks confirmed the existing compact interface,
 readable text, Next line/Reset, a complete telling and personal save/reload.
-The restored emotes, new collection, human-art textures and source whispers
-have not yet been checked live. Full-restart/other-character persistence and
-CurseForge app installation remain unverified. Publication/approval records
-are maintained separately from the immutable package build.
+Version 3.0.3 changes project, addon-list and minimap artwork only. The new
+64px RGBA game texture and 28px preview were inspected and package-verified,
+but have not been rendered in the native client. The restored emotes,
+replacement collection and source whispers also lack complete current-client
+live coverage. Full-restart/other-character persistence and CurseForge app
+installation remain unverified.
 
 The earlier Error 109 (20-second unresponsive thread) while fighting with the
 addon window closed remains undiagnosed. No crash fix or crash-free claim.

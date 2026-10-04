@@ -6,23 +6,26 @@ CODE: MIT
 Original addon code, metadata and documentation use the MIT License below.
 Literary content and artwork are covered separately.
 
-HISTORICAL STORY TEXTS AND ARTWORK: PUBLIC DOMAIN
+HISTORICAL STORY TEXTS: PUBLIC DOMAIN
 The twenty included human-written tales are credited to their original
 collectors and translators in STORY_SOURCES.txt. They are not authored by
 Gideon, and are not relicensed under CC BY 4.0. Documented place-name changes
 do not create ownership of the underlying tales.
-The human-painted logo and minimap artwork come from Winslow Homer's
-Camp Fire (1880), provided as public domain by the Met. See ARTWORK.txt.
-The story narratives and artwork are human-made. The earlier AI-assisted
-roleplay opening actions are restored separately at the owner's request.
-Addon development and editorial/formatting work were assisted by AI.
+Versions 3.0.0–3.0.2 used logo and minimap artwork cropped from Winslow
+Homer's Camp Fire (1880), provided as public domain by the Met. Version
+3.0.3 replaces those shipped images with an original AI-assisted
+campfire-and-open-book icon. See ARTWORK.txt for the exact provenance.
+The story narratives remain human-written. The earlier AI-assisted roleplay
+opening actions are restored separately at the owner's request. Addon
+development, icon creation and editorial/formatting work were assisted by AI.
 
 EARLIER ORIGINAL CONTENT: CC BY 4.0
 The previous grant for original addon stories, opening actions and artwork
 remains unchanged, to the extent applicable rights exist. The restored
 opening actions retain their existing CC BY 4.0 grant and Gideon attribution.
-The earlier generated narratives, spoken introductions and artwork remain
-removed from this release. This historical licence does not apply to the
+The earlier generated narratives and spoken introductions remain removed.
+The current AI-assisted icon is included under this existing artwork grant,
+to the extent applicable rights exist. This grant does not apply to the
 public-domain collection or Homer painting. See CC-BY-4.0.txt.
 Personal stories written or imported by players remain their owners' work;
 using this addon does not automatically license or share a player's library.
