@@ -1,5 +1,5 @@
 local _, U = ...
-U.VERSION = "0.1.20"
+U.VERSION = "0.1.21"
 U.TITLE = "Utility Helper: Forever"
 U.catalog = {}
 -- IDs identify spell families. The spellbook supplies the learned rank and localized name.
@@ -14,7 +14,7 @@ local function a(class, id, label, rule, target, extra) add(class, id, label, ru
 
 a("HUNTER", 1513, "Scare Beast", "creature", "target", {types = {1}, missingDebuff = true})
 a("HUNTER", 136, "Mend Pet", "pethealth", "pet", {missingAura = true})
-a("HUNTER", 982, "Revive Pet", "petdead", "pet")
+a("HUNTER", 982, "Revive Pet", "petdead", "pet", {dualState = true})
 a("HUNTER", 883, "Call Pet", "petmissing", "player", {outOfCombat = true})
 a("HUNTER", 19801, "Tranquilizing Shot", "purge", "target", {dispels = {Enrage = true}})
 a("HUNTER", 1499, "Freezing Trap", "combat", "player", {note = "Places a trap at your feet; position the enemy yourself."})

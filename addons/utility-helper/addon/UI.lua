@@ -129,7 +129,8 @@ function U.Tooltip(b)
     if e.note then tip:AddLine(e.note, 1, 0.7, 0.3, true) end
     if e.incidentalDamage then tip:AddLine("Utility spell with incidental damage", 1, 0.6, 0.35) end
     tip:AddLine("Key: " .. (U.db.bindings[e.key] or "Unassigned"), 1, 1, 1)
-    tip:AddLine(e.selfBuff and "Learned maintenance buffs appear when their buff family is missing and keep a fixed combat button."
+    tip:AddLine(e.dualState and "Revive Pet appears for a dead pet both outside combat and during combat."
+        or e.selfBuff and "Learned maintenance buffs appear when their buff family is missing and keep a fixed combat button."
         or e.tracking and "Learned resource trackers appear outside combat when no supported resource tracker is active."
         or e.restOnly and "Bandages appear only outside combat at the health threshold. Private-health alerts are reminders; use your normal action bar."
         or "This button and its keybind work in combat. Bright borders indicate a relevant utility.", 0.7, 0.7, 0.7, true)
@@ -258,7 +259,7 @@ function U.ApplyBindings()
         local key = U.db.bindings[e.key]
         b.keyText:SetText(key or "")
         b:SetAttribute("utility-key", key)
-        b:SetAttribute("utility-maintenance", e.maintenance or false)
+        b:SetAttribute("utility-maintenance", e.maintenance or e.dualState or false)
         if e.restOnly then
             restCount = restCount + 1; U.restRoot:SetFrameRef("action" .. restCount, b)
             b.restInput, b.restBinding = nil, nil
@@ -286,9 +287,10 @@ function U.SyncRestButton(b, state)
         b.restInput, b.restBinding = nil, nil
         return
     end
-    local owner = b.entry.maintenance and U.root or U.restRoot
+    local dualState = b.entry.maintenance or b.entry.dualState
+    local owner = dualState and U.root or U.restRoot
     local ownerState = owner:GetAttribute("state-utility")
-    local available = ownerState == "rest" or (b.entry.maintenance and U.editing and ownerState == "arrange")
+    local available = ownerState == "rest" or (dualState and U.editing and ownerState == "arrange")
     -- Only a publicly confirmed condition may enable protected input. Private
     -- health controls bandage reminder artwork only, with input disabled.
     local active = available and not U.editing and state == "active" or false
@@ -304,7 +306,7 @@ function U.SyncRestButton(b, state)
     local key = active and U.db.bindings[b.entry.key] or nil
     if b.restBinding ~= key then
         b.restBinding = key
-        if b.entry.maintenance then U.maintenanceBindingsDirty = true else U.restBindingsDirty = true end
+        if dualState then U.maintenanceBindingsDirty = true else U.restBindingsDirty = true end
     end
 end
 function U.SetBinding(keyID, key, replace)
@@ -498,14 +500,14 @@ function U.Refresh()
     for _, e in ipairs(U.entries) do
         local b = U.byKey[e.key]
         local state, reason, unit, visual = U.Evaluate(e)
-        if e.restOnly or e.maintenance then U.SyncRestButton(b, state) end
+        if e.restOnly or e.maintenance or e.dualState then U.SyncRestButton(b, state) end
         U.Render(b, state, reason, unit, visual)
     end
     if not InCombatLockdown() and U.maintenanceBindingsDirty then
         U.maintenanceBindingsDirty = nil; ClearOverrideBindings(U.root)
         for _, e in ipairs(U.entries) do
             local b = U.byKey[e.key]
-            if e.maintenance and b.restBinding then SetOverrideBindingClick(U.root, true, b.restBinding, b:GetName(), "LeftButton") end
+            if (e.maintenance or e.dualState) and b.restBinding then SetOverrideBindingClick(U.root, true, b.restBinding, b:GetName(), "LeftButton") end
         end
     end
     if not InCombatLockdown() and U.restBindingsDirty then

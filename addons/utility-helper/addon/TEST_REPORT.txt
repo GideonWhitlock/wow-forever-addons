@@ -3,6 +3,16 @@
 Updated: 7 October 2026. Target: WoW: Forever beta, interface 16001.
 Local installed client metadata: 1.60.1.70245.
 
+## 0.1.21 Revive Pet dual-state display
+
+Revive Pet now uses the main secure owner in both rest and combat states. While
+a dead pet is publicly confirmed, the outside-combat button is shown, enabled,
+mouse-clickable and assigned its configured override key. A living, absent or
+dismissed pet hides and disables the button and releases that key. Combat keeps
+the preconfigured secure action available. The focused regression verifies the
+complete display/input lifecycle in addition to distant-corpse and tokenless
+dead-pet detection. The full Lua 5.1 syntax and scenario suite passes.
+
 ## 0.1.20 Revive Pet range and bandage input audit
 
 Revive Pet no longer performs an ordinary spell-range check against the pet

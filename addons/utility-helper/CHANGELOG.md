@@ -1,5 +1,15 @@
 # Utility Helper: Forever changelog
 
+## 0.1.21
+
+- Revive Pet now remains visible and clickable outside combat while the pet is
+  dead instead of disappearing with the combat-only display.
+- Its configured keybind follows the dead-pet state outside combat and remains
+  preconfigured in combat.
+- Living, absent and dismissed pets hide the outside-combat button and release
+  its keybind.
+- Preserves the distant-corpse and tokenless dead-pet fixes from 0.1.20.
+
 ## 0.1.20
 
 - Fixed Revive Pet failing to appear for a distant pet corpse.

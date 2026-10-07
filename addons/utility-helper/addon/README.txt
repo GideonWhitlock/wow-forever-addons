@@ -1,6 +1,11 @@
 # Utility Helper: Forever
 
-Version **0.1.20** for **WoW: Forever beta 1.60.1**, interface **16001**.
+Version **0.1.21** for **WoW: Forever beta 1.60.1**, interface **16001**.
+
+**Revive Pet now remains visible and clickable outside combat while the pet is
+dead.** It uses the same fixed secure button in combat, and its keybind follows
+the dead-pet state outside combat. A living, absent or dismissed pet removes
+the outside-combat button and releases its keybind.
 
 **Revive Pet now works for a distant pet corpse.** The helper no longer treats
 Revive Pet as a ranged cast against the corpse or explicitly targets a dead pet
