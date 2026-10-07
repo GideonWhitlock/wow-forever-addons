@@ -129,7 +129,7 @@ function U.Tooltip(b)
     if e.note then tip:AddLine(e.note, 1, 0.7, 0.3, true) end
     if e.incidentalDamage then tip:AddLine("Utility spell with incidental damage", 1, 0.6, 0.35) end
     tip:AddLine("Key: " .. (U.db.bindings[e.key] or "Unassigned"), 1, 1, 1)
-    tip:AddLine(e.selfBuff and "Learned self-buffs appear outside combat when their buff family is missing."
+    tip:AddLine(e.selfBuff and "Learned maintenance buffs appear when their buff family is missing and keep a fixed combat button."
         or e.tracking and "Learned resource trackers appear outside combat when no supported resource tracker is active."
         or e.restOnly and "Bandages appear only outside combat at the health threshold. Private-health alerts are reminders; use your normal action bar."
         or "This button and its keybind work in combat. Bright borders indicate a relevant utility.", 0.7, 0.7, 0.7, true)
@@ -253,6 +253,7 @@ function U.ApplyBindings()
         local key = U.db.bindings[e.key]
         b.keyText:SetText(key or "")
         b:SetAttribute("utility-key", key)
+        b:SetAttribute("utility-maintenance", e.maintenance or false)
         if e.restOnly then
             restCount = restCount + 1; U.restRoot:SetFrameRef("action" .. restCount, b)
             b.restInput, b.restBinding = nil, nil
@@ -267,15 +268,22 @@ function U.ApplyBindings()
     U.root:SetAttribute("state-utility", nil)
     local driver = "hide"
     if U.db.enabled then
-        driver = "[dead][mounted][flying][vehicleui] hide; [combat] combat; " .. (U.editing and "arrange" or "hide")
+        driver = "[dead][mounted][flying][vehicleui] hide; [combat] combat; " .. (U.editing and "arrange" or "rest")
     end
     RegisterStateDriver(U.root, "utility", driver)
     U.restRoot:SetAttribute("state-utility", nil)
     RegisterStateDriver(U.restRoot, "utility", U.db.enabled and "[dead][mounted][flying][vehicleui][combat] hide; rest" or "hide")
 end
 function U.SyncRestButton(b, state)
-    if InCombatLockdown() then return end
-    local available = U.restRoot:GetAttribute("state-utility") == "rest"
+    if InCombatLockdown() then
+        -- Secure state snippets own the transition. Clear only Lua's cached
+        -- bookkeeping so the next rest refresh reapplies input and bindings.
+        b.restInput, b.restBinding = nil, nil
+        return
+    end
+    local owner = b.entry.maintenance and U.root or U.restRoot
+    local ownerState = owner:GetAttribute("state-utility")
+    local available = ownerState == "rest" or (b.entry.maintenance and U.editing and ownerState == "arrange")
     -- Only a publicly confirmed condition may enable protected input. Private
     -- health controls bandage reminder artwork only, with input disabled.
     local active = available and not U.editing and state == "active" or false
@@ -289,7 +297,10 @@ function U.SyncRestButton(b, state)
     b:SetShown(available and (active or reminder or U.editing) or false)
     b.keyText:SetText(reminder and "" or (U.db.bindings[b.entry.key] or ""))
     local key = active and U.db.bindings[b.entry.key] or nil
-    if b.restBinding ~= key then b.restBinding = key; U.restBindingsDirty = true end
+    if b.restBinding ~= key then
+        b.restBinding = key
+        if b.entry.maintenance then U.maintenanceBindingsDirty = true else U.restBindingsDirty = true end
+    end
 end
 function U.SetBinding(keyID, key, replace)
     if InCombatLockdown() then return false, "Change keybinds after combat." end
@@ -334,14 +345,17 @@ function U.BuildUI()
             if b then
                 if newstate == "combat" then
                     b:Enable(); b:EnableMouse(true)
+                    b:Show()
                     local key = b:GetAttribute("utility-key")
                     if key then self:SetBindingClick(true, key, b:GetName(), "LeftButton") end
+                elseif newstate == "arrange" then
+                    b:Disable(); b:EnableMouse(false); b:Show()
                 else
-                    b:Disable(); b:EnableMouse(false)
+                    b:Disable(); b:EnableMouse(false); b:Hide()
                 end
             end
         end
-        if newstate == "combat" or (newstate == "arrange" and self:GetAttribute("arranging")) then
+        if newstate == "combat" or newstate == "rest" or (newstate == "arrange" and self:GetAttribute("arranging")) then
             self:Show()
         else self:Hide() end
     ]])
@@ -479,8 +493,15 @@ function U.Refresh()
     for _, e in ipairs(U.entries) do
         local b = U.byKey[e.key]
         local state, reason, unit, visual = U.Evaluate(e)
-        if e.restOnly then U.SyncRestButton(b, state) end
+        if e.restOnly or e.maintenance then U.SyncRestButton(b, state) end
         U.Render(b, state, reason, unit, visual)
+    end
+    if not InCombatLockdown() and U.maintenanceBindingsDirty then
+        U.maintenanceBindingsDirty = nil; ClearOverrideBindings(U.root)
+        for _, e in ipairs(U.entries) do
+            local b = U.byKey[e.key]
+            if e.maintenance and b.restBinding then SetOverrideBindingClick(U.root, true, b.restBinding, b:GetName(), "LeftButton") end
+        end
     end
     if not InCombatLockdown() and U.restBindingsDirty then
         U.restBindingsDirty = nil; ClearOverrideBindings(U.restRoot)

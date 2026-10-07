@@ -157,12 +157,16 @@ f:SetScript("OnEvent", function(_, event, arg1, arg2)
     if event == "SPELL_UPDATE_COOLDOWN" then U.CaptureCooldownEvent() end
     if event == "PLAYER_REGEN_DISABLED" then
         -- Unprotected editing overlays can close. Protected geometry/actions wait for combat end.
+        local wasEditing = U.editing
         U.editing, U.preview = false, false
         if U.handle then U.handle:Hide() end
         if U.options then U.options:Hide() end
         if U.StopSpellPicker then U.StopSpellPicker() end
         for _, b in ipairs(U.buttons) do b.editor:Hide(); b.number:SetAlpha(0) end
         if U.StopMinimapDrag then U.StopMinimapDrag() end
+        -- ApplyBindings cannot replace an arrange-state secure driver during combat.
+        -- Queue the normal rest-state rebuild for the moment combat ends.
+        if wasEditing then U.QueueRebuild() end
     end
     if rebuildEvents[event] then U.QueueRebuild() end
     if event == "PLAYER_REGEN_ENABLED" then

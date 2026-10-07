@@ -1,5 +1,15 @@
 # Utility Helper: Forever changelog
 
+## 0.1.19
+
+- Battle Shout and every supported learned maintenance buff can now appear and
+  remain clickable during combat when its buff family is missing.
+- Applying a maintenance buff clears its alert while preserving mutually
+  exclusive families and spell-specific conditions.
+- Bandages, profession tracking and Warlock stone creation remain restricted
+  to outside combat.
+- Fixed the return from arrange mode when combat interrupts editing.
+
 ## 0.1.18
 
 - Added learned-only Life Tap for Warlocks. It appears when mana is at or below

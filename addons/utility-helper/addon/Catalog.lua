@@ -1,5 +1,5 @@
 local _, U = ...
-U.VERSION = "0.1.18"
+U.VERSION = "0.1.19"
 U.TITLE = "Utility Helper: Forever"
 U.catalog = {}
 -- IDs identify spell families. The spellbook supplies the learned rank and localized name.
@@ -224,7 +224,10 @@ for _, e in ipairs(U.catalog) do
         end
     end
     if e.rule == "buff" and e.target == "player" then
-        e.missingAura, e.outOfCombat, e.restOnly, e.selfBuff = true, true, true, true
+        -- Maintenance actions keep one fixed secure button for both states:
+        -- public missing-aura data controls out-of-combat input, while the
+        -- combat state driver enables the already-configured action in combat.
+        e.missingAura, e.outOfCombat, e.restOnly, e.selfBuff, e.maintenance = true, nil, nil, true, true
     end
     if e.rule == "buff" and e.target == "friendly" then
         e.targetedBuff, e.missingAura, e.outOfCombat = true, true, nil
@@ -233,7 +236,7 @@ for _, e in ipairs(U.catalog) do
 end
 
 -- Keep ally buff buttons available in combat, and add independent self versions
--- to the outside-combat group so a friendly target is never required to maintain yourself.
+-- that can maintain the player both outside combat and during combat.
 local originalCount = #U.catalog
 for index = 1, originalCount do
     local source = U.catalog[index]
@@ -241,7 +244,7 @@ for index = 1, originalCount do
         local e = {}; for k, v in pairs(source) do e[k] = v end
         e.key, e.label, e.target = source.key .. ":self", source.label .. " (self)", "player"
         e.targetedBuff, e.party, e.playerOnly = nil, nil, nil
-        e.missingAura, e.outOfCombat, e.restOnly, e.selfBuff = true, true, true, true
+        e.missingAura, e.outOfCombat, e.restOnly, e.selfBuff, e.maintenance = true, nil, nil, true, true
         U.catalog[#U.catalog + 1] = e
     end
 end

@@ -2,7 +2,7 @@
 ## Title: Utility Helper: Forever
 ## Notes: Contextual class utility, emergency recovery, dispels, interrupts and pet care.
 ## Author: Gideon Whitlock
-## Version: 0.1.18
+## Version: 0.1.19
 ## SavedVariablesPerCharacter: UtilityHelperDB
 ## IconTexture: Interface\Icons\INV_Misc_Gear_01
 

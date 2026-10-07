@@ -1,7 +1,19 @@
 # Utility Helper: Forever 0.1.18 — verification record
 
-Date: 3 October 2026. Target: WoW: Forever beta, interface 16001.
-Local installed client metadata: 1.60.1.70205.
+Updated: 7 October 2026. Target: WoW: Forever beta, interface 16001.
+Local installed client metadata: 1.60.1.70245.
+
+## 0.1.19 combat maintenance buffs
+
+Battle Shout and every configured learned maintenance buff now retain a fixed
+secure combat button. When the relevant buff family is missing, the alert can
+appear and the prepared button can be clicked during combat; applying the buff
+suppresses the alert. Outside combat, only missing maintenance buffs accept
+mouse or key input. Strict rest utilities such as bandages, profession tracking
+and Warlock stone creation still hide, disable and release bindings in combat.
+`tests/maintenance_combat.lua` covers Battle Shout, aura transitions, simultaneous
+recovery alerts and strict rest-only isolation. The full Lua 5.1 syntax and
+scenario suite passes.
 
 ## 0.1.18 Life Tap and spell picker
 

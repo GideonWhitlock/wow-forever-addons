@@ -1,6 +1,12 @@
 # Utility Helper: Forever
 
-Version **0.1.18** for **WoW: Forever beta 1.60.1**, interface **16001**.
+Version **0.1.19** for **WoW: Forever beta 1.60.1**, interface **16001**.
+
+**Maintenance buffs now remain available during combat when missing.** This
+includes Battle Shout and every supported learned self-buff. The fixed secure
+button is prepared before combat, so a missing buff can light up and be clicked
+without a reload. Applying the buff clears its alert. Bandages, profession
+tracking and Warlock stone creation remain outside-combat utilities.
 
 **Life Tap** is now a built-in Warlock utility. It highlights when mana is at
 or below the configured mana threshold and health is above the configured
@@ -29,8 +35,9 @@ Paladin's other learned blessing choices remain available. Once the Paladin
 applies one of their own mutually exclusive blessings, the alternative personal
 blessing reminders clear.
 
-Learned maintenance buffs now appear as clickable outside-combat self-buff
-reminders. This includes level 1 **Demon Skin**, Priest protections, Druid
+Learned maintenance buffs appear as clickable self-buff reminders whenever
+their buff family is missing, including during combat. This includes level 1
+**Demon Skin**, Priest protections, Druid
 buffs, Mage intellect and armor families, Paladin blessings and auras, Hunter
 aspects, Shaman shields, Warlock armor families and Warrior shouts. Friendly
 player/pet buff buttons remain separate. For mutually exclusive families, every
@@ -97,11 +104,11 @@ The prior fix for ready Scare Beast at 0% inactive visibility was confirmed
 working by the user. This version preserves that fix.
 `/uh why` prints each button's most recent combat check if an alert is missing.
 
-**Combat utilities, with self-buffs, resource trackers and bandage reminders outside combat:** the ordinary bar is hidden, its buttons
+**Combat utilities, with maintenance buffs also available when missing:** the ordinary bar is hidden outside combat, its buttons
 are disabled and its keybinds are released. Entering combat enables the fixed
 buttons and their assigned keys through the game's secure state driver. Leaving
 combat disables them again. Arrange mode reveals a preview that cannot cast.
-The separate outside-combat group provides learned self-buffs, resource trackers
+The separate outside-combat group provides resource trackers, stone creation
 and the low-health bandage reminder. The minimap button and settings remain available outside combat.
 
 An ability's own cooldown and an existing cast/channel suppress
