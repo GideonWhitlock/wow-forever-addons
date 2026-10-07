@@ -3,6 +3,23 @@
 Updated: 7 October 2026. Target: WoW: Forever beta, interface 16001.
 Local installed client metadata: 1.60.1.70245.
 
+## 0.1.20 Revive Pet range and bandage input audit
+
+Revive Pet no longer performs an ordinary spell-range check against the pet
+corpse and no longer assigns the corpse unit token to its secure action. It
+uses the public dead-or-ghost state while the pet unit exists. If Forever drops
+that token, public Revive Pet usability provides a guarded fallback: usable
+means a revivable stored pet; unusable means absent or dismissed. Restricted
+state fails closed.
+
+The focused bandage audit confirms that a usable bandage at publicly readable
+low health is shown, mouse-enabled, securely bound and configured with its
+outside-combat self-use macro. Above the threshold it is hidden and releases
+input. With private health, the native curve can draw the low-health icon but
+cannot provide a non-secret boolean for mouse input, so it remains a disabled
+reminder and cannot create an invisible click area. The full Lua 5.1 syntax and
+scenario suite passes, including `tests/revive_bandage_regressions.lua`.
+
 ## 0.1.19 combat maintenance buffs
 
 Battle Shout and every configured learned maintenance buff now retain a fixed

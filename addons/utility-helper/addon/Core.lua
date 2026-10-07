@@ -348,7 +348,23 @@ function U.Condition(e, unit)
         if choice == nil then return nil, "Buff choice information restricted" end
     end
     if e.rule == "petmissing" then return U.Public(UnitExists, "pet") == false, "Call your pet" end
-    if e.rule == "petdead" then return U.Public(UnitExists, "pet") == true and U.Public(UnitIsDead, "pet") == true, "Revive your pet" end
+    if e.rule == "petdead" then
+        local exists = U.Public(UnitExists, "pet")
+        if exists == true then
+            local dead = U.Public(UnitIsDeadOrGhost, "pet")
+            if dead == nil then return nil, "Pet death status unavailable" end
+            return dead, dead and "Revive your pet" or "Your pet is alive"
+        end
+        if exists == false then
+            -- Forever can drop the pet unit token while retaining a revivable
+            -- corpse. Spell usability is public and distinguishes that state
+            -- from an absent or dismissed pet.
+            local usable = U.Public(C_Spell and C_Spell.IsSpellUsable, e.spellID)
+            if usable == nil then return nil, "Pet status unavailable" end
+            return usable, usable and "Revive your pet" or "No dead pet"
+        end
+        return nil, "Pet status unavailable"
+    end
     if e.rule == "resurrect" then
         return U.Public(UnitExists, unit) == true and U.Public(UnitCanAssist, "player", unit) == true
             and U.Public(UnitIsPlayer, unit) == true and U.Public(UnitIsDead, unit) == true
@@ -464,7 +480,9 @@ function U.Readiness(e, unit)
         usable = U.Public(C_SpellBook.IsSpellBookItemUsable, e.slot, e.bank)
     else usable = U.Public(C_Spell.IsSpellUsable, e.spellID) end
     if usable == false then return false, "Not usable: check resources, form, equipment or reagents" end
-    local rangeUnit = e.selfCast and "player" or unit
+    -- Revive Pet acts on the hunter's stored pet and is not a ranged action
+    -- against the current pet unit token, which may disappear after death.
+    local rangeUnit = (e.selfCast or e.rule == "petdead") and "player" or unit
     if rangeUnit ~= "player" then
         local range
         if e.petSpell and e.slot and C_SpellBook.IsSpellBookItemInRange then

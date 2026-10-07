@@ -1,6 +1,18 @@
 # Utility Helper: Forever
 
-Version **0.1.19** for **WoW: Forever beta 1.60.1**, interface **16001**.
+Version **0.1.20** for **WoW: Forever beta 1.60.1**, interface **16001**.
+
+**Revive Pet now works for a distant pet corpse.** The helper no longer treats
+Revive Pet as a ranged cast against the corpse or explicitly targets a dead pet
+unit. If Forever temporarily removes the pet unit token, public Revive Pet
+usability can still identify a revivable pet without confusing a dismissed or
+absent pet with a dead one.
+
+Bandages remain clickable outside combat when the client exposes readable
+health and confirms the character is at or below the health threshold. On the
+current private-health path, the low-health icon remains a display-only reminder:
+the API can draw it but cannot safely enable its secure click without also
+creating an invisible click area above the threshold.
 
 **Maintenance buffs now remain available during combat when missing.** This
 includes Battle Shout and every supported learned self-buff. The fixed secure

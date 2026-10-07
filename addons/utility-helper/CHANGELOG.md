@@ -1,5 +1,16 @@
 # Utility Helper: Forever changelog
 
+## 0.1.20
+
+- Fixed Revive Pet failing to appear for a distant pet corpse.
+- Revive Pet now acts on the hunter's stored pet without a corpse range check
+  or explicit dead-unit target.
+- Added guarded handling for a revivable pet whose unit token disappears,
+  while absent or dismissed pets remain suppressed.
+- Re-audited bandage input: readable low health enables the outside-combat
+  secure click and keybind; private health remains reminder-only to prevent an
+  invisible click area above the threshold.
+
 ## 0.1.19
 
 - Battle Shout and every supported learned maintenance buff can now appear and

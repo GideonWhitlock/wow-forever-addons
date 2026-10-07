@@ -1,5 +1,5 @@
 local _, U = ...
-U.VERSION = "0.1.19"
+U.VERSION = "0.1.20"
 U.TITLE = "Utility Helper: Forever"
 U.catalog = {}
 -- IDs identify spell families. The spellbook supplies the learned rank and localized name.

@@ -234,6 +234,11 @@ function U.ConfigureAction(b, e)
             or e.target == "friendly" and "[help,nodead][@player]" or "[help,dead]"
         b:SetAttribute("*type1", "macro")
         b:SetAttribute("macrotext", "/cast " .. condition .. " " .. e.name)
+    elseif e.rule == "petdead" then
+        -- Revive Pet acts on the hunter's stored pet. Explicitly targeting a
+        -- dead or missing pet unit token can make the secure action fail.
+        b:SetAttribute("*type1", "spell"); b:SetAttribute("spell", e.name)
+        b:SetAttribute("checkselfcast", false); b:SetAttribute("checkfocuscast", false)
     else
         b:SetAttribute("*type1", "spell"); b:SetAttribute("spell", e.name)
         b:SetAttribute("unit", e.selfCast and "player" or e.target)
