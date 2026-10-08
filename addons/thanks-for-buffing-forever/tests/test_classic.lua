@@ -37,7 +37,15 @@ function GetTime() return now end
 function GetBuildInfo() return "2.5.5", "build", "date", 20506 end
 function InCombatLockdown() return false end
 function IsInGroup() return grouped end
-function UnitGUID(unit) return unit == "player" and "Player-Self" or nil end
+function UnitExists(unit) return unit == "player" or unit == "party1" end
+function UnitGUID(unit)
+    if unit == "player" then return "Player-Self" end
+    if unit == "party1" then return "Player-Buff" end
+end
+function UnitFullName(unit)
+    if unit == "party1" then return "Helpful", "TestRealm" end
+    return "Self", "TestRealm"
+end
 function CombatLogGetCurrentEventInfo() return table.unpack(combatEvent) end
 function wipe(tableValue)
     for key in pairs(tableValue) do tableValue[key] = nil end
@@ -71,8 +79,15 @@ now = now + 600
 eventHandler(nil, "COMBAT_LOG_EVENT_UNFILTERED")
 assert(#scheduled == 1, "group buffs should not schedule whispers")
 
+combatEvent[4] = "Player-Outside"
+combatEvent[5] = "Outside-TestRealm"
+eventHandler(nil, "COMBAT_LOG_EVENT_UNFILTERED")
+assert(#scheduled == 2, "an external player should still be thanked while the recipient is grouped")
+scheduled[2].callback()
+assert(#whispers == 2 and whispers[2].target == "Outside-TestRealm", "the external grouped-state caster should receive one whisper")
+
 combatEvent[2] = "SPELL_DAMAGE"
 eventHandler(nil, "COMBAT_LOG_EVENT_UNFILTERED")
-assert(#scheduled == 1, "non-buff combat events should be ignored")
+assert(#scheduled == 2, "non-buff combat events should be ignored")
 
 print("Classic behavior tests passed")
