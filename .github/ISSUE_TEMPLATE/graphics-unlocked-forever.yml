@@ -1,0 +1,57 @@
+name: Graphics Unlocked issue
+description: Report a problem with Graphics Unlocked: Forever
+title: "[Graphics Unlocked] "
+labels:
+  - "addon: graphics-unlocked"
+body:
+  - type: input
+    id: addon-version
+    attributes:
+      label: Add-on version
+    validations:
+      required: true
+  - type: input
+    id: game-version
+    attributes:
+      label: WoW: Forever version and build
+    validations:
+      required: true
+  - type: dropdown
+    id: profile
+    attributes:
+      label: Profile or individual control
+      options:
+        - Potato
+        - Low
+        - Medium
+        - High
+        - UFO
+        - Individual control
+        - None / opening the interface
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: other-addons
+    attributes:
+      label: Other relevant add-ons
+  - type: textarea
+    id: errors
+    attributes:
+      label: Redacted error text
+      description: Remove account names, character names, local paths, tokens and other private information.

@@ -1,0 +1,39 @@
+Graphics Unlocked: Forever changelog
+
+1.0.0
+- First public release for WoW: Forever 1.60.1 (interface 16001).
+- Added 22 individually adjustable graphics controls with current-value display and plain-language performance guidance.
+- Added Potato, Low, Medium, High and UFO whole-system profiles plus matching per-setting shortcuts.
+- Added safe capture and restoration of the player's original values.
+- Added optional reapplication on login and zone changes, disabled until explicitly selected.
+- Added the custom Elwynn-inspired minimap icon, movable minimap launcher, AddOn Compartment entry and native Options category.
+- Confirmed in the Forever beta that the add-on loads, controls apply, restoration works and chosen values persist after login.
+- Corrected the automatic-reapplication label so it remains inside the main window.
+
+0.1.0-rc2
+- Kept the automatic reapplication label fully inside the main window.
+- Separated the bottom status message from the reapplication control.
+- Confirmed in the Forever beta that settings persist across login when reapplication is enabled.
+
+0.1.0-rc1
+- Confirmed the final public name as Graphics Unlocked: Forever.
+- Prepared the first complete in-game testing candidate for WoW: Forever.
+- Included 22 individual controls, five whole-system profiles and per-setting profile shortcuts.
+- Included the custom Elwynn-inspired icon, minimap launcher and native Options entry.
+
+0.1.0-dev
+- Created the data-driven slider and toggle framework.
+- Added safe CVar reads and writes with error handling.
+- Added per-setting capture and restoration of the player's original values.
+- Added a movable standard 32-pixel minimap button.
+- Added the /guf and /graphicsunlocked commands.
+- Added the first three ground-detail sliders from the owner's examples.
+- Added Enhanced and Return to normal ground-detail presets while keeping personal original-value restoration separate.
+- Added every requested advanced candidate: distant-detail, horizon, sharpening, dynamic-resolution, ambient-occlusion, HDR, shadow-cascade, camera and weather controls.
+- Added conservative ranges and in-game warnings for settings that are hardware-dependent, experimental or overwritten by standard graphics options.
+- Reviewed Enhanced Graphics Forever 2.0.0 as an MIT-licensed feature benchmark.
+- Added render scale, reflection mode, a broader fidelity preset, native Options/AddOn Compartment entry points and opt-in reapplication.
+- Kept fresh installs passive and retained captured personal-value restoration instead of silently applying maximum values.
+- Added one-click Potato, Low, Medium, High and UFO hardware profiles; generic profiles deliberately leave HDR and camera preference untouched.
+- Added colour-coded per-setting P/L/M/H/UFO shortcuts and a supported native Options → AddOns entry point.
+- Avoided unsupported direct injection into Blizzard's Graphics canvas; the native category links to the complete quirky control panel.

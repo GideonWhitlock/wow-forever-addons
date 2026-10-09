@@ -1,0 +1,7 @@
+Graphics Unlocked: Forever artwork
+
+The forest-path icon was generated specifically for this project on 9 October 2026 using OpenAI's built-in image generation tool.
+
+Creative direction: a highly realistic, golden-hour fantasy forest inspired by the welcoming visual language of Elwynn Forest, with lush grass, detailed trees, flowers, a winding path and a signpost. It is an original composition and does not copy an existing screenshot or add-on logo.
+
+The source project image is stored at development/artwork/GraphicsUnlockedForever-icon.png. The add-on uses the 64×64 TGA derivative at Media/Icon.tga.

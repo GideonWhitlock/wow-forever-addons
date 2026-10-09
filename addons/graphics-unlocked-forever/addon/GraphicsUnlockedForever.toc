@@ -1,0 +1,13 @@
+## Interface: 16001
+## Title: Graphics Unlocked: Forever
+## Author: Gideon Whitlock
+## Notes: Adds clearly explained controls for supported graphics console variables not exposed by the standard options.
+## Version: 1.0.0
+## SavedVariables: GraphicsUnlockedForeverDB
+## IconTexture: Interface\AddOns\GraphicsUnlockedForever\Media\Icon.tga
+## AddonCompartmentFunc: GraphicsUnlockedForever_OnAddonCompartmentClick
+
+Core.lua
+Catalog.lua
+UI.lua
+GraphicsUnlockedForever.lua
