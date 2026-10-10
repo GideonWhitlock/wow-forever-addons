@@ -2,7 +2,7 @@
 
 Graphics Unlocked: Forever exposes useful WoW: Forever graphics controls that are not available in the standard graphics panel. It presents them as clear sliders and toggles with plain-language explanations, five hardware profiles and safe restoration of the player's original values.
 
-The public release is version **1.0.0** for WoW: Forever **1.60.1** (interface **16001**). Install the `GraphicsUnlockedForever` folder in `_classic_beta_/Interface/AddOns/`, enable the add-on, and use `/guf` or its minimap button to open the controls.
+The public release is version **1.0.1** for WoW: Forever **1.60.1** (interface **16001**). Install the `GraphicsUnlockedForever` folder in `_classic_beta_/Interface/AddOns/`, enable the add-on, and use `/guf` or its minimap button to open the controls.
 
 ## Features
 

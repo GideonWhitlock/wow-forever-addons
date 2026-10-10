@@ -1,5 +1,11 @@
 # Graphics Unlocked: Forever changelog
 
+## 1.0.1
+
+- Fixed sliders being interrupted after a click because `CVAR_UPDATE` rebuilt the controls during an active drag.
+- Slider handles now track continuous mouse movement until the button is released.
+- Confirmed in WoW: Forever 1.60.1.70338 through owner testing.
+
 ## 1.0.0
 
 - First public release for WoW: Forever 1.60.1 (interface 16001).

@@ -84,7 +84,7 @@ frame:SetScript("OnEvent", function(_, event, argument)
             C_Timer.After(1.5, function() EGF.ApplySavedValues() end)
         end
         if EGF.options and EGF.options:IsShown() then EGF.RefreshOptions() end
-    elseif event == "CVAR_UPDATE" and EGF.options and EGF.options:IsShown() then
+    elseif event == "CVAR_UPDATE" and EGF.options and EGF.options:IsShown() and not EGF.options.sliderDragging then
         EGF.RefreshOptions()
     end
 end)

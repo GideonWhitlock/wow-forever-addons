@@ -1,5 +1,10 @@
 Graphics Unlocked: Forever changelog
 
+1.0.1
+- Keep slider frames alive while they are being dragged so continuous mouse movement works correctly.
+- Ignore CVAR_UPDATE-driven panel rebuilds during an active slider interaction.
+- Confirmed the fix in WoW: Forever 1.60.1.70338 through owner testing.
+
 1.0.0
 - First public release for WoW: Forever 1.60.1 (interface 16001).
 - Added 22 individually adjustable graphics controls with current-value display and plain-language performance guidance.

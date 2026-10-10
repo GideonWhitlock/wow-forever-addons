@@ -132,6 +132,14 @@ function EGF.RefreshOptions()
                 local count = decimals(definition.step)
                 local valueText = label(row, value == nil and "Unavailable" or string.format("%." .. count .. "f", value), 574, -3, "GameFontHighlight")
                 valueText:SetWidth(42)
+                slider:SetScript("OnMouseDown", function()
+                    panel.sliderDragging = true
+                end)
+                local function stopSliderDrag()
+                    panel.sliderDragging = false
+                end
+                slider:SetScript("OnMouseUp", stopSliderDrag)
+                slider:SetScript("OnHide", stopSliderDrag)
                 slider:SetScript("OnValueChanged", function(_, newValue)
                     valueText:SetText(string.format("%." .. count .. "f", newValue))
                     local ok, message = EGF.SetValue(definition, newValue)
