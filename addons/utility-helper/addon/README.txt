@@ -1,6 +1,12 @@
 # Utility Helper: Forever
 
-Version **0.1.21** for **WoW: Forever beta 1.60.1**, interface **16001**.
+Version **0.1.22** for **WoW: Forever beta 1.60.1**, interface **16001**.
+
+**A living hunter pet that despawns after being left on Stay now offers Call
+Pet instead of Revive Pet.** Forever can report both spells as usable after
+this kind of despawn, so Utility Helper now gives Call Pet priority. Call Pet
+is shown as a clickable out-of-combat utility; a confirmed dead pet still
+offers Revive Pet.
 
 **Revive Pet now remains visible and clickable outside combat while the pet is
 dead.** It uses the same fixed secure button in combat, and its keybind follows
@@ -9,9 +15,9 @@ the outside-combat button and releases its keybind.
 
 **Revive Pet now works for a distant pet corpse.** The helper no longer treats
 Revive Pet as a ranged cast against the corpse or explicitly targets a dead pet
-unit. If Forever temporarily removes the pet unit token, public Revive Pet
-usability can still identify a revivable pet without confusing a dismissed or
-absent pet with a dead one.
+unit. If Forever temporarily removes the pet unit token, the public usability
+of both Call Pet and Revive Pet distinguishes a revivable corpse from a living
+pet that can be called.
 
 Bandages remain clickable outside combat when the client exposes readable
 health and confirms the character is at or below the health threshold. On the

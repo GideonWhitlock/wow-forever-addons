@@ -347,7 +347,17 @@ function U.Condition(e, unit)
         if choice == true then return false, "A mutually exclusive buff is already active" end
         if choice == nil then return nil, "Buff choice information restricted" end
     end
-    if e.rule == "petmissing" then return U.Public(UnitExists, "pet") == false, "Call your pet" end
+    if e.rule == "petmissing" then
+        local exists = U.Public(UnitExists, "pet")
+        if exists == true then return false, "Your pet is already present" end
+        if exists ~= false then return nil, "Pet status unavailable" end
+        -- Forever can report Revive Pet as usable after a living pet despawns.
+        -- Prefer Call Pet whenever its own public usability says that the
+        -- stored pet can be summoned; this also keeps Revive Pet suppressed.
+        local callable = U.Public(C_Spell and C_Spell.IsSpellUsable, e.spellID)
+        if callable == nil then return nil, "Pet status unavailable" end
+        return callable, callable and "Call your pet" or "No callable pet"
+    end
     if e.rule == "petdead" then
         local exists = U.Public(UnitExists, "pet")
         if exists == true then
@@ -357,11 +367,13 @@ function U.Condition(e, unit)
         end
         if exists == false then
             -- Forever can drop the pet unit token while retaining a revivable
-            -- corpse. Spell usability is public and distinguishes that state
-            -- from an absent or dismissed pet.
-            local usable = U.Public(C_Spell and C_Spell.IsSpellUsable, e.spellID)
-            if usable == nil then return nil, "Pet status unavailable" end
-            return usable, usable and "Revive your pet" or "No dead pet"
+            -- corpse, but it can also report Revive Pet as usable after a
+            -- living pet despawns. Call Pet wins when both spells are usable.
+            local callable = U.Public(C_Spell and C_Spell.IsSpellUsable, 883)
+            local revivable = U.Public(C_Spell and C_Spell.IsSpellUsable, e.spellID)
+            if callable == nil or revivable == nil then return nil, "Pet status unavailable" end
+            local dead = not callable and revivable
+            return dead, dead and "Revive your pet" or "No dead pet"
         end
         return nil, "Pet status unavailable"
     end

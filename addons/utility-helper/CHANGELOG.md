@@ -1,5 +1,15 @@
 # Utility Helper: Forever changelog
 
+## 0.1.22
+
+- Fixed a living hunter pet that despawns after being left on Stay incorrectly
+  showing Revive Pet.
+- Call Pet now takes priority when the client reports both Call Pet and Revive
+  Pet as usable.
+- Call Pet is now shown as a clickable out-of-combat utility when the living
+  pet is absent.
+- Tokenless and distant dead pets continue to offer Revive Pet.
+
 ## 0.1.21
 
 - Revive Pet now remains visible and clickable outside combat while the pet is

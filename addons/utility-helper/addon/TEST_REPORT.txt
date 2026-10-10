@@ -1,7 +1,19 @@
-# Utility Helper: Forever 0.1.18 — verification record
+# Utility Helper: Forever 0.1.22 — verification record
 
-Updated: 7 October 2026. Target: WoW: Forever beta, interface 16001.
-Local installed client metadata: 1.60.1.70245.
+Updated: 10 October 2026. Target: WoW: Forever beta, interface 16001.
+Local installed client metadata: 1.60.1.70338.
+
+## 0.1.22 despawned hunter pet routing
+
+When the pet unit disappears, Utility Helper now checks the public usability of
+both Call Pet and Revive Pet. If a living pet despawned after being left on
+Stay and the client makes both spells look usable, Call Pet takes priority and
+Revive Pet remains hidden. A tokenless dead pet still offers Revive Pet when
+Call Pet is unavailable. Call Pet is now a true out-of-combat action: it is
+shown, mouse-enabled and bound only while publicly usable, and its input is
+removed in combat. The focused regression reproduces the reported dual-usable
+state, verifies Call Pet wins, and retains all existing dead/ghost/distant-pet
+and bandage checks. Lua 5.1 syntax and the full scenario suite pass.
 
 ## 0.1.21 Revive Pet dual-state display
 

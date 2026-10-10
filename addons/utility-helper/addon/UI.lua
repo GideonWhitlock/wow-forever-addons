@@ -132,6 +132,7 @@ function U.Tooltip(b)
     tip:AddLine(e.dualState and "Revive Pet appears for a dead pet both outside combat and during combat."
         or e.selfBuff and "Learned maintenance buffs appear when their buff family is missing and keep a fixed combat button."
         or e.tracking and "Learned resource trackers appear outside combat when no supported resource tracker is active."
+        or e.rule == "petmissing" and "Call Pet appears outside combat when your living pet is absent."
         or e.restOnly and "Bandages appear only outside combat at the health threshold. Private-health alerts are reminders; use your normal action bar."
         or "This button and its keybind work in combat. Bright borders indicate a relevant utility.", 0.7, 0.7, 0.7, true)
     tip:Show()
