@@ -1,8 +1,8 @@
-# Test notes — 1.0.1
+# Test notes — 1.0.2
 
 ## Release acceptance
 
-The owner explicitly accepted the installed `0.1.3-alpha` behaviour for launch on 11 October 2026. Version `1.0.1` adds matching green selected/red unselected styling to the Weekdays and Weekends selector; reminder logic, Local/Server behaviour and the circular gold icon remain unchanged. The installed client was WoW: Forever `1.60.1.70338`, interface `16001`.
+The owner explicitly accepted the installed baseline for launch on 11 October 2026. Version `1.0.2` additionally suppresses reminders inside dungeons, raids, battlegrounds and arenas while leaving normal grouped open-world play unchanged. The installed client was WoW: Forever `1.60.1.70338`, interface `16001`.
 
 Unchecked scenarios below remain useful regression coverage and are not silently represented as observed.
 

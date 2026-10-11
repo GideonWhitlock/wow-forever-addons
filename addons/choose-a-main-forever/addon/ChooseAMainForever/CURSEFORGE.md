@@ -4,7 +4,7 @@
 
 - Title: **Choose a Main: Forever**
 - Slug: `choose-a-main-forever`
-- Prepared version: `1.0.1`
+- Prepared version: `1.0.2`
 - Game: World of Warcraft
 - Flavour: Forever
 - Game version: `1.60.1`

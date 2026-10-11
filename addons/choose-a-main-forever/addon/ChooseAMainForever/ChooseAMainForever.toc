@@ -2,7 +2,7 @@
 ## Title: Choose a Main: Forever
 ## Notes: A thoughtful, private class and specialisation recommendation for WoW: Forever.
 ## Author: Gideon
-## Version: 1.0.1
+## Version: 1.0.2
 ## SavedVariables: ChooseAMainForeverDB
 ## IconTexture: Interface\AddOns\ChooseAMainForever\Media\ChooseAMainForeverIcon.tga
 ## X-Category: Miscellaneous

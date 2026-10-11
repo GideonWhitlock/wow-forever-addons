@@ -14,7 +14,7 @@ The add-on can say “this is the thing you asked me to remember.” It must nev
 - Session and current-day logged-in totals, presented as neutral information.
 - One to five configurable snooze choices.
 - A warm reminder card, optional gentle sound, and opt-in local text-to-speech.
-- Delivery deferred during combat and cinematics. A visible card is hidden and re-queued if either starts.
+- Delivery deferred during combat, cinematics, dungeons, raids, battlegrounds and arenas. A visible card is hidden and re-queued if one starts; ordinary open-world parties remain allowed.
 - Movable minimap button, slash-command recovery path, local SavedVariables, and a rolling settings backup.
 
 ## Deliberate limits

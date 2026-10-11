@@ -1,4 +1,4 @@
-# Automated test report — 1.0.1
+# Automated test report — 1.0.2
 
 Run date: 11 October 2026
 
@@ -34,5 +34,5 @@ The UI smoke test constructs every screen, selects the ten-choice question, navi
 Not covered by this run: rendering inside the Forever client, taint/protected-action observation, live Escape behaviour, drag/scale behaviour, minimap artwork placement, SavedVariables reload persistence and genuine gameplay screenshots.
 
 - Live client check, 11 October 2026: the recommendation model was verified after /reload; increasing the window scale keeps the complete head and Naxxramas armour visible.
-- Version 1.0.1 anchors the Personal Notes field to the restrictions panel above the footer and lets it resize with the panel, removing the fixed-position overlap shown in the live client.
+- Version 1.0.2 anchors the Personal Notes field above the footer and compacts the role and class rows so the final class choice cannot enter the notes area at supported window scales.
 

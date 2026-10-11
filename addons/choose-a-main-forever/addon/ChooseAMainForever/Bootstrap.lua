@@ -2,7 +2,7 @@ local ADDON_NAME, NS = ...
 
 NS.name = ADDON_NAME or "ChooseAMainForever"
 NS.title = "Choose a Main: Forever"
-NS.version = "1.0.1"
+NS.version = "1.0.2"
 NS.schemaVersion = 2
 NS.scoringVersion = "1.0.0-beta.1"
 NS.profileVersion = "forever-1.60.1.70338-beta-2026-10-11"

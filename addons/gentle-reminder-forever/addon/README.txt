@@ -1,4 +1,4 @@
-Gentle Reminder: Forever 1.0.1
+Gentle Reminder: Forever 1.0.2
 
 Open settings with /grf or the pocket-watch minimap icon.
 Add a one-off reminder with /grf remind 20m Your reminder text

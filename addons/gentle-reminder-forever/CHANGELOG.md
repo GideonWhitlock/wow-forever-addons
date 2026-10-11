@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.2 — 2026-10-11
+
+- Suppressed reminder cards, sound and speech automatically inside dungeons, raids, battlegrounds and arenas.
+- Kept ordinary open-world parties eligible for reminders.
+- Deferred any visible reminder on entry and resumed delivery after leaving the activity.
+- Coalesced recurring reminders while suppressed so a long activity cannot create a backlog of repeated break cards.
+
 ## 1.0.1 — 2026-10-11
 
 - Made the active Weekdays or Weekends profile use the same green selected state as the Local/Server time selector.

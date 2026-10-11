@@ -33,7 +33,7 @@ Forever is in beta. Capability ratings are a documented expert model based on of
 
 ## Development status
 
-Version `1.0.1` passed the automated engine, syntax and mocked-interface checks. The owner reviewed the interface in the Forever client and authorised publication on 11 October 2026. Any remaining live edge cases are listed in `KNOWN-LIMITATIONS.md`.
+Version `1.0.2` passed the automated engine, syntax and mocked-interface checks. The owner reviewed the interface in the Forever client; this revision compacts the lower restrictions layout to keep the final class row clear of Personal Notes at supported window scales. Any remaining live edge cases are listed in `KNOWN-LIMITATIONS.md`.
 
 Code is MIT licensed. The generated compass artwork is original project artwork; World of Warcraft and its game assets remain the property of Blizzard Entertainment.
 

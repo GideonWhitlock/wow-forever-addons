@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.2 — 11 October 2026
+
+- Compacted the lower Hard Restrictions layout so the final class row and Personal Notes field remain separate at every supported window scale.
+
 ## 1.0.1 — 11 October 2026
 
 - Anchored the Personal Notes field above the footer so it no longer stretches across or obscures the navigation buttons at any supported window scale.

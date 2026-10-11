@@ -1,7 +1,7 @@
 local addonName, addon = ...
 local L = addon.L
 
-addon.VERSION = "1.0.1"
+addon.VERSION = "1.0.2"
 addon.SCHEMA = 2
 addon.MIN_INTERVAL = 5
 addon.MAX_INTERVAL = 360
@@ -363,6 +363,12 @@ end
 function addon.IsQuietState()
     if InCombatLockdown and InCombatLockdown() then return false, "combat" end
     if C_Cinematic and C_Cinematic.InCinematic and C_Cinematic.InCinematic() then return false, "cinematic" end
+    if IsInInstance then
+        local inside, instanceType = IsInInstance()
+        if inside and (instanceType == "party" or instanceType == "raid" or instanceType == "pvp" or instanceType == "arena") then
+            return false, instanceType
+        end
+    end
     return true
 end
 
@@ -414,6 +420,11 @@ end
 
 function addon.QueueReminder(kind, text, source)
     addon.pending = addon.pending or {}
+    if kind == "recurring" then
+        for _, queued in ipairs(addon.pending) do
+            if queued.kind == "recurring" then return end
+        end
+    end
     addon.pending[#addon.pending + 1] = {
         kind = kind,
         text = addon.SanitizeText(text, L.DEFAULT_MESSAGE),
@@ -421,6 +432,26 @@ function addon.QueueReminder(kind, text, source)
         queuedAt = time(),
     }
     addon.TryDeliver()
+end
+
+function addon.DeferCurrentReminder()
+    local quiet = addon.IsQuietState()
+    if quiet or not addon.currentReminder then return end
+    addon.pending = addon.pending or {}
+    tinsert(addon.pending, 1, addon.currentReminder)
+    addon.currentReminder = nil
+    addon.deferred = true
+    if addon.HideReminder then addon.HideReminder() end
+    if addon.RefreshUI then addon.RefreshUI() end
+end
+
+function addon.RefreshQuietState()
+    local quiet = addon.IsQuietState()
+    if quiet then
+        C_Timer.After(0.5, addon.TryDeliver)
+    else
+        addon.DeferCurrentReminder()
+    end
 end
 
 local function speak(text)
@@ -617,6 +648,8 @@ events:RegisterEvent("PLAYER_REGEN_ENABLED")
 events:RegisterEvent("PLAYER_REGEN_DISABLED")
 events:RegisterEvent("CINEMATIC_START")
 events:RegisterEvent("CINEMATIC_STOP")
+events:RegisterEvent("PLAYER_ENTERING_WORLD")
+events:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 events:SetScript("OnEvent", function(_, event, name)
     if event == "ADDON_LOADED" and name == addonName then
         if type(GentleReminderForeverDB) == "table" and
@@ -649,16 +682,11 @@ events:SetScript("OnEvent", function(_, event, name)
             addon.db.recurringRemaining = max(1, addon.db.recurringDueAt - GetTime())
             addon.db.recurringDueAt = nil
         end
-    elseif event == "PLAYER_REGEN_DISABLED" or event == "CINEMATIC_START" then
-        if addon.currentReminder then
-            addon.pending = addon.pending or {}
-            tinsert(addon.pending, 1, addon.currentReminder)
-            addon.currentReminder = nil
-            addon.deferred = true
-            if addon.HideReminder then addon.HideReminder() end
-        end
+    elseif event == "PLAYER_REGEN_DISABLED" or event == "CINEMATIC_START" or
+            event == "PLAYER_ENTERING_WORLD" or event == "ZONE_CHANGED_NEW_AREA" then
+        addon.RefreshQuietState()
     elseif event == "PLAYER_REGEN_ENABLED" or event == "CINEMATIC_STOP" then
-        C_Timer.After(0.5, addon.TryDeliver)
+        addon.RefreshQuietState()
     end
 end)
 

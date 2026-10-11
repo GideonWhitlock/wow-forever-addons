@@ -2,7 +2,7 @@
 ## Title: Gentle Reminder: Forever
 ## Notes: Warm, private break and real-life reminders for WoW: Forever.
 ## Author: Gideon Whitlock
-## Version: 1.0.1
+## Version: 1.0.2
 ## SavedVariables: GentleReminderForeverDB, GentleReminderForeverBackupDB
 ## IconTexture: Interface\AddOns\GentleReminderForever\Media\Icon.tga
 ## X-Category: Miscellaneous
