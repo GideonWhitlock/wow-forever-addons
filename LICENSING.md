@@ -11,7 +11,10 @@ This repository contains several separate add-ons. It does not apply one reposit
 - Minimap Button: Forever: MIT for source code. Promotional artwork reuse rights require separate confirmation.
 - Misspelled: Forever: GPL-2.0-or-later; preserve the bundled licence and upstream attribution.
 - Totem Tooltip: Forever: all rights reserved unless the owner later adds a public licence.
+- Thanks for Buffing: Forever: all rights reserved; preserve its included licence notice.
 - Graphics Unlocked: Forever: MIT; preserve its licence and artwork-attribution files.
+- Gentle Reminder: Forever: MIT; preserve its licence and artwork-attribution files.
 - Addon Health Manager: Forever: MIT; preserve its licence and artwork-attribution files.
+- Objective Hider for RestedXP — Forever: MIT; preserve its licence and original-artwork record. RestedXP is referenced only to describe optional compatibility; no RestedXP code, guides, paid content, artwork or branding assets are included.
 
 World of Warcraft names, icons and other game assets remain the property of their respective owners. Runtime references to client assets do not place those assets under an add-on licence.
