@@ -1,7 +1,7 @@
 local _, addon = ...
 
 addon.L = {
-    ADDON_NAME = "Objective Hider for RestedXP — Forever",
+    ADDON_NAME = "Objective Hider for RestedXP: Forever",
     SHORT_NAME = "Objective Hider",
     SUMMARY = "Keep Blizzard's objective tracker out of RestedXP's screen space.",
     INDEPENDENCE = "Independent compatibility utility. Not affiliated with, endorsed by, or supported by RestedXP.",

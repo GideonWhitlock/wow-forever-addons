@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1 — 2026-10-11
+
+- Made the active Weekdays or Weekends profile use the same green selected state as the Local/Server time selector.
+- Kept the inactive profile red and both profile buttons fully clickable.
+
 ## 1.0.0 — 2026-10-11
 
 - Promoted the owner-accepted `0.1.3-alpha` candidate to the first public release without changing its behaviour.

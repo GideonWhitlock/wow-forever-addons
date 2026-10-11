@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1 — 2026-10-11
+
+- Standardised the public and in-game title to **Objective Hider for RestedXP: Forever**.
+- No gameplay behaviour or SavedVariables changed.
+
 ## 1.0.0 — 2026-10-11
 
 - Promoted the owner-accepted Forever 1.60.1 build to the first public release.

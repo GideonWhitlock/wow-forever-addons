@@ -32,7 +32,7 @@ def syntax_checks() -> None:
 def toc_and_package_checks() -> None:
     toc = (ADDON / "RXPObjectiveHiderForever.toc").read_text(encoding="utf-8")
     check("## Interface: 16001" in toc, "Forever interface must be 16001")
-    check("## Version: 1.0.0" in toc, "Unexpected release version")
+    check("## Version: 1.0.1" in toc, "Unexpected release version")
     check("RXPObjectiveHiderForeverDB, RXPObjectiveHiderForeverBackupDB" in toc, "Safe variables/backup missing")
     check("OptionalDeps: RXPGuides, Questie" in toc, "Compatibility dependencies must remain optional")
     expected = ["Locale\\enUS.lua", "LegacyCleanup.lua", "Core.lua", "UI.lua", "Minimap.lua"]

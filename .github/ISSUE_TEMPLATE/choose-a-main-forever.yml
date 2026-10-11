@@ -1,0 +1,51 @@
+name: "Choose a Main: Forever issue"
+description: "Report a reproducible problem or recommendation concern with Choose a Main: Forever."
+title: "[Choose a Main: Forever] "
+labels: [bug]
+body:
+  - type: input
+    id: build
+    attributes:
+      label: WoW Forever version and build
+      placeholder: 1.60.1.70338
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Choose a Main version
+      placeholder: 1.0.0
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area affected
+      options:
+        - Questionnaire or navigation
+        - Class experience or restrictions
+        - Gameplay Match recommendation
+        - Long-Term Main recommendation
+        - Explanation or confidence label
+        - Saved settings or minimap button
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Describe the answers or settings needed to reproduce the result. Remove character, realm and account identifiers.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected and actual behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: error
+    attributes:
+      label: Redacted Lua error or supporting detail
+      description: Remove character, realm and account identifiers.

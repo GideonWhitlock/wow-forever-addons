@@ -1,0 +1,23 @@
+## Interface: 16001
+## Title: Choose a Main: Forever
+## Notes: A thoughtful, private class and specialisation recommendation for WoW: Forever.
+## Author: Gideon
+## Version: 1.0.1
+## SavedVariables: ChooseAMainForeverDB
+## IconTexture: Interface\AddOns\ChooseAMainForever\Media\ChooseAMainForeverIcon.tga
+## X-Category: Miscellaneous
+## X-License: MIT
+## X-Website: https://github.com/GideonWhitlock/wow-forever-addons
+
+Bootstrap.lua
+Data\Questions.lua
+Data\Classes.lua
+Data\NaxxramasSets.lua
+Engine\Profile.lua
+Engine\Restrictions.lua
+Engine\Scoring.lua
+Engine\Explanations.lua
+Storage.lua
+UI.lua
+Minimap.lua
+Main.lua

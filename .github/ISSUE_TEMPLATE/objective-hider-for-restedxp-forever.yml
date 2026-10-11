@@ -1,6 +1,6 @@
-name: Objective Hider bug
-description: Report a WoW Forever compatibility or behavior problem
-title: "[Objective Hider] "
+name: "Objective Hider for RestedXP: Forever issue"
+description: "Report a reproducible problem with Objective Hider for RestedXP: Forever."
+title: "[Objective Hider for RestedXP: Forever] "
 labels: [bug]
 body:
   - type: input

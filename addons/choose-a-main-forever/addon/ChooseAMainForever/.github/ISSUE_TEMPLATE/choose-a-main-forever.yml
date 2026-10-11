@@ -1,0 +1,61 @@
+name: Choose a Main: Forever report
+description: Report a recommendation, interface or compatibility problem.
+title: "[Choose a Main: Forever] "
+labels: ["choose-a-main-forever"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for helping improve Choose a Main: Forever. Do not include account, character, realm or private note text.
+  - type: input
+    id: addon-version
+    attributes:
+      label: Choose a Main: Forever version
+      placeholder: 0.9.0-rc1
+    validations:
+      required: true
+  - type: input
+    id: game-build
+    attributes:
+      label: WoW: Forever version and build
+      placeholder: 1.60.1.70338
+    validations:
+      required: true
+  - type: dropdown
+    id: problem
+    attributes:
+      label: Problem type
+      options:
+        - Recommendation seems inconsistent with my structured answers
+        - A hard restriction was not respected
+        - Explanation does not match the displayed result
+        - Interface or SavedVariables problem
+        - Lua error
+        - Class profile may be outdated
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps and relevant structured answers
+      description: Describe only the answers or restrictions needed to reproduce the problem. Omit personal notes.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour and redacted error
+    validations:
+      required: true
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy check
+      options:
+        - label: I removed character, realm, account and personal-note details.
+          required: true

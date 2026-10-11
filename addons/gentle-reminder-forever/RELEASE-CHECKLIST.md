@@ -8,7 +8,7 @@ This checklist is intentionally gated. Do not complete a later phase merely beca
 - Record the exact build, character/UI scale matrix, test date and failures.
 - Obtain owner acceptance for default wording, intervals, card prominence, dismissal wording and overdue one-off behaviour.
 - Resolve all blocker/major defects and re-run automated validation.
-- Release version set to `1.0.0` after explicit owner launch acceptance on 11 October 2026.
+- Release version set to `1.0.1` after explicit owner launch acceptance on 11 October 2026.
 - Preserve a rollback copy of the accepted add-on folder and release ZIP.
 
 ## 2. Public source and CurseForge

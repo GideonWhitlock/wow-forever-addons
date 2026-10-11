@@ -1,4 +1,4 @@
-# Objective Hider for RestedXP — Forever
+# Objective Hider for RestedXP: Forever
 
 Reclaim the space beside your WoW: Forever character: this focused utility keeps Blizzard's **All Objectives** tracker hidden while you use the RestedXP guide window.
 

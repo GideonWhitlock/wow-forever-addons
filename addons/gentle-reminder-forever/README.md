@@ -2,7 +2,7 @@
 
 Warm, private reminders for **World of Warcraft: Forever**. Remember a break, a glass of water, a stretch, bedtime, an appointment, food, medication, or a household task—without being told what to do.
 
-> **Release status:** version `1.0.0`, owner-accepted on WoW: Forever `1.60.1.70338` / interface `16001`. Automated validation passes. Public GitHub and CurseForge publication are handled separately from this prepared source package.
+> **Release status:** version `1.0.1`, owner-accepted on WoW: Forever `1.60.1.70338` / interface `16001`. Automated validation passes. Public GitHub and CurseForge publication are handled separately from this prepared source package.
 
 ## What makes it different
 
@@ -53,7 +53,7 @@ The add-on never uses party, raid, guild, whisper, public chat, add-on communica
 
 ## Testing status
 
-See [TESTING.md](addon/TESTING.md). Automated syntax, package, metadata, privacy-surface, icon and behavioural-model checks are required before every package. The owner accepted the installed `0.1.3-alpha` behaviour as the `1.0.0` release baseline; scenarios not directly observed remain recorded honestly in the test notes.
+See [TESTING.md](addon/TESTING.md). Automated syntax, package, metadata, privacy-surface, icon and behavioural-model checks are required before every package. The owner accepted the installed `0.1.3-alpha` behaviour as the `1.0.1` release baseline; scenarios not directly observed remain recorded honestly in the test notes.
 
 ## Source and support
 

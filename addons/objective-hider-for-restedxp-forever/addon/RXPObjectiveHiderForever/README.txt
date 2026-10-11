@@ -1,4 +1,4 @@
-Objective Hider for RestedXP — Forever 1.0.0
+Objective Hider for RestedXP: Forever 1.0.0
 
 Independent compatibility utility. Not affiliated with, endorsed by, or supported by RestedXP.
 

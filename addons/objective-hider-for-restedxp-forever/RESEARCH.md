@@ -32,7 +32,7 @@ Blizzard may call `Show()` during quest acceptance, watch-list changes, world en
 
 ## Name assessment
 
-The working title **RestedXP Objective Hider: Forever** leads with a third-party mark and can read like an official RestedXP product. The closest clearer alternative containing both required terms is **Objective Hider for RestedXP — Forever**. “For RestedXP” is descriptive compatibility wording, the original emblem contains no RestedXP artwork, and every public description carries an independence disclaimer. CurseForge moderation still has final say, and this assessment is not legal advice.
+The working title **RestedXP Objective Hider: Forever** leads with a third-party mark and can read like an official RestedXP product. The closest clearer alternative containing both required terms is **Objective Hider for RestedXP: Forever**. “For RestedXP” is descriptive compatibility wording, the original emblem contains no RestedXP artwork, and every public description carries an independence disclaimer. CurseForge moderation still has final say, and this assessment is not legal advice.
 
 ## Sources checked
 

@@ -1,6 +1,6 @@
-# Objective Hider for RestedXP — Forever
+# Objective Hider for RestedXP: Forever
 
-Objective Hider for RestedXP — Forever is a focused WoW: Forever 1.60.x utility that keeps Blizzard's **All Objectives** tracker out of the screen space used by a RestedXP guide window. It does not replace, modify or redistribute RestedXP.
+Objective Hider for RestedXP: Forever is a focused WoW: Forever 1.60.x utility that keeps Blizzard's **All Objectives** tracker out of the screen space used by a RestedXP guide window. It does not replace, modify or redistribute RestedXP.
 
 > Independent compatibility utility. Not affiliated with, endorsed by, or supported by RestedXP.
 

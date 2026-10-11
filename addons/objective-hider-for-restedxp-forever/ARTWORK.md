@@ -9,3 +9,5 @@ Final generation prompt:
 The emblem does not use RestedXP or Blizzard logos, characters, artwork or other brand assets. `artwork/project-logo.png` is the high-resolution source for the project page. `addon/RXPObjectiveHiderForever/Media/Icon.tga` is the in-game texture.
 
 Automated checks cover dimensions, color mode, transparent corners, circular-alpha symmetry, subject centering and small-size contrast. The owner accepted the installed in-game presentation for release.
+
+The CurseForge project image uses a wide safe margin so the complete circular emblem remains visible in square and circular thumbnail crops.

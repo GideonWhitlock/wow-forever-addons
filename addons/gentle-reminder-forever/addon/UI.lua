@@ -149,8 +149,10 @@ function addon.SyncPanel()
     if not panel then return end
     addon.syncing = true
     local profile = addon.db[panel.profileKey]
-    panel.weekday:SetEnabled(panel.profileKey ~= "weekday")
-    panel.weekend:SetEnabled(panel.profileKey ~= "weekend")
+    panel.weekday:SetEnabled(true)
+    panel.weekend:SetEnabled(true)
+    setBasisActive(panel.weekday, panel.profileKey == "weekday")
+    setBasisActive(panel.weekend, panel.profileKey == "weekend")
     panel.profileEnabled:SetChecked(profile.enabled)
     panel.interval:SetText(tostring(profile.intervalMinutes))
     panel.message:SetText(profile.message)
@@ -252,9 +254,9 @@ local function buildPanel()
     panel.nextValue = makeText(panel, "GameFontHighlight", "—", "LEFT", panel.todayValue, "RIGHT", 125, 0)
     makeText(panel, "GameFontNormal", L.LABEL_NEXT .. ":", "RIGHT", panel.nextValue, "LEFT", -8, 0)
 
-    panel.weekday = makeButton(panel, L.PROFILE_WEEKDAY, 120, function() addon.SelectProfile("weekday") end)
+    panel.weekday = makeBasisButton(panel, L.PROFILE_WEEKDAY, 120, function() addon.SelectProfile("weekday") end)
     panel.weekday:SetPoint("TOPLEFT", 24, -112)
-    panel.weekend = makeButton(panel, L.PROFILE_WEEKEND, 120, function() addon.SelectProfile("weekend") end)
+    panel.weekend = makeBasisButton(panel, L.PROFILE_WEEKEND, 120, function() addon.SelectProfile("weekend") end)
     panel.weekend:SetPoint("LEFT", panel.weekday, "RIGHT", 8, 0)
     panel.profileKey = select(2, addon.GetProfile())
 

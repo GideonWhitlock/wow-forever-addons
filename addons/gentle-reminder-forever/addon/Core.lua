@@ -1,7 +1,7 @@
 local addonName, addon = ...
 local L = addon.L
 
-addon.VERSION = "1.0.0"
+addon.VERSION = "1.0.1"
 addon.SCHEMA = 2
 addon.MIN_INTERVAL = 5
 addon.MAX_INTERVAL = 360
