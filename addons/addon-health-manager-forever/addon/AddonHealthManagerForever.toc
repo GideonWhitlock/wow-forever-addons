@@ -1,0 +1,16 @@
+## Interface: 16001
+## Title: Addon Health Manager: Forever
+## Notes: Friendly add-on diagnostics, recovery guidance, and privacy-clean support reports.
+## Author: Gideon
+## Version: 1.0.0
+## SavedVariables: AddonHealthManagerForeverDB
+## IconTexture: Interface\AddOns\AddonHealthManagerForever\Media\AddonHealthManagerIcon.tga
+## X-Category: Development Tools
+## X-License: MIT
+
+Locale\enUS.lua
+Core.lua
+Scanner.lua
+Report.lua
+UI.lua
+Minimap.lua
