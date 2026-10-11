@@ -1,0 +1,16 @@
+## Interface: 16001
+## Title: Objective Hider for RestedXP — Forever
+## Notes: Independently hides Blizzard's objective tracker without changing RestedXP.
+## Author: Gideon Whitlock
+## Version: 1.0.0
+## SavedVariables: RXPObjectiveHiderForeverDB, RXPObjectiveHiderForeverBackupDB
+## OptionalDeps: RXPGuides, Questie
+## IconTexture: Interface\AddOns\RXPObjectiveHiderForever\Media\Icon.tga
+## X-Category: Quests
+## X-License: MIT
+
+Locale\enUS.lua
+LegacyCleanup.lua
+Core.lua
+UI.lua
+Minimap.lua
