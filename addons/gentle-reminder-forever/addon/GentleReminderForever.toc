@@ -1,0 +1,14 @@
+## Interface: 16001
+## Title: Gentle Reminder: Forever
+## Notes: Warm, private break and real-life reminders for WoW: Forever.
+## Author: Gideon Whitlock
+## Version: 1.0.0
+## SavedVariables: GentleReminderForeverDB, GentleReminderForeverBackupDB
+## IconTexture: Interface\AddOns\GentleReminderForever\Media\Icon.tga
+## X-Category: Miscellaneous
+## X-License: MIT
+
+Locale.lua
+Core.lua
+UI.lua
+

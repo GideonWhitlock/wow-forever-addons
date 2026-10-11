@@ -1,0 +1,55 @@
+local addonName, addon = ...
+
+addon.L = addon.L or {}
+local L = addon.L
+
+-- The table and lookup metatable make every visible string localisation-ready.
+-- Translators can replace values in a locale-specific file without touching logic.
+setmetatable(L, { __index = function(_, key) return key end })
+
+L.ADDON_NAME = "Gentle Reminder: Forever"
+L.TAG = "Gentle Reminder"
+L.TITLE_BREAK = "A gentle reminder"
+L.DEFAULT_MESSAGE = "A small pause might feel good — water, a stretch, or anything else you meant to do."
+L.TITLE_BEDTIME = "Your bedtime reminder"
+L.DEFAULT_BEDTIME_MESSAGE = "It’s around the time you wanted to start winding down. No pressure — this is just your reminder."
+L.TITLE_ONE_OFF = "Something you asked to remember"
+L.BUTTON_DONE = "Done for now"
+L.BUTTON_SNOOZE = "Snooze"
+L.BUTTON_SETTINGS = "Settings"
+L.BUTTON_ADD = "Add reminder"
+L.BUTTON_CANCEL = "Cancel"
+L.BUTTON_SAVE = "Save"
+L.BUTTON_TEST = "Preview"
+L.BUTTON_RESET = "Restore defaults"
+L.BUTTON_RECOVER = "Recover backup"
+L.STATUS_READY = "Your reminders are ready."
+L.STATUS_DEFERRED = "A reminder is waiting until combat or the cinematic ends."
+L.STATUS_DISABLED = "Recurring reminders are paused."
+L.PROFILE_WEEKDAY = "Weekdays"
+L.PROFILE_WEEKEND = "Weekends"
+L.LABEL_ENABLED = "Recurring reminders"
+L.LABEL_INTERVAL = "Remind me every (minutes)"
+L.LABEL_MESSAGE = "Personal reminder text"
+L.LABEL_BEDTIME = "Bedtime (24-hour HH:MM)"
+L.CLOCK_LOCAL = "Local time"
+L.CLOCK_SERVER = "Server time"
+L.CLOCK_LOCAL_HELP_TITLE = "Use local time"
+L.CLOCK_LOCAL_HELP = "Uses your computer's current local clock. Daylight-saving changes are handled by the operating system. Existing bedtime settings use this basis after updating."
+L.CLOCK_SERVER_HELP_TITLE = "Use server time"
+L.CLOCK_SERVER_HELP = "Uses the realm's game clock and server calendar day. The current local/server offset is shown below the field."
+L.LABEL_VISUAL = "Show reminder card"
+L.LABEL_SOUND = "Play a gentle sound"
+L.LABEL_SPEECH = "Speak reminder text (opt-in)"
+L.LABEL_SNOOZES = "Snooze choices (minutes, comma-separated)"
+L.LABEL_MINIMAP = "Show minimap button"
+L.LABEL_SESSION = "Session"
+L.LABEL_TODAY = "Today"
+L.LABEL_NEXT = "Next reminder"
+L.LABEL_ONE_OFFS = "One-off reminders"
+L.LABEL_PRIVACY = "Stored only in your local SavedVariables. Nothing is broadcast."
+L.NO_REMINDER = "None scheduled"
+L.MINIMAP_LEFT = "Left-click: open Gentle Reminder"
+L.MINIMAP_RIGHT = "Right-click: add a one-off reminder"
+L.MINIMAP_DRAG = "Drag: move this button"
+
