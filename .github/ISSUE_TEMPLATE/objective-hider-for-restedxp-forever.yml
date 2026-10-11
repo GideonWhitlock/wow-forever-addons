@@ -1,0 +1,45 @@
+name: Objective Hider bug
+description: Report a WoW Forever compatibility or behavior problem
+title: "[Objective Hider] "
+labels: [bug]
+body:
+  - type: input
+    id: build
+    attributes:
+      label: WoW Forever version and build
+      placeholder: 1.60.1.70338
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Add-on, RestedXP and Questie versions
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Hiding mode
+      options:
+        - Only while RestedXP is active
+        - Always hide it
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Include combat state, zone and whether the action was a quest accept, progress, completion, reload or tracking change.
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: error
+    attributes:
+      label: Redacted Lua error or /rxpoh status
+      description: Remove character, realm and account identifiers.
