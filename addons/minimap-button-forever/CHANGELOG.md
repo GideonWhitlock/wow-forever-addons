@@ -3,6 +3,43 @@
 This changelog records released add-on versions. Changes that were later replaced
 or reverted remain listed under the version in which they shipped.
 
+## 1.0.19 — 2026-10-14
+
+- Added a saved exclusion list for named add-on minimap buttons.
+- Added a **Choose exclusions** window that restores selected buttons to their
+  original minimap position and keeps them out of future collection scans.
+- Preserved each excluded button's own alerts, flashing and click behaviour.
+
+## 1.0.18 — 2026-10-11
+
+- Added saved Square and Circle choices for the gold launcher, with Square
+  retained as the default for both existing and new characters.
+- Added a saved idle-opacity setting from 20% to 100%.
+- Hovering the launcher now restores it to full opacity and leaving restores the
+  chosen idle opacity.
+- Circle mode applies round masking, background and gold border artwork without
+  changing the launcher's reliable click or drag area.
+
+## 1.0.17 — 2026-10-10
+
+- Excluded RestedXP Guides' unnamed numbered quest-step minimap pins from the
+  collected button bar without excluding its actual LibDBIcon launcher.
+- Strengthened Questie objective-pin detection and release-on-rescan handling.
+
+## 1.0.16 — Unreleased
+
+- Positioned every scaled collected button through a separate unscaled slot.
+- Prevented a button's scale from multiplying its bar-position offset, which made
+  some buttons detach from the bar and produce uneven gaps at larger sizes.
+- Kept every button centred at zero offset inside its slot across the full slider.
+
+## 1.0.15 — Superseded before release
+
+- Fixed mixed icon sizes when adjusting the icon-size slider by scaling each
+  collected button, including its border, textures and overlays, as one unit.
+- Preserved original aspect ratios and centred each button in an equal-size slot.
+- Reclaimed buttons when their owning add-on changes their scale or dimensions.
+
 ## 1.0.14 — 2026-10-03
 
 - Restored eligible collected buttons when the bar is opened during combat, fixing
@@ -95,4 +132,3 @@ or reverted remain listed under the version in which they shipped.
 - Added horizontal and vertical collection layouts, show/hide controller actions,
   settings, Alt-drag movement, rescan/reset commands and restoration of recorded
   button placement when collection is disabled.
-
