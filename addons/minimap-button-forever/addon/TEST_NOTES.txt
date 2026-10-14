@@ -1,5 +1,12 @@
 MINIMAP BUTTON FOREVER - LIVE TEST CHECKLIST
 
+VERSION 1.0.19 EXCLUSION CHECK
+- Open settings, choose exclusions, and tick a named chat/message minimap button.
+  Confirm it returns to its original minimap position immediately, remains there
+  after Scan buttons and /reload, and still flashes for a new message.
+- Untick it and confirm it rejoins the collected bar. Confirm unnamed map pins are
+  not presented as persistent exclusions.
+
 1. Install the add-on and log in with at least two other add-ons that have
    minimap buttons. Confirm their buttons appear beside the gold controller.
 2. Left-click the gold controller. Confirm the collected icons appear. Click it
@@ -7,6 +14,10 @@ MINIMAP BUTTON FOREVER - LIVE TEST CHECKLIST
 3. Right-click the controller. Confirm the settings window opens.
 4. Select vertical layout, change size and spacing, and hide the background.
    Confirm each setting takes effect immediately and size changes only here.
+   Move the icon-size slider through 20, 32, 48 and 64. Confirm every collected
+   button's border, icon and overlay scale together, all buttons remain centred in
+   equal-size slots, no artwork drifts outside its original circle, and no icon
+   separates from the bar or develops larger gaps at 48 or 64.
 5. Collapse the collected icons, then hold Alt and drag the gold controller.
    Confirm the single controller moves. Open the icons and confirm they appear
    from its new location, which remains after /reload and relogging.
@@ -18,5 +29,19 @@ MINIMAP BUTTON FOREVER - LIVE TEST CHECKLIST
    minimap button joins the bar without a reload.
 9. Confirm normal left-click, right-click and tooltip behaviour still works on
    every collected button.
-10. Confirm Blizzard zoom, tracking, mail, clock, queue and difficulty controls
+10. With RestedXP Guides and Questie enabled, show nearby numbered quest-step and
+    objective pins on the minimap, then scan. Confirm none enter the bar while
+    the RestedXP and Questie launcher buttons remain collected and clickable.
+11. Confirm Blizzard zoom, tracking, mail, clock, queue and difficulty controls
     stay on the minimap.
+12. With an existing SavedVariables file that has no shape or opacity fields,
+    reload and confirm the gold controller remains square and fully opaque.
+13. Select Circle in settings. Confirm the controller icon, dark background and
+    gold border read as one circular minimap-style button at sizes 20, 32 and 64.
+    Switch back to Square and confirm the original appearance is restored.
+14. Move Idle opacity through 20%, 60% and 100%. At each value, move the pointer
+    off the controller and confirm the saved idle opacity is used; hover it and
+    confirm it returns to 100%, then leaves to the configured value again.
+15. Set Circle and 60% opacity, Alt-drag to a new position, toggle the bar and
+    orientation, then /reload. Confirm shape, idle opacity, expanded state,
+    orientation and position persist and all launcher click/drag actions work.

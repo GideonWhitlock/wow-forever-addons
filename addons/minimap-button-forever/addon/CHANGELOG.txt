@@ -1,3 +1,37 @@
+1.0.19 - 2026-10-14
+- Adds a saved exclusion list for named add-on minimap buttons.
+- Adds a Choose exclusions window that restores selected buttons to their original
+  minimap position and keeps them out of future collection scans.
+- Preserves each excluded button's own alert, flashing and click behaviour.
+
+1.0.18 - 2026-10-11
+- Adds saved Square and Circle choices for the gold launcher, retaining Square
+  as the default for existing and new characters.
+- Adds a saved 20%-100% idle-opacity setting; hovering restores the launcher to
+  full opacity and leaving returns it to the configured idle value.
+- Keeps the launcher click target rectangular internally while circular masking,
+  background and border artwork make the Circle choice visually round.
+
+1.0.17 - 2026-10-10
+- Excludes RestedXP Guides' unnamed numbered quest-step map pins from the
+  collected minimap-button bar while retaining its genuine LibDBIcon launcher.
+- Strengthens Questie map-pin filtering using objective-frame properties as well
+  as names, and releases any such pin that was collected before a rescan.
+
+1.0.16 - 2026-10-04
+- Positions collected buttons through unscaled layout slots so changing icon size
+  cannot multiply their anchor offsets or push them outside the bar.
+- Keeps every collected button centred at zero offset inside its assigned slot at
+  small, default and large slider sizes.
+
+1.0.15 - 2026-10-04
+- Scales each collected button as a complete unit so its border, icon and overlay
+  artwork remain synchronized with the icon-size slider.
+- Preserves each button's original aspect ratio and centres it within an equal-size
+  layout slot, preventing mixed sizes and artwork drifting outside its circle.
+- Reclaims collected buttons if their owning add-on changes their scale or frame
+  dimensions after collection.
+
 1.0.14 - 2026-10-03
 - Restores collected add-on buttons when the bar is opened during combat, fixing
   empty slots left by add-ons that hide their own minimap button on combat entry.

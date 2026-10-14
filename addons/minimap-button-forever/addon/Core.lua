@@ -1,10 +1,12 @@
 local _, F = ...
 
-F.VERSION = "1.0.14"
+F.VERSION = "1.0.19"
 F.MIN_SIZE = 20
 F.MAX_SIZE = 64
 F.MIN_SPACING = 0
 F.MAX_SPACING = 16
+F.MIN_IDLE_OPACITY = 0.2
+F.MAX_IDLE_OPACITY = 1
 F.SIZE_STEPS = {24, 32, 40, 48, 56, 64}
 
 local DEFAULTS = {
@@ -16,6 +18,8 @@ local DEFAULTS = {
     expanded = false,
     showBackground = true,
     enabled = true,
+    buttonShape = "square",
+    idleOpacity = 1,
 }
 
 local blockedNames = {
@@ -44,10 +48,36 @@ local blockedNames = {
 
 local blockedPatterns = {
     "^QuestieFrame%d+$",
+    "^questieLineFrame%d+$",
     "^GatherMatePin",
     "^HandyNotesPin",
     "^pfMiniMapPin",
 }
+
+function F.IsMapLocationPin(button)
+    if not button then return false end
+    local name = button.GetName and button:GetName()
+    if name then
+        for _, pattern in ipairs(blockedPatterns) do
+            if name:match(pattern) then return true end
+        end
+    end
+
+    -- Questie marks its pooled world/minimap objective frames directly.
+    if button.miniMapIcon or button.isManualIcon or button.type == "line" then
+        return true
+    end
+
+    -- RestedXP/HereBeDragons pins are unnamed pooled Buttons. Their renderer
+    -- stores the guide pin (and its step elements) on activeObject, while the
+    -- genuine LibDBIcon launcher has none of these fields.
+    local activeObject = button.activeObject
+    if type(button.render) == "function" and type(activeObject) == "table" and
+            (type(activeObject.elements) == "table" or activeObject.step) then
+        return true
+    end
+    return false
+end
 
 local function isIgnoredByButtonBag(name)
     if not name or type(MBB_Ignore) ~= "table" then return false end
@@ -116,13 +146,36 @@ function F.LoadSettings()
     F.db.y = finite(F.db.y) and F.db.y or DEFAULTS.y
     F.db.size = math.floor(F.Clamp(F.db.size, F.MIN_SIZE, F.MAX_SIZE) + 0.5)
     F.db.spacing = math.floor(F.Clamp(F.db.spacing, F.MIN_SPACING, F.MAX_SPACING) + 0.5)
+    F.db.idleOpacity = F.Clamp(F.db.idleOpacity, F.MIN_IDLE_OPACITY, F.MAX_IDLE_OPACITY)
     if type(F.db.vertical) ~= "boolean" then F.db.vertical = DEFAULTS.vertical end
     if type(F.db.expanded) ~= "boolean" then F.db.expanded = DEFAULTS.expanded end
     if type(F.db.showBackground) ~= "boolean" then F.db.showBackground = DEFAULTS.showBackground end
     if type(F.db.enabled) ~= "boolean" then F.db.enabled = DEFAULTS.enabled end
+    if F.db.buttonShape ~= "square" and F.db.buttonShape ~= "circle" then
+        F.db.buttonShape = DEFAULTS.buttonShape
+    end
+    if type(F.db.excludedButtons) ~= "table" then F.db.excludedButtons = {} end
 end
 
-function F.IsCollectable(button)
+function F.GetButtonIdentifier(button)
+    if not button or not button.GetName then return nil end
+    local name = button:GetName()
+    if type(name) ~= "string" or name == "" then return nil end
+    return name
+end
+
+function F.GetButtonDisplayName(name)
+    name = tostring(name or "")
+    local libName = name:match("^LibDBIcon10_(.+)$")
+    return libName or name
+end
+
+function F.IsButtonExcluded(buttonOrName)
+    local name = type(buttonOrName) == "string" and buttonOrName or F.GetButtonIdentifier(buttonOrName)
+    return name and F.db and F.db.excludedButtons and F.db.excludedButtons[name] == true or false
+end
+
+function F.IsCollectable(button, includeExcluded)
     if not button or button == F.launcher or button == F.container or button == F.options then return false end
     if F.IsBlizzardMinimapControl(button) then return false end
     if button.IsForbidden and button:IsForbidden() then return false end
@@ -131,14 +184,37 @@ function F.IsCollectable(button)
     local name = button.GetName and button:GetName()
     if name and (blockedNames[name] or name:match("^MinimapButtonForever")) then return false end
     if isIgnoredByButtonBag(name) then return false end
-    if name then
-        for _, pattern in ipairs(blockedPatterns) do
-            if name:match(pattern) then return false end
-        end
-    end
+    if F.IsMapLocationPin(button) then return false end
     local width, height = button:GetWidth() or 0, button:GetHeight() or 0
     if width < 8 or height < 8 or width > 80 or height > 80 then return false end
     if not isMinimapRelative(button) then return false end
+    if not includeExcluded and F.IsButtonExcluded(name) then return false end
+    return true
+end
+
+function F.SetButtonExcluded(name, excluded)
+    if InCombatLockdown() then
+        F.Print("Button exclusions can be changed after combat.")
+        return false
+    end
+    name = type(name) == "string" and name or nil
+    if not name or name == "" then return false end
+    F.db.excludedButtons[name] = excluded and true or nil
+
+    if excluded then
+        for index = #(F.collected or {}), 1, -1 do
+            local info = F.collected[index]
+            if F.GetButtonIdentifier(info.button) == name then
+                F.collectedByButton[info.button] = nil
+                table.remove(F.collected, index)
+                F.RestoreButton(info)
+            end
+        end
+        F.Layout()
+    else
+        F.ScanButtons()
+    end
+    if F.RefreshExclusions then F.RefreshExclusions() end
     return true
 end
 
@@ -181,6 +257,7 @@ end
 function F.RestoreButton(info)
     local button = info and info.button
     if not button then return end
+    if info.slot then info.slot:Hide() end
     if info.isLibDBIcon then
         if button.SetFixedFrameLevel then button:SetFixedFrameLevel(false) end
         if button.SetFixedFrameStrata then button:SetFixedFrameStrata(false) end
@@ -246,11 +323,31 @@ function F.SetSpacing(value)
     F.SyncOptions()
 end
 
+function F.SetButtonShape(value)
+    if InCombatLockdown() then
+        F.Print("Button shape can be changed after combat.")
+        return
+    end
+    value = tostring(value or ""):lower()
+    if value ~= "square" and value ~= "circle" then return end
+    F.db.buttonShape = value
+    F.ApplyLauncherStyle()
+    F.SyncOptions()
+end
+
+function F.SetIdleOpacity(value)
+    F.db.idleOpacity = F.Clamp(value, F.MIN_IDLE_OPACITY, F.MAX_IDLE_OPACITY)
+    F.ApplyLauncherOpacity()
+    F.SyncOptions()
+end
+
 function F.ResetLayout()
     if InCombatLockdown() then return end
     F.db.x, F.db.y = DEFAULTS.x, DEFAULTS.y
     F.db.size, F.db.spacing = DEFAULTS.size, DEFAULTS.spacing
     F.db.vertical, F.db.expanded, F.db.showBackground, F.db.enabled = false, false, true, true
+    F.db.buttonShape, F.db.idleOpacity = DEFAULTS.buttonShape, DEFAULTS.idleOpacity
+    F.ApplyLauncherStyle()
     F.ApplyPosition()
     F.ScanButtons()
     F.Layout()
@@ -270,15 +367,23 @@ function F.Command(message)
         F.SetSize(value)
     elseif command == "spacing" and tonumber(value) then
         F.SetSpacing(value)
+    elseif command == "shape" then
+        F.SetButtonShape(value)
+    elseif command == "opacity" and tonumber(value) then
+        F.SetIdleOpacity(tonumber(value) / 100)
     elseif command == "scan" then
         F.ScanButtons(true)
+    elseif command == "exclusions" or command == "exclude" then
+        F.ToggleExclusions()
     elseif command == "reset" then
         F.ResetLayout()
     elseif command == "status" then
         local count = F.collected and #F.collected or 0
         F.Print("Version " .. F.VERSION .. "; " .. count .. " button(s); " ..
-            (F.db.vertical and "vertical" or "horizontal") .. "; size " .. F.db.size .. ".")
+            (F.db.vertical and "vertical" or "horizontal") .. "; size " .. F.db.size ..
+            "; " .. F.db.buttonShape .. "; idle opacity " ..
+            math.floor(F.db.idleOpacity * 100 + 0.5) .. "%.")
     else
-        F.Print("Commands: /mbf, /mbf horizontal, /mbf vertical, /mbf size 40, /mbf spacing 4, /mbf scan, /mbf reset, /mbf status")
+        F.Print("Commands: /mbf, /mbf exclusions, /mbf horizontal, /mbf vertical, /mbf size 40, /mbf spacing 4, /mbf shape circle, /mbf opacity 70, /mbf scan, /mbf reset, /mbf status")
     end
 end

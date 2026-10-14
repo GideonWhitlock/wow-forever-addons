@@ -9,6 +9,42 @@ local function setBackdrop(frame)
     })
 end
 
+local squareLauncherBackdrop = {
+    bgFile = "Interface\\Buttons\\WHITE8X8",
+    edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+    edgeSize = 10,
+    insets = {left = 2, right = 2, top = 2, bottom = 2},
+}
+
+function F.ApplyLauncherOpacity()
+    if not F.launcher or not F.db then return end
+    F.launcher:SetAlpha(F.launcherHovered and 1 or F.db.idleOpacity)
+end
+
+function F.ApplyLauncherStyle()
+    local launcher = F.launcher
+    if not launcher or not F.db then return end
+    local circular = F.db.buttonShape == "circle"
+    if circular then
+        launcher:SetBackdrop(nil)
+        launcher.circleBorder:Show()
+        launcher.circleBackground:Show()
+        launcher.icon:Hide()
+        launcher.circleIcon:Show()
+        launcher:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight", "ADD")
+    else
+        launcher:SetBackdrop(squareLauncherBackdrop)
+        launcher:SetBackdropColor(0.12, 0.08, 0.02, 1)
+        launcher:SetBackdropBorderColor(1, 0.72, 0.2, 1)
+        launcher.circleBorder:Hide()
+        launcher.circleBackground:Hide()
+        launcher.circleIcon:Hide()
+        launcher.icon:Show()
+        launcher:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
+    end
+    F.ApplyLauncherOpacity()
+end
+
 local function requestLayout()
     if F.layoutPending or F.layingOut or InCombatLockdown() then return end
     F.layoutPending = true
@@ -25,6 +61,18 @@ local function watchCollectedButton(button)
         if F.collectedByButton and F.collectedByButton[button] and not F.layingOut then requestLayout() end
     end)
     hooksecurefunc(button, "SetPoint", function()
+        if F.collectedByButton and F.collectedByButton[button] and not F.layingOut then requestLayout() end
+    end)
+    hooksecurefunc(button, "SetScale", function()
+        if F.collectedByButton and F.collectedByButton[button] and not F.layingOut then requestLayout() end
+    end)
+    hooksecurefunc(button, "SetSize", function()
+        if F.collectedByButton and F.collectedByButton[button] and not F.layingOut then requestLayout() end
+    end)
+    hooksecurefunc(button, "SetWidth", function()
+        if F.collectedByButton and F.collectedByButton[button] and not F.layingOut then requestLayout() end
+    end)
+    hooksecurefunc(button, "SetHeight", function()
         if F.collectedByButton and F.collectedByButton[button] and not F.layingOut then requestLayout() end
     end)
     hooksecurefunc(button, "SetAlpha", function(_, alpha)
@@ -88,6 +136,97 @@ function F.ReleaseButtons()
     F.Layout()
 end
 
+function F.RefreshExclusions()
+    local panel = F.exclusions
+    if not panel then return end
+    local names = {}
+    for name in pairs(F.knownButtons or {}) do names[#names + 1] = name end
+    for name, excluded in pairs(F.db.excludedButtons or {}) do
+        if excluded and not (F.knownButtons and F.knownButtons[name]) then
+            names[#names + 1] = name
+        end
+    end
+    table.sort(names, function(left, right)
+        return F.GetButtonDisplayName(left):lower() < F.GetButtonDisplayName(right):lower()
+    end)
+
+    panel.empty:SetShown(#names == 0)
+    for index, row in ipairs(panel.rows) do row:Hide() end
+    for index, name in ipairs(names) do
+        local row = panel.rows[index]
+        if not row then
+            row = CreateFrame("CheckButton", nil, panel.content, "UICheckButtonTemplate")
+            row:SetPoint("TOPLEFT", 4, -((index - 1) * 28))
+            row.Text:SetWidth(330)
+            row.Text:SetJustifyH("LEFT")
+            panel.rows[index] = row
+        end
+        row.buttonName = name
+        row.Text:SetText("Keep " .. F.GetButtonDisplayName(name) .. " on the minimap")
+        row:SetChecked(F.IsButtonExcluded(name))
+        row:SetScript("OnClick", function(self)
+            F.SetButtonExcluded(self.buttonName, self:GetChecked() and true or false)
+        end)
+        row:Show()
+    end
+    panel.content:SetHeight(math.max(1, #names * 28))
+end
+
+function F.ToggleExclusions()
+    if InCombatLockdown() then F.Print("Button exclusions can be changed after combat."); return end
+    if not F.exclusions then
+        local panel = CreateFrame("Frame", "MinimapButtonForeverExclusions", UIParent, "BackdropTemplate")
+        F.exclusions = panel
+        panel:SetSize(460, 430)
+        panel:SetPoint("CENTER", UIParent, "CENTER", -180, 0)
+        panel:SetFrameStrata("DIALOG")
+        panel:SetClampedToScreen(true)
+        panel:SetMovable(true)
+        panel:EnableMouse(true)
+        panel:RegisterForDrag("LeftButton")
+        panel:SetScript("OnDragStart", panel.StartMoving)
+        panel:SetScript("OnDragStop", panel.StopMovingOrSizing)
+        panel:SetBackdrop({bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+            edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border", edgeSize = 28,
+            insets = {left = 8, right = 8, top = 8, bottom = 8}})
+
+        local title = panel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+        title:SetPoint("TOP", 0, -20); title:SetText("Buttons kept on the minimap")
+        local help = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        help:SetPoint("TOPLEFT", 28, -52); help:SetPoint("TOPRIGHT", -28, -52)
+        help:SetJustifyH("LEFT")
+        help:SetText("Tick a named add-on button to restore it to the minimap and leave it there on future scans. Its own alerts and flashing continue to work.")
+        local close = CreateFrame("Button", nil, panel, "UIPanelCloseButton")
+        close:SetPoint("TOPRIGHT", -4, -4)
+
+        local scroll = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
+        scroll:SetPoint("TOPLEFT", 24, -96); scroll:SetPoint("BOTTOMRIGHT", -48, 58)
+        local content = CreateFrame("Frame", nil, scroll)
+        content:SetSize(370, 1)
+        scroll:SetScrollChild(content)
+        panel.content, panel.rows = content, {}
+        panel.empty = content:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        panel.empty:SetPoint("TOPLEFT", 8, -8)
+        panel.empty:SetText("No named add-on buttons were found. Refresh after the button appears on the minimap.")
+        panel.empty:SetWidth(340); panel.empty:SetJustifyH("LEFT")
+
+        local refresh = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+        refresh:SetSize(130, 26); refresh:SetPoint("BOTTOMLEFT", 28, 24); refresh:SetText("Refresh buttons")
+        refresh:SetScript("OnClick", function() F.ScanButtons(true); F.RefreshExclusions() end)
+        local done = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+        done:SetSize(100, 26); done:SetPoint("BOTTOMRIGHT", -28, 24); done:SetText("Done")
+        done:SetScript("OnClick", function() panel:Hide() end)
+        panel:Hide()
+    end
+    if F.exclusions:IsShown() then
+        F.exclusions:Hide()
+    else
+        F.ScanButtons()
+        F.RefreshExclusions()
+        F.exclusions:Show()
+    end
+end
+
 function F.ScanButtons(report)
     if InCombatLockdown() or F.dragging or not Minimap or not F.container then return end
     if not F.db.enabled then
@@ -96,7 +235,8 @@ function F.ScanButtons(report)
     end
     for index = #F.collected, 1, -1 do
         local info = F.collected[index]
-        if F.IsBlizzardMinimapControl(info.button) then
+        if F.IsBlizzardMinimapControl(info.button) or F.IsMapLocationPin(info.button) or
+                F.IsButtonExcluded(info.button) then
             F.collectedByButton[info.button] = nil
             table.remove(F.collected, index)
             F.RestoreButton(info)
@@ -125,7 +265,12 @@ function F.ScanButtons(report)
             end
         end
     end
+    F.knownButtons = F.knownButtons or {}
     for _, button in ipairs(children) do
+        if F.IsCollectable(button, true) then
+            local name = F.GetButtonIdentifier(button)
+            if name then F.knownButtons[name] = button end
+        end
         if F.IsCollectable(button) and not F.collectedByButton[button] then
             local info = F.CaptureButton(button)
             F.collected[#F.collected + 1] = info
@@ -136,12 +281,12 @@ function F.ScanButtons(report)
             -- job is to hide the button again. The original is restored on release.
             button:SetScript("OnShow", nil)
             button:SetParent(F.buttonHolder)
-            button:SetScale(1)
             added = added + 1
         end
     end
     table.sort(F.collected, function(left, right) return left.order < right.order end)
     F.Layout()
+    if F.RefreshExclusions then F.RefreshExclusions() end
     if report then F.Print("Scan complete: " .. added .. " new, " .. #F.collected .. " total button(s).") end
 end
 
@@ -179,7 +324,6 @@ function F.Layout()
         if button then
             F.BrightenButton(info)
             button:SetParent(F.buttonHolder)
-            button:SetScale(1)
             if info.forceVisible then button:Show() end
             if button:IsShown() then visible[#visible + 1] = button end
         end
@@ -218,6 +362,10 @@ function F.Layout()
     end
 
     F.ApplyExpandedVisibility()
+    for _, info in ipairs(F.collected or {}) do
+        if info.slot then info.slot:Hide() end
+    end
+
     local buttons = {F.launcher}
     for _, button in ipairs(visible) do buttons[#buttons + 1] = button end
     for index, button in ipairs(buttons) do
@@ -227,25 +375,60 @@ function F.Layout()
             if button.SetFixedFrameStrata then button:SetFixedFrameStrata(false) end
         end
         button:ClearAllPoints()
-        button:SetSize(size, size)
+        local anchor = button
+        if info then
+            -- SetPoint offsets are evaluated in the anchored frame's scale.
+            -- Anchoring a scaled third-party button directly at a bar-sized
+            -- offset therefore makes its position drift as the slider moves.
+            -- Keep every positional offset on an unscaled slot and place the
+            -- complete third-party button at the slot's zero-offset centre.
+            if not info.slot then
+                info.slot = CreateFrame("Frame", nil, F.buttonHolder)
+                info.slot:EnableMouse(false)
+            end
+            anchor = info.slot
+            anchor:SetParent(F.buttonHolder)
+            anchor:SetScale(1)
+            anchor:SetSize(size, size)
+            anchor:ClearAllPoints()
+            anchor:Show()
+
+            button:SetParent(F.buttonHolder)
+            local originalWidth = math.max(1, tonumber(info.width) or size)
+            local originalHeight = math.max(1, tonumber(info.height) or size)
+            local originalExtent = math.max(originalWidth, originalHeight)
+            button:SetSize(originalWidth, originalHeight)
+            button:SetScale(size / originalExtent)
+        else
+            button:SetScale(1)
+            button:SetSize(size, size)
+        end
         button:SetFrameStrata("MEDIUM")
         button:SetFrameLevel(F.buttonHolder:GetFrameLevel() + 2)
-        local offset = 4 + (index - 1) * (size + spacing)
+        local offset = 4 + size / 2 + (index - 1) * (size + spacing)
         if F.db.vertical then
             if F.db.y < 0 then
-                button:SetPoint("BOTTOM", F.container, "BOTTOM", 0, offset)
+                anchor:SetPoint("CENTER", F.container, "BOTTOM", 0, offset)
             else
-                button:SetPoint("TOP", F.container, "TOP", 0, -offset)
+                anchor:SetPoint("CENTER", F.container, "TOP", 0, -offset)
             end
         else
             if F.db.x > 0 then
-                button:SetPoint("RIGHT", F.container, "RIGHT", -offset, 0)
+                anchor:SetPoint("CENTER", F.container, "RIGHT", -offset, 0)
             else
-                button:SetPoint("LEFT", F.container, "LEFT", offset, 0)
+                anchor:SetPoint("CENTER", F.container, "LEFT", offset, 0)
             end
         end
+        if info then button:SetPoint("CENTER", anchor, "CENTER", 0, 0) end
     end
-    F.launcher.icon:SetSize(math.max(12, size - 8), math.max(12, size - 8))
+    local launcherIconSize = math.max(12, size - 8)
+    F.launcher.icon:SetSize(launcherIconSize, launcherIconSize)
+    F.launcher.circleIcon:SetSize(launcherIconSize, launcherIconSize)
+    F.launcher.iconMask:SetSize(launcherIconSize, launcherIconSize)
+    F.launcher.circleBorder:SetSize(size, size)
+    F.launcher.circleBorderMask:SetSize(size, size)
+    F.launcher.circleBackground:SetSize(math.max(12, size - 4), math.max(12, size - 4))
+    F.launcher.circleBackgroundMask:SetSize(math.max(12, size - 4), math.max(12, size - 4))
     F.ApplyPosition()
     F.layingOut = false
 end
@@ -257,12 +440,14 @@ local function launcherTooltip()
     GameTooltip:AddLine("Right-click: open settings", 1, 1, 1)
     GameTooltip:AddLine("Alt-drag: move the button bar", 0.72, 0.72, 0.72)
     GameTooltip:AddLine((F.db.vertical and "Vertical" or "Horizontal") .. " layout - size " .. F.db.size, 0.72, 0.9, 0.72)
+    GameTooltip:AddLine((F.db.buttonShape == "circle" and "Circle" or "Square") ..
+        " controller - " .. math.floor(F.db.idleOpacity * 100 + 0.5) .. "% idle opacity", 0.72, 0.9, 0.72)
     GameTooltip:Show()
 end
 
 function F.BuildUI()
     if F.container then return end
-    F.collected, F.collectedByButton = {}, {}
+    F.collected, F.collectedByButton, F.knownButtons = {}, {}, {}
 
     local container = CreateFrame("Frame", "MinimapButtonForeverBar", UIParent, "BackdropTemplate")
     F.container = container
@@ -300,17 +485,46 @@ function F.BuildUI()
     launcher:RegisterForClicks("LeftButtonUp", "RightButtonUp")
     launcher:RegisterForDrag("LeftButton")
     launcher:EnableMouse(true)
-    launcher:SetBackdrop({bgFile = "Interface\\Buttons\\WHITE8X8", edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 10,
-        insets = {left = 2, right = 2, top = 2, bottom = 2}})
-    launcher:SetBackdropColor(0.12, 0.08, 0.02, 1)
-    launcher:SetBackdropBorderColor(1, 0.72, 0.2, 1)
+    launcher:SetBackdrop(squareLauncherBackdrop)
     launcher.icon = launcher:CreateTexture(nil, "ARTWORK")
     launcher.icon:SetPoint("CENTER")
     launcher.icon:SetTexture("Interface\\Icons\\INV_Misc_PocketWatch_01")
     launcher.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-    launcher:SetHighlightTexture("Interface\\Buttons\\ButtonHilight-Square", "ADD")
-    launcher:SetScript("OnEnter", launcherTooltip)
-    launcher:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    launcher.circleIcon = launcher:CreateTexture(nil, "ARTWORK")
+    launcher.circleIcon:SetPoint("CENTER")
+    launcher.circleIcon:SetTexture("Interface\\Icons\\INV_Misc_PocketWatch_01")
+    launcher.circleIcon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+    launcher.iconMask = launcher:CreateMaskTexture()
+    launcher.iconMask:SetPoint("CENTER")
+    launcher.iconMask:SetTexture("Interface\\CharacterFrame\\TempPortraitAlphaMask")
+    launcher.circleIcon:AddMaskTexture(launcher.iconMask)
+    launcher.circleBorder = launcher:CreateTexture(nil, "BACKGROUND")
+    launcher.circleBorder:SetPoint("CENTER")
+    launcher.circleBorder:SetTexture("Interface\\Buttons\\WHITE8X8")
+    launcher.circleBorder:SetVertexColor(1, 0.72, 0.2, 1)
+    launcher.circleBorderMask = launcher:CreateMaskTexture()
+    launcher.circleBorderMask:SetPoint("CENTER")
+    launcher.circleBorderMask:SetTexture("Interface\\CharacterFrame\\TempPortraitAlphaMask")
+    launcher.circleBorder:AddMaskTexture(launcher.circleBorderMask)
+    launcher.circleBackground = launcher:CreateTexture(nil, "BACKGROUND")
+    launcher.circleBackground:SetPoint("CENTER")
+    launcher.circleBackground:SetTexture("Interface\\Buttons\\WHITE8X8")
+    launcher.circleBackground:SetVertexColor(0.12, 0.08, 0.02, 1)
+    launcher.circleBackgroundMask = launcher:CreateMaskTexture()
+    launcher.circleBackgroundMask:SetPoint("CENTER")
+    launcher.circleBackgroundMask:SetTexture("Interface\\CharacterFrame\\TempPortraitAlphaMask")
+    launcher.circleBackground:AddMaskTexture(launcher.circleBackgroundMask)
+    F.ApplyLauncherStyle()
+    launcher:SetScript("OnEnter", function()
+        F.launcherHovered = true
+        F.ApplyLauncherOpacity()
+        launcherTooltip()
+    end)
+    launcher:SetScript("OnLeave", function()
+        F.launcherHovered = false
+        F.ApplyLauncherOpacity()
+        GameTooltip:Hide()
+    end)
     launcher:SetScript("OnClick", function(_, mouseButton)
         if GetTime() < (launcher.ignoreClickUntil or 0) then return end
         if mouseButton == "RightButton" then
@@ -391,10 +605,15 @@ function F.SyncOptions()
     F.options.enabled:SetChecked(F.db.enabled)
     F.options.vertical:SetChecked(F.db.vertical)
     F.options.background:SetChecked(F.db.showBackground)
+    F.options.shapeSquare:SetChecked(F.db.buttonShape == "square")
+    F.options.shapeCircle:SetChecked(F.db.buttonShape == "circle")
     F.options.size:SetValue(F.db.size)
     F.options.size.label:SetText("Icon size: " .. F.db.size)
     F.options.spacing:SetValue(F.db.spacing)
     F.options.spacing.label:SetText("Spacing: " .. F.db.spacing)
+    local opacityPercent = math.floor(F.db.idleOpacity * 100 + 0.5)
+    F.options.opacity:SetValue(opacityPercent)
+    F.options.opacity.label:SetText("Idle opacity: " .. opacityPercent .. "%")
     F.syncingOptions = false
 end
 
@@ -403,7 +622,7 @@ function F.ToggleOptions()
     if not F.options then
         local panel = CreateFrame("Frame", "MinimapButtonForeverOptions", UIParent, "BackdropTemplate")
         F.options = panel
-        panel:SetSize(360, 390)
+        panel:SetSize(380, 560)
         panel:SetPoint("CENTER", UIParent, "CENTER", 250, 0)
         panel:SetFrameStrata("DIALOG")
         panel:SetClampedToScreen(true)
@@ -439,10 +658,29 @@ function F.ToggleOptions()
         panel.background = checkbox(-156, "Show the bar background", function(checked)
             F.db.showBackground = checked; F.Layout()
         end)
-        panel.size = createSlider(panel, "MinimapButtonForeverSizeSlider", -220,
+        local shapeLabel = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        shapeLabel:SetPoint("TOPLEFT", 30, -198); shapeLabel:SetText("Button shape")
+        local function shapeRadio(x, label, value)
+            local radio = CreateFrame("CheckButton", nil, panel, "UIRadioButtonTemplate")
+            radio:SetPoint("TOPLEFT", x, -214)
+            local radioLabel = radio.Text or radio.text
+            if radioLabel then radioLabel:SetText(label) end
+            radio:SetScript("OnClick", function() F.SetButtonShape(value) end)
+            return radio
+        end
+        panel.shapeSquare = shapeRadio(28, "Square", "square")
+        panel.shapeCircle = shapeRadio(138, "Circle", "circle")
+        panel.size = createSlider(panel, "MinimapButtonForeverSizeSlider", -280,
             F.MIN_SIZE, F.MAX_SIZE, 1, F.SetSize)
-        panel.spacing = createSlider(panel, "MinimapButtonForeverSpacingSlider", -285,
+        panel.spacing = createSlider(panel, "MinimapButtonForeverSpacingSlider", -345,
             F.MIN_SPACING, F.MAX_SPACING, 1, F.SetSpacing)
+        panel.opacity = createSlider(panel, "MinimapButtonForeverOpacitySlider", -410,
+            20, 100, 1, function(value) F.SetIdleOpacity(value / 100) end)
+
+        local exclusions = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+        exclusions:SetSize(160, 26); exclusions:SetPoint("BOTTOM", 0, 62)
+        exclusions:SetText("Choose exclusions")
+        exclusions:SetScript("OnClick", F.ToggleExclusions)
 
         local scan = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
         scan:SetSize(110, 26); scan:SetPoint("BOTTOMLEFT", 48, 28); scan:SetText("Scan buttons")
