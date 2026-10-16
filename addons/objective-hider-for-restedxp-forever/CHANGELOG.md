@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.2 — 2026-10-16
+
+- Fixed Blizzard's objective tracker reappearing when combat starts.
+- Re-applies the hidden state immediately if Blizzard shows the tracker during combat.
+- Continues to defer any action that could restore or show the tracker until combat ends.
+
 ## 1.0.1 — 2026-10-11
 
 - Standardised the public and in-game title to **Objective Hider for RestedXP: Forever**.

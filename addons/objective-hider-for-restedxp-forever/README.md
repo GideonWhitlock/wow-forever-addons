@@ -9,7 +9,7 @@ Objective Hider for RestedXP: Forever is a focused WoW: Forever 1.60.x utility t
 - Hides only Blizzard's `ObjectiveTrackerFrame` while leaving RestedXP's guide, arrow, target controls and guide engine alone.
 - Offers **Only while RestedXP is active** and **Always hide it** modes.
 - Re-applies the requested state when Blizzard shows the tracker after quest, tracking, reload or zone activity.
-- Defers tracker changes during combat and applies only the latest requested state afterward.
+- Re-hides the tracker if Blizzard shows it during combat, while deferring restoration until combat ends.
 - Remembers whether Blizzard's tracker was shown before this utility took control and restores that state when hiding is disabled.
 - Provides `/rxpoh`, a native AddOns settings page, and a draggable circular minimap button.
 - Detects RestedXP and Questie without requiring either one and reports when Forever's tracker internals are unavailable.
