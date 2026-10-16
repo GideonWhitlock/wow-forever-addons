@@ -17,7 +17,7 @@ Source, release notes and issue reporting for Gideon Whitlock's World of Warcraf
 | Graphics Unlocked: Forever | 1.0.1 | [README](addons/graphics-unlocked-forever/README.md) · [Changelog](addons/graphics-unlocked-forever/CHANGELOG.md) |
 | Gentle Reminder: Forever | 1.0.2 | [README](addons/gentle-reminder-forever/README.md) · [Changelog](addons/gentle-reminder-forever/CHANGELOG.md) |
 | Addon Health Manager: Forever | 1.0.0 | [README](addons/addon-health-manager-forever/README.md) · [Changelog](addons/addon-health-manager-forever/CHANGELOG.md) |
-| Objective Hider for RestedXP: Forever | 1.0.1 | [README](addons/objective-hider-for-restedxp-forever/README.md) · [Changelog](addons/objective-hider-for-restedxp-forever/CHANGELOG.md) |
+| Objective Hider for RestedXP: Forever | 1.0.2 | [README](addons/objective-hider-for-restedxp-forever/README.md) · [Changelog](addons/objective-hider-for-restedxp-forever/CHANGELOG.md) |
 | Choose a Main: Forever | 1.0.2 | [README](addons/choose-a-main-forever/README.md) · [Changelog](addons/choose-a-main-forever/CHANGELOG.md) |
 
 Use the repository's issue forms to report a problem. Choose the form for the affected add-on and include its version, the WoW: Forever version and build, clear reproduction steps, expected and actual behaviour, relevant add-ons, and a redacted error message when available.
