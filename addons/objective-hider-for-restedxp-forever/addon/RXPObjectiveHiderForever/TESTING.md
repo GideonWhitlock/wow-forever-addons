@@ -16,7 +16,8 @@ Target: WoW: Forever 1.60.1.70338 or newer, Interface 16001.
 - [ ] RestedXP hidden: `restedxp` mode releases Blizzard's tracker; `always` mode does not.
 - [ ] Questie tracker enabled and disabled: Questie continues operating; no visibility tug-of-war or errors.
 - [ ] Reload, relog and zone change preserve the selected mode and minimap angle.
-- [ ] Enter combat, toggle twice, accept/progress a quest, then leave combat: only the final requested state applies.
+- [ ] Enter combat and attack an enemy: Blizzard's tracker stays hidden in both add-on modes.
+- [ ] While in combat, disable hiding: the tracker remains hidden until combat ends, then restores its prior state.
 - [ ] Left-click the minimap button ON/OFF at least 20 times; RestedXP must remain visible and responsive.
 - [ ] Drag through 0°, 90°, 180°, 270° and diagonals: button centre remains on the minimap rim.
 - [ ] Reload at each cardinal position and after changing resolution/UI scale: position remains angle-correct.

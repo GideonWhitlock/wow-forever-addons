@@ -1,7 +1,7 @@
 local addonName, addon = ...
 local L = addon.L
 
-addon.VERSION = "1.0.0"
+addon.VERSION = "1.0.2"
 addon.SCHEMA = 1
 addon.MODE_RXP = "restedxp"
 addon.MODE_ALWAYS = "always"
@@ -143,7 +143,13 @@ end
 local function applyNow(reason)
     addon.applyScheduled = false
     addon.lastReason = reason or addon.lastReason
-    if InCombatLockdown and InCombatLockdown() then
+    local inCombat = InCombatLockdown and InCombatLockdown()
+    local shouldHide = addon.ShouldHide()
+    -- Re-hiding is intentionally allowed in combat. Blizzard can show the
+    -- tracker when combat begins, and postponing this Hide until combat ends
+    -- defeats the add-on's purpose. Any state that could show or restore the
+    -- tracker remains deferred until PLAYER_REGEN_ENABLED.
+    if inCombat and not shouldHide then
         addon.pendingCombat = true
         if addon.RefreshUI then addon.RefreshUI() end
         return false, "combat"
@@ -156,7 +162,6 @@ local function applyNow(reason)
     addon.HookRestedXP()
     local tracker = addon.GetTracker()
     if not tracker then return false, "unsupported" end
-    local shouldHide = addon.ShouldHide()
     if shouldHide then
         if not addon.hiddenByUs then
             addon.previousShown = tracker:IsShown() and true or false

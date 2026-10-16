@@ -1,4 +1,4 @@
-Objective Hider for RestedXP: Forever 1.0.0
+Objective Hider for RestedXP: Forever 1.0.2
 
 Independent compatibility utility. Not affiliated with, endorsed by, or supported by RestedXP.
 
@@ -15,4 +15,5 @@ Commands:
   /rxpoh status | settings | reset | recover
 
 The add-on never modifies RestedXP, its guides, artwork or SavedVariables. It changes only the
-visibility of Blizzard's ObjectiveTrackerFrame and defers that work during combat.
+visibility of Blizzard's ObjectiveTrackerFrame. It re-hides the tracker if Blizzard
+shows it during combat and defers restoration until combat ends.
