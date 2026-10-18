@@ -2,7 +2,7 @@
 
 Source, release notes and issue reporting for Gideon Whitlock's World of Warcraft: Forever add-ons.
 
-[Add-on website](https://gideonwhitlock.github.io/wow-forever-addons/) · [CurseForge](https://www.curseforge.com/members/gideonwhitlock/projects) · [YouTube](https://www.youtube.com/@GideonWhitlockWoW) · [Optional support](https://ko-fi.com/gideonwhitlock)
+[Add-on website](https://gideonwhitlock.github.io/wow-forever-addons/) · [CurseForge](https://www.curseforge.com/members/gideonwhitlock/projects) · [YouTube](https://www.youtube.com/@GideonWhitlockWoW) · [GitHub Sponsors](https://github.com/sponsors/GideonWhitlock) · [Ko-fi](https://ko-fi.com/gideonwhitlock)
 
 | Add-on | Version | Documentation | Download | Full video | Short |
 |---|---:|---|---|---|---|
