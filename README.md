@@ -2,23 +2,25 @@
 
 Source, release notes and issue reporting for Gideon Whitlock's World of Warcraft: Forever add-ons.
 
-| Add-on | Current prepared version | Documentation |
-|---|---:|---|
-| Campfire Tooltips: Forever | 1.0.2 | [README](addons/campfire-tooltips/README.md) · [Changelog](addons/campfire-tooltips/CHANGELOG.md) |
-| Feed Pet: Forever | 1.0.2 | [README](addons/feed-pet-forever/README.md) · [Changelog](addons/feed-pet-forever/CHANGELOG.md) |
-| Campfire Stories: Forever | 3.0.3 | [README](addons/campfire-stories/README_SECTION.md) · [Changelog](addons/campfire-stories/CHANGELOG.md) |
-| Utility Helper: Forever | 0.1.22 | [README](addons/utility-helper/README.md) · [Changelog](addons/utility-helper/CHANGELOG.md) |
-| Night Watch Torch Helper: Forever | 1.0.2 | [README](addons/night-watch-torch-helper/README.md) · [Changelog](addons/night-watch-torch-helper/CHANGELOG.md) |
-| Combo Points Plate: Forever | 1.0.6 | [README](addons/combo-points-plate-forever/README-section.md) · [Changelog](addons/combo-points-plate-forever/CHANGELOG.md) |
-| Minimap Button: Forever | 1.0.19 | [README](addons/minimap-button-forever/README.md) · [Changelog](addons/minimap-button-forever/CHANGELOG.md) |
-| Misspelled: Forever | 1.1.1 | [README](addons/misspelled-forever/README.md) · [Changelog](addons/misspelled-forever/CHANGELOG.md) |
-| Totem Tooltip: Forever | 1.0.0 | [README](addons/totem-tooltip-forever/README.md) · [Changelog](addons/totem-tooltip-forever/CHANGELOG.md) |
-| Thanks for Buffing: Forever | 1.0.13 | [README](addons/thanks-for-buffing-forever/README.md) · [Changelog](addons/thanks-for-buffing-forever/CHANGELOG.md) |
-| Graphics Unlocked: Forever | 1.0.1 | [README](addons/graphics-unlocked-forever/README.md) · [Changelog](addons/graphics-unlocked-forever/CHANGELOG.md) |
-| Gentle Reminder: Forever | 1.0.2 | [README](addons/gentle-reminder-forever/README.md) · [Changelog](addons/gentle-reminder-forever/CHANGELOG.md) |
-| Addon Health Manager: Forever | 1.0.0 | [README](addons/addon-health-manager-forever/README.md) · [Changelog](addons/addon-health-manager-forever/CHANGELOG.md) |
-| Objective Hider for RestedXP: Forever | 1.0.2 | [README](addons/objective-hider-for-restedxp-forever/README.md) · [Changelog](addons/objective-hider-for-restedxp-forever/CHANGELOG.md) |
-| Choose a Main: Forever | 1.0.2 | [README](addons/choose-a-main-forever/README.md) · [Changelog](addons/choose-a-main-forever/CHANGELOG.md) |
+[Add-on website](https://gideonwhitlock.github.io/wow-forever-addons/) · [CurseForge](https://www.curseforge.com/members/gideonwhitlock/projects) · [YouTube](https://www.youtube.com/@GideonWhitlockWoW) · [Optional support](https://ko-fi.com/gideonwhitlock)
+
+| Add-on | Version | Documentation | Download | Full video | Short |
+|---|---:|---|---|---|---|
+| Campfire Tooltips: Forever | 1.0.2 | [README](addons/campfire-tooltips/README.md) · [Changelog](addons/campfire-tooltips/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/campfire-tooltips) | [YouTube](https://youtu.be/3GcNEPl17y0) | [Short](https://youtube.com/shorts/z05B6QziquA) |
+| Feed Pet: Forever | 1.0.2 | [README](addons/feed-pet-forever/README.md) · [Changelog](addons/feed-pet-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/feed-pet-forever) | [YouTube](https://youtu.be/lVknLDpYFNc) | [Short](https://youtube.com/shorts/_3BZxxMcTTI) |
+| Campfire Stories: Forever | 3.0.3 | [README](addons/campfire-stories/README_SECTION.md) · [Changelog](addons/campfire-stories/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/campfire-stories) | [YouTube](https://youtu.be/WRWzFLMsZ3o) | [Short](https://youtube.com/shorts/JDaBCacZ1eE) |
+| Utility Helper: Forever | 0.1.22 | [README](addons/utility-helper/README.md) · [Changelog](addons/utility-helper/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/utility-helper) | [YouTube](https://youtu.be/Fpw8RDISIk4) | [Short](https://youtube.com/shorts/MyqN8RvalSc) |
+| Night Watch Torch Helper: Forever | 1.0.2 | [README](addons/night-watch-torch-helper/README.md) · [Changelog](addons/night-watch-torch-helper/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/night-watch-torch-helper-forever) | [YouTube](https://youtu.be/vM9aDFz9j7w) | [Short](https://youtube.com/shorts/Zmk_Rd_ZHJQ) |
+| Combo Points Plate: Forever | 1.0.6 | [README](addons/combo-points-plate-forever/README-section.md) · [Changelog](addons/combo-points-plate-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/combo-points-forever-addon) | [YouTube](https://youtu.be/lKikLVh04Y4) | [Short](https://youtube.com/shorts/4HB71g-2A3o) |
+| Minimap Button: Forever | 1.0.19 | [README](addons/minimap-button-forever/README.md) · [Changelog](addons/minimap-button-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/minimap-button-forever) | [YouTube](https://youtu.be/BOt04rqn8yk) | [Short](https://youtube.com/shorts/vVtjfRtm1Fs) |
+| Misspelled: Forever | 1.1.1 | [README](addons/misspelled-forever/README.md) · [Changelog](addons/misspelled-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/misspelled-forever) | [YouTube](https://youtu.be/gn7IWbM8tMc) | [Short](https://youtube.com/shorts/XZcBzAIUx4E) |
+| Totem Tooltip: Forever | 1.0.0 | [README](addons/totem-tooltip-forever/README.md) · [Changelog](addons/totem-tooltip-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/totem-tooltip-forever) | [YouTube](https://youtu.be/rFxLs73fKQo) | [Short](https://youtube.com/shorts/QT7DoNT5aLQ) |
+| Thanks for Buffing: Forever | 1.0.13 | [README](addons/thanks-for-buffing-forever/README.md) · [Changelog](addons/thanks-for-buffing-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/thanks-for-buffing-forever) | [YouTube](https://youtu.be/Xu1xAH5xSfk) | [Short](https://youtube.com/shorts/CIQ_jMLt5T8) |
+| Graphics Unlocked: Forever | 1.0.1 | [README](addons/graphics-unlocked-forever/README.md) · [Changelog](addons/graphics-unlocked-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/graphics-unlocked-forever) | [YouTube](https://youtu.be/KwVVK8HuTBI) | [Short](https://youtube.com/shorts/e8QuPjzCzcw) |
+| Gentle Reminder: Forever | 1.0.2 | [README](addons/gentle-reminder-forever/README.md) · [Changelog](addons/gentle-reminder-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/gentle-reminder-forever) | [YouTube](https://youtu.be/wlQIO_nXSyw) | [Short](https://youtube.com/shorts/dY2MCsjkeTc) |
+| Addon Health Manager: Forever | 1.0.0 | [README](addons/addon-health-manager-forever/README.md) · [Changelog](addons/addon-health-manager-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/addon-health-manager-forever) | [YouTube](https://youtu.be/gJd5TI7flx4) | [Short](https://youtube.com/shorts/LHttUAj88eY) |
+| Objective Hider for RestedXP: Forever | 1.0.2 | [README](addons/objective-hider-for-restedxp-forever/README.md) · [Changelog](addons/objective-hider-for-restedxp-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/objective-hider-for-restedxp-forever) | [YouTube](https://youtu.be/ClDdbJD2sBA) | [Short](https://youtube.com/shorts/0-F5hl2etcM) |
+| Choose a Main: Forever | 1.0.2 | [README](addons/choose-a-main-forever/README.md) · [Changelog](addons/choose-a-main-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/choose-a-main-forever) | [YouTube](https://youtu.be/qU-Nen7UfXk) | [Short](https://youtube.com/shorts/oz6Up2AmQg8) |
 
 Use the repository's issue forms to report a problem. Choose the form for the affected add-on and include its version, the WoW: Forever version and build, clear reproduction steps, expected and actual behaviour, relevant add-ons, and a redacted error message when available.
 
