@@ -88,7 +88,7 @@ assert(scheduled[2].delay >= 2.5 and scheduled[2].delay <= 9.5, "the refresh wai
 
 scheduled[2].callback()
 assert(#whispers == 1, "the refreshed aura caster should receive one whisper")
-assert(whispers[1].target == "Arcana", "the refreshed source should use the accepted same-realm whisper name")
+assert(whispers[1].target == "Arcana TestRealm", "the refreshed source should use the complete Forever name")
 assert(whispers[1].chatType == "WHISPER", "the refreshed source path must remain private")
 
 print("Forever aura refresh tests passed")

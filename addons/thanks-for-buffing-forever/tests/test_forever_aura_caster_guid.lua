@@ -113,7 +113,8 @@ for index, family in ipairs(families) do
     scheduled[index].callback()
 
     assert(#whispers == index, family.label .. " should send exactly one whisper")
-    assert(whispers[index].target == playersByGUID[family.casterGUID].name, family.label .. " should whisper the same-realm GUID-resolved caster without a realm suffix")
+    local player = playersByGUID[family.casterGUID]
+    assert(whispers[index].target == player.name .. " " .. player.realm, family.label .. " should whisper the complete Forever first name and surname")
     assert(whispers[index].chatType == "WHISPER", family.label .. " must remain private")
     now = now + 1
 end

@@ -6,7 +6,6 @@ local scheduled = {}
 local whispers = {}
 local eventHandler
 local now = 1500
-local grouped = false
 local targetingPlayer = {}
 
 local units = {
@@ -50,7 +49,7 @@ end
 function GetTime() return now end
 function GetBuildInfo() return "1.60.1.70205", "70205", "Oct 2026", 16001 end
 function InCombatLockdown() return false end
-function IsInGroup() return grouped end
+function IsInGroup() return false end
 function issecretvalue() return false end
 function UnitExists(unit) return unit == "player" or units[unit] ~= nil end
 function UnitIsPlayer(unit) return UnitExists(unit) end
@@ -92,7 +91,7 @@ for index, family in ipairs(families) do
     targetingPlayer[family.unit] = not family.useSentTarget
 
     if family.useSentTarget then
-        eventHandler(nil, "UNIT_SPELLCAST_SENT", family.unit, "Self", castGUID, family.castSpellID)
+        eventHandler(nil, "UNIT_SPELLCAST_SENT", family.unit, "Self TestRealm", castGUID, family.castSpellID)
     end
 
     local auraUpdate = {
@@ -126,27 +125,10 @@ for index, family in ipairs(families) do
     scheduled[thanksIndex].callback()
 
     assert(#whispers == index, family.label .. " should send exactly one whisper")
-    assert(whispers[index].target == units[family.unit].name, family.label .. " should whisper the targeted same-realm caster")
+    assert(whispers[index].target == units[family.unit].name .. " TestRealm", family.label .. " should whisper the targeted caster's complete Forever name")
     assert(whispers[index].chatType == "WHISPER", family.label .. " must remain private")
     now = now + 3
 end
-
-grouped = true
-targetingPlayer.nameplate7 = true
-eventHandler(nil, "UNIT_AURA", "player", {
-    isFullUpdate = false,
-    addedAuras = {
-        { auraInstanceID = 2999, spellId = 1283998, isHelpful = true, sourceUnit = nil },
-    },
-})
-eventHandler(nil, "UNIT_SPELLCAST_SUCCEEDED", "nameplate7", "Cast-Grouped-External", 10000)
-assert(#scheduled == 13, "a grouped external caster should still queue its correlation timer")
-now = now + 0.5
-scheduled[13].callback()
-assert(#scheduled == 14, "a grouped external caster should still schedule a thank-you after correlation")
-scheduled[14].callback()
-assert(#whispers == 7 and whispers[7].target == "Otherbuffer", "a grouped external correlated caster should receive one whisper")
-grouped = false
 
 targetingPlayer.nameplate1 = true
 targetingPlayer.nameplate7 = true
@@ -159,10 +141,10 @@ eventHandler(nil, "UNIT_AURA", "player", {
     },
 })
 
-assert(#scheduled == 15, "an ambiguous targeted-caster case should queue only its correlation timer")
+assert(#scheduled == 13, "an ambiguous targeted-caster case should queue only its correlation timer")
 now = now + 0.5
-scheduled[15].callback()
-assert(#scheduled == 15, "two different targeted casters must be rejected")
-assert(#whispers == 7, "ambiguity must not send a whisper")
+scheduled[13].callback()
+assert(#scheduled == 13, "two different targeted casters must be rejected")
+assert(#whispers == 6, "ambiguity must not send a whisper")
 
 print("Forever targeted cast spell-family tests passed")

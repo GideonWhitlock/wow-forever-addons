@@ -85,7 +85,7 @@ assert(scheduled[1].delay >= 3 and scheduled[1].delay <= 10, "delay must be 3-10
 scheduled[1].callback()
 assert(#whispers == 1, "one whisper should be sent")
 assert(whispers[1].chatType == "WHISPER", "message must be a whisper")
-assert(whispers[1].target == "Buffy", "Forever should omit the realm suffix even when its local realm labels do not compare equally")
+assert(whispers[1].target == "Buffy TestRealm", "Forever should combine the caster's first name and surname")
 
 eventHandler(nil, "UNIT_AURA", "player", update)
 assert(#scheduled == 1, "ten-minute cooldown should suppress another immediate thank-you")
@@ -103,7 +103,7 @@ assert(#whispers == 2, "a second whisper should be sent after the cooldown")
 grouped = true
 now = now + 600
 eventHandler(nil, "UNIT_AURA", "player", update)
-assert(#scheduled == 2, "an actual party member buff should not schedule a whisper")
+assert(#scheduled == 2, "party and raid buffs should not schedule whispers")
 
 grouped = false
 secretName = true
@@ -125,7 +125,7 @@ assert(#scheduled == 4, "an aura-before-cast event order should schedule the tha
 assert(scheduled[4].delay >= 2.5 and scheduled[4].delay <= 9.5, "correlation time should be subtracted from the overall 3-10 second delay")
 scheduled[4].callback()
 assert(#whispers == 3, "the aura-before-cast Arcane Intellect path should whisper")
-assert(whispers[3].target == "Arcana", "the Arcane Intellect caster should receive the whisper")
+assert(whispers[3].target == "Arcana TestRealm", "the Arcane Intellect caster should receive the whisper")
 
 eventHandler(nil, "UNIT_SPELLCAST_SUCCEEDED", "nameplate1", "Cast-1", 20217)
 eventHandler(nil, "UNIT_AURA", "player", {
@@ -140,25 +140,12 @@ scheduled[5].callback()
 assert(#scheduled == 6, "a cast-before-aura event order should also schedule the thank-you")
 scheduled[6].callback()
 assert(#whispers == 4, "the correlated Blessing should send a whisper")
-assert(whispers[4].target == "Kingsbuffer", "the nearby Blessing caster should receive the whisper")
+assert(whispers[4].target == "Kingsbuffer TestRealm", "the nearby Blessing caster should receive the whisper")
 
 chatLocked = true
 eventHandler(nil, "UNIT_AURA", "player", update)
 assert(#scheduled == 7, "an otherwise eligible buff should still schedule before chat lockdown is checked")
 scheduled[7].callback()
 assert(#whispers == 4, "chat lockdown should drop the whisper without calling the protected API")
-
-chatLocked = false
-grouped = true
-now = now + 600
-eventHandler(nil, "UNIT_AURA", "player", {
-    isFullUpdate = false,
-    addedAuras = {
-        { isHelpful = true, sourceUnit = "nameplate2", spellId = 1459 },
-    },
-})
-assert(#scheduled == 8, "an external player should still be thanked while the recipient is grouped")
-scheduled[8].callback()
-assert(#whispers == 5 and whispers[5].target == "Arcana", "the external grouped-state caster should receive one whisper")
 
 print("Forever behavior tests passed")

@@ -107,6 +107,6 @@ helpfulAuras[#helpfulAuras + 1] = {
 eventHandler(nil, "UNIT_AURA", "player", nil)
 assert(#scheduled == 1, "a genuinely new external buff after the settling baseline should schedule one thank-you")
 scheduled[1].callback()
-assert(#whispers == 1 and whispers[1].target == "Newcaster", "the genuine same-realm caster should receive the accepted whisper name")
+assert(#whispers == 1 and whispers[1].target == "Newcaster TestRealm", "the genuine caster should receive the complete Forever whisper name")
 
 print("Forever login replay tests passed")

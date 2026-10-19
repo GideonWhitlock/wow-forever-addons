@@ -113,7 +113,8 @@ for index, family in ipairs(families) do
     assert(scheduled[index].delay >= 3 and scheduled[index].delay <= 10, family.label .. " should keep the 3-10 second delay")
     scheduled[index].callback()
     assert(#whispers == index, family.label .. " should send exactly one whisper")
-    assert(whispers[index].target == units[family.unit].name, family.label .. " should use Forever's bare-name whisper target even when an aura exposes a realm")
+    local player = units[family.unit]
+    assert(whispers[index].target == player.name .. " " .. (player.realm or "TestRealm"), family.label .. " should use Forever's complete first name and surname")
     assert(whispers[index].chatType == "WHISPER", family.label .. " must stay private")
     now = now + 1
 end

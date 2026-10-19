@@ -42,26 +42,26 @@ function CreateFrame()
 end
 
 function GetTime() return now end
-function GetBuildInfo() return "1.60.1.70205", "70205", "Oct 2026", 16001 end
+function GetBuildInfo() return "1.60.1.70450", "70450", "Oct 2026", 16001 end
 function InCombatLockdown() return combat end
 function IsInGroup() return grouped end
 function issecretvalue(value) return value == SECRET end
-function UnitExists(unit) return unit == "player" or unit == "party1" or unit == "nameplate1" or unit == "nameplate2" or unit == "nameplate3" or unit == "nameplate4" end
+function UnitExists(unit) return unit == "player" or unit == "nameplate1" or unit == "nameplate2" or unit == "nameplate3" or unit == "nameplate4" or (grouped and unit == "party1") end
 function UnitIsPlayer(unit) return UnitExists(unit) end
 function UnitGUID(unit)
     if unit == "player" then return "Player-Self" end
-    if unit == "party1" then return "Player-One" end
     if unit == "nameplate1" then return "Player-One" end
     if unit == "nameplate2" then return "Player-Two" end
     if unit == "nameplate3" then return "Player-Three" end
     if unit == "nameplate4" then return "Player-One-AlternateRoute" end
+    if unit == "party1" and grouped then return "Player-One" end
 end
 function UnitFullName(unit)
-    if unit == "party1" then return "One", "Realm" end
     if unit == "nameplate1" then return "One", "Realm" end
     if unit == "nameplate2" then return "Two", "Realm" end
     if unit == "nameplate3" then return secretThirdName and SECRET or "Three", "Realm" end
     if unit == "nameplate4" then return "One", "Realm" end
+    if unit == "party1" and grouped then return "One", "Realm" end
     return "Self", "Realm"
 end
 function wipe(tableValue)
@@ -81,9 +81,10 @@ SlashCmdList.THANKSFORTHEBUFFFOREVER("debug")
 
 eventHandler(nil, "PLAYER_LOGIN")
 eventHandler(nil, "PLAYER_ENTERING_WORLD")
-assert(registered.UNIT_AURA == true, "build 1.60.1.70205 should register global UNIT_AURA and filter player events")
-assert(registered.UNIT_SPELLCAST_SUCCEEDED, "build 1.60.1.70205 should register cast correlation")
-assert(registered.PLAYER_ENTERING_WORLD, "build 1.60.1.70205 should baseline helpful auras on world entry")
+assert(registered.UNIT_AURA == true, "build 1.60.1.70450 should register global UNIT_AURA and filter player events")
+assert(registered.UNIT_SPELLCAST_SUCCEEDED, "build 1.60.1.70450 should register cast correlation")
+assert(registered.PLAYER_ENTERING_WORLD, "build 1.60.1.70450 should baseline helpful auras on world entry")
+assert(registered.PLAYER_REGEN_ENABLED, "build 1.60.1.70450 should flush deferred whispers after combat")
 assert(not registered.COMBAT_LOG_EVENT_UNFILTERED, "Forever must not register the protected combat log")
 
 local directAura = {
@@ -100,7 +101,7 @@ assert(#scheduled == 1, "multiple buffs with alternate GUID routes for one named
 assert(scheduled[1].delay >= 3 and scheduled[1].delay <= 10, "the delay should remain inside 3-10 seconds")
 local detectedLines = 0
 for _, message in ipairs(printed) do
-    if string.find(message, "Detected a buff from One.", 1, true) then
+    if string.find(message, "Detected a buff from One Realm.", 1, true) then
         detectedLines = detectedLines + 1
     end
 end
@@ -115,19 +116,24 @@ eventHandler(nil, "UNIT_AURA", "player", directAura)
 assert(#scheduled == 2, "a dropped grouped whisper should not start the cooldown")
 combat = true
 scheduled[2].callback()
-assert(#whispers == 0, "entering combat before the timer fires should cancel delivery")
+assert(#whispers == 0, "entering combat before the timer fires should defer delivery")
 
 combat = false
+eventHandler(nil, "PLAYER_REGEN_ENABLED")
+assert(#whispers == 1 and whispers[1].target == "One Realm", "leaving combat should deliver the deferred whisper to the complete Forever name")
+assert(whispers[1].chatType == "WHISPER", "deferred combat delivery must remain private")
+
+now = now + 600
 eventHandler(nil, "UNIT_AURA", "player", directAura)
 chatLocked = true
 scheduled[3].callback()
-assert(#whispers == 0, "chat lockdown should cancel delivery")
+assert(#whispers == 1, "chat lockdown should defer delivery")
+assert(#scheduled == 4 and scheduled[4].delay == 1, "chat lockdown should schedule the bounded retry")
 
 chatLocked = false
-eventHandler(nil, "UNIT_AURA", "player", directAura)
 scheduled[4].callback()
-assert(#whispers == 1 and whispers[1].target == "One", "an eligible direct aura should use its caster's same-realm whisper name")
-assert(whispers[1].chatType == "WHISPER", "delivery must remain private")
+assert(#whispers == 2 and whispers[2].target == "One Realm", "the retry should deliver to the caster's complete Forever name")
+assert(whispers[2].chatType == "WHISPER", "chat-lockdown retry must remain private")
 
 now = now + 599
 eventHandler(nil, "UNIT_AURA", "player", directAura)
@@ -136,7 +142,7 @@ now = now + 1
 eventHandler(nil, "UNIT_AURA", "player", directAura)
 assert(#scheduled == 5, "the caster should become eligible at exactly 10:00")
 scheduled[5].callback()
-assert(#whispers == 2, "the eligible repeat should send after ten minutes")
+assert(#whispers == 3, "the eligible repeat should send after ten minutes")
 
 eventHandler(nil, "UNIT_SPELLCAST_SUCCEEDED", "nameplate2", "Cast-A", 20217)
 eventHandler(nil, "UNIT_SPELLCAST_SUCCEEDED", "nameplate3", "Cast-B", 20217)
@@ -159,7 +165,7 @@ now = now + 0.5
 scheduled[7].callback()
 assert(#scheduled == 8, "one recent visible caster should match after correlation")
 scheduled[8].callback()
-assert(#whispers == 3 and whispers[3].target == "Two", "the unique correlated caster should receive the whisper")
+assert(#whispers == 4 and whispers[4].target == "Two Realm", "the unique correlated caster should receive the whisper")
 
 eventHandler(nil, "UNIT_AURA", "player", {
     isFullUpdate = false,
@@ -189,7 +195,7 @@ eventHandler(nil, "UNIT_AURA", "player", {
 assert(#scheduled == 10, "a third caster should be schedulable")
 SlashCmdList.THANKSFORTHEBUFFFOREVER("off")
 scheduled[10].callback()
-assert(#whispers == 3, "disabling the addon should invalidate pending whispers")
+assert(#whispers == 4, "disabling the addon should invalidate pending whispers")
 
 assert(#printed > 0, "debug and command status should remain local chat output")
-print("Forever 1.60.1.70205 edge-case tests passed")
+print("Forever 1.60.1.70450 edge-case tests passed")
