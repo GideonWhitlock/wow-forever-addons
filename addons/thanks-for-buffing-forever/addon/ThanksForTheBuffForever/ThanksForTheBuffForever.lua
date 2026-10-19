@@ -6,6 +6,9 @@ local CASTER_COOLDOWN_SECONDS = 10 * 60
 local CAST_MATCH_WINDOW_SECONDS = 2.5
 local CAST_CORRELATION_DELAY_SECONDS = 0.5
 local WORLD_ENTRY_BASELINE_DELAY_SECONDS = 2
+local RECENT_SPEAKER_SECONDS = 120
+local DEFERRED_DELIVERY_TIMEOUT_SECONDS = 15 * 60
+local CHAT_LOCKDOWN_RETRY_SECONDS = 1
 
 local THANK_YOU_MESSAGES = {
     "thanks!",
@@ -43,12 +46,14 @@ local recentCastsBySpellID = {}
 local recentTargetedCasts = {}
 local sentCastTargetsByGUID = {}
 local pendingAnonymousAuraBySpellID = {}
+local recentSpeakerNamesByGUID = {}
 local knownHelpfulAuras = {}
 local auraSnapshotInitialized = false
 local auraDetectionArmed = false
 local worldEntryBaselineToken
 local playerGUID
 local debugEnabled = false
+local TrySendThanks
 
 local function Print(message)
     DEFAULT_CHAT_FRAME:AddMessage("|cff7dd3fcThanks for Buffing: Forever|r " .. message)
@@ -96,6 +101,33 @@ local function IsModernRestrictedClient()
     return WOW_PROJECT_ID == WOW_PROJECT_MAINLINE or IsForeverClient()
 end
 
+local function GetWhisperTargetName(name, secondName)
+    if not name or IsSecret(name) or IsSecret(secondName) or type(name) ~= "string" or name == "" then
+        return nil
+    end
+
+    -- On Forever, UnitFullName and GetPlayerInfoByGUID return the character's
+    -- first name followed by surname. Every valid whisper target needs both.
+    if IsForeverClient() then
+        if type(secondName) == "string" and secondName ~= "" and not string.find(name, "%s") then
+            return name .. " " .. secondName
+        end
+        return name
+    end
+
+    -- Other modern branches use the second return value as the realm.
+    local _, playerRealm = UnitFullName("player")
+    if IsSecret(playerRealm) then
+        return nil
+    end
+
+    if not secondName or secondName == "" or not playerRealm or playerRealm == "" or secondName == playerRealm then
+        return name
+    end
+
+    return name .. "-" .. secondName
+end
+
 local function SendWhisper(message, target)
     if C_ChatInfo and C_ChatInfo.SendChatMessage then
         C_ChatInfo.SendChatMessage(message, "WHISPER", nil, target)
@@ -128,7 +160,7 @@ local function GroupUnitMatchesCaster(unit, casterKey, targetName)
         return false
     end
 
-    return targetName == name or (realm and realm ~= "" and targetName == name .. "-" .. realm)
+    return targetName == GetWhisperTargetName(name, realm)
 end
 
 local function IsCasterInPlayersGroup(casterKey, targetName)
@@ -192,63 +224,66 @@ local function ScheduleThanks(casterKey, targetName, buffDetectedAt)
         return false
     end
 
-    local token = {}
+    local token = {
+        casterKey = casterKey,
+        targetName = targetName,
+        createdAt = now,
+        ready = false,
+        retryScheduled = false,
+    }
     pendingByCaster[responseKey] = token
 
     local totalDelay = math.random(MIN_DELAY_SECONDS * 10, MAX_DELAY_SECONDS * 10) / 10
     local elapsed = buffDetectedAt and math.max(0, now - buffDetectedAt) or 0
     local delay = math.max(0, totalDelay - elapsed)
     C_Timer.After(delay, function()
-        if pendingByCaster[responseKey] ~= token then
-            return
-        end
-
-        pendingByCaster[responseKey] = nil
-
-        if not IsEnabled() then
-            return
-        end
-
-        -- Forever and modern Retail restrict aura and chat data during combat.
-        -- Dropping the whisper is safer than causing a protected-action error.
-        if (IsModernRestrictedClient() and InCombatLockdown()) or IsChatMessagingLockedDown() then
-            return
-        end
-
-        if IsCasterInPlayersGroup(casterKey, targetName) then
-            return
-        end
-
-        SendWhisper(PickMessage(responseKey), targetName)
-        Debug("Submitted a thank-you whisper to " .. targetName .. ".")
-        lastThankedByCaster[responseKey] = GetTime()
+        token.ready = true
+        TrySendThanks(responseKey, token)
     end)
 
     return true
 end
 
-local function GetWhisperTargetName(name, realm)
-    if not name or IsSecret(name) or IsSecret(realm) or type(name) ~= "string" or name == "" then
-        return nil
+TrySendThanks = function(responseKey, token)
+    if pendingByCaster[responseKey] ~= token or not token.ready then
+        return
     end
 
-    -- Forever chat rejects realm-qualified player targets even when its unit
-    -- APIs expose a realm label. Always use the bare display name there.
-    if IsForeverClient() then
-        return name
+    if not IsEnabled() or GetTime() - token.createdAt > DEFERRED_DELIVERY_TIMEOUT_SECONDS then
+        pendingByCaster[responseKey] = nil
+        return
     end
 
-    -- Other modern branches retain the conventional cross-realm suffix.
-    local _, playerRealm = UnitFullName("player")
-    if IsSecret(playerRealm) then
-        return nil
+    -- Forever can protect addon chat while combat is active. Preserve the
+    -- already identified recipient and retry after lockdown instead of losing
+    -- the thank-you. No caster is guessed while information is protected.
+    if (IsModernRestrictedClient() and InCombatLockdown()) or IsChatMessagingLockedDown() then
+        if not InCombatLockdown() and not token.retryScheduled then
+            token.retryScheduled = true
+            C_Timer.After(CHAT_LOCKDOWN_RETRY_SECONDS, function()
+                token.retryScheduled = false
+                TrySendThanks(responseKey, token)
+            end)
+        end
+        return
     end
 
-    if not realm or realm == "" or not playerRealm or playerRealm == "" or realm == playerRealm then
-        return name
+    pendingByCaster[responseKey] = nil
+    if IsCasterInPlayersGroup(token.casterKey, token.targetName) then
+        return
     end
 
-    return name .. "-" .. realm
+    SendWhisper(PickMessage(responseKey), token.targetName)
+    Debug("Submitted a thank-you whisper to " .. token.targetName .. ".")
+    lastThankedByCaster[responseKey] = GetTime()
+end
+
+local function FlushDeferredThanks()
+    for responseKey, token in pairs(pendingByCaster) do
+        if token.ready then
+            TrySendThanks(responseKey, token)
+        end
+    end
 end
 
 local function GetFullUnitName(unit)
@@ -257,7 +292,12 @@ local function GetFullUnitName(unit)
 end
 
 local function GetCasterFromUnit(unit)
-    if not unit or IsSecret(unit) or not UnitExists(unit) then
+    if not unit or IsSecret(unit) then
+        return nil, nil, false
+    end
+
+    local unitExists = UnitExists(unit)
+    if IsSecret(unitExists) or not unitExists then
         return nil, nil, false
     end
 
@@ -349,12 +389,50 @@ local function GetFullPlayerNameFromGUID(casterGUID)
         return visibleName
     end
 
+    -- Forever's GUID-only lookup can truncate multi-word character names. A
+    -- nearby chat event supplies the same player's GUID and exact display name,
+    -- so prefer that recent identity when the caster has just spoken.
+    local recentSpeaker = recentSpeakerNamesByGUID[casterGUID]
+    if recentSpeaker then
+        if GetTime() - recentSpeaker.time <= RECENT_SPEAKER_SECONDS then
+            return recentSpeaker.name
+        end
+        recentSpeakerNamesByGUID[casterGUID] = nil
+    end
+
     if not GetPlayerInfoByGUID then
         return nil
     end
 
     local _, _, _, _, _, name, realm = GetPlayerInfoByGUID(casterGUID)
     return GetWhisperTargetName(name, realm)
+end
+
+local function RememberNearbySpeaker(senderName, senderGUID)
+    if not senderName or IsSecret(senderName) or type(senderName) ~= "string" or senderName == ""
+        or not senderGUID or IsSecret(senderGUID) or senderGUID == playerGUID
+    then
+        return
+    end
+
+    if C_PlayerInfo and C_PlayerInfo.GUIDIsPlayer then
+        local isPlayer = C_PlayerInfo.GUIDIsPlayer(senderGUID)
+        if IsSecret(isPlayer) or not isPlayer then
+            return
+        end
+    elseif type(senderGUID) ~= "string" or not string.find(senderGUID, "^Player%-") then
+        return
+    end
+
+    local targetName = senderName
+    if IsForeverClient() then
+        targetName = string.match(senderName, "^([^%-]+)") or senderName
+    end
+
+    recentSpeakerNamesByGUID[senderGUID] = {
+        name = targetName,
+        time = GetTime(),
+    }
 end
 
 local function GetCasterFromAuraInstance(auraInstanceID)
@@ -398,16 +476,12 @@ local function TargetNameIsPlayer(targetName)
         return false
     end
 
-    local playerName, playerRealm = UnitFullName("player")
-    if not playerName or IsSecret(playerName) or IsSecret(playerRealm) then
+    local playerName, playerSecondName = UnitFullName("player")
+    if not playerName or IsSecret(playerName) or IsSecret(playerSecondName) then
         return false
     end
 
-    if targetName == playerName then
-        return true
-    end
-
-    return playerRealm and playerRealm ~= "" and targetName == playerName .. "-" .. playerRealm
+    return targetName == GetWhisperTargetName(playerName, playerSecondName)
 end
 
 local function UnitTargetsPlayer(unit)
@@ -626,8 +700,19 @@ local function HandleAura(aura)
     local spellID = aura.spellId
     local auraInstanceID = aura.auraInstanceID
 
-    if IsSecret(isHelpful) or IsSecret(isFromPlayerOrPlayerPet) or IsSecret(spellID) then
+    if IsSecret(isHelpful) then
         return false
+    end
+
+    -- Forever can protect individual ownership or spell fields even when the
+    -- aura's source unit remains readable. Those fields are useful hints, but
+    -- they are not required when the exact player caster can still be resolved.
+    if IsSecret(isFromPlayerOrPlayerPet) then
+        isFromPlayerOrPlayerPet = nil
+    end
+
+    if IsSecret(spellID) then
+        spellID = nil
     end
 
     if IsSecret(sourceUnit) then
@@ -702,15 +787,16 @@ local function ForEachHelpfulAura(callback)
     if C_UnitAuras and C_UnitAuras.GetAuraDataByIndex then
         for index = 1, 255 do
             local aura = C_UnitAuras.GetAuraDataByIndex("player", index, "HELPFUL")
-            if IsSecret(aura) then
-                return false
-            end
-
             if not aura then
                 return true
             end
 
-            callback(aura)
+            -- Forever can expose an individual protected aura among otherwise
+            -- readable helpful auras. Skipping that one entry keeps detection
+            -- armed for later public buffs such as Mark of the Wild.
+            if not IsSecret(aura) then
+                callback(aura)
+            end
         end
 
         return true
@@ -770,15 +856,13 @@ end
 local function HandleUnitAura(updateInfo)
     -- Forever may omit the modern incremental payload entirely. Prefer it
     -- when usable, otherwise diff a complete helpful-aura snapshot.
-    if InCombatLockdown() then
-        return
-    end
-
     if not auraDetectionArmed then
         -- Aura events replay the character's existing buffs while login and
         -- world entry are still settling. Keep the baseline current, but do
         -- not treat any of those auras as a genuinely new application.
-        RefreshHelpfulAuraSnapshot(false)
+        if not InCombatLockdown() then
+            RefreshHelpfulAuraSnapshot(false)
+        end
         return
     end
 
@@ -793,10 +877,33 @@ local function HandleUnitAura(updateInfo)
                     HandleAura(aura)
                 end
             end
+
+            -- Forever can report a freshly reapplied long-duration buff as an
+            -- updated aura instance rather than a new aura. Resolve those
+            -- instances immediately so refreshes such as Power Word: Fortitude
+            -- and Mark of the Wild are not silently missed.
+            local updatedAuraInstanceIDs = updateInfo.updatedAuraInstanceIDs
+            if not IsSecret(updatedAuraInstanceIDs) and type(updatedAuraInstanceIDs) == "table"
+                and not InCombatLockdown()
+                and C_UnitAuras and C_UnitAuras.GetAuraDataByAuraInstanceID
+            then
+                usedIncrementalUpdate = true
+                for _, auraInstanceID in ipairs(updatedAuraInstanceIDs) do
+                    if not IsSecret(auraInstanceID) then
+                        local aura = C_UnitAuras.GetAuraDataByAuraInstanceID("player", auraInstanceID)
+                        HandleAura(aura)
+                    end
+                end
+            end
         end
     end
 
-    if usedIncrementalUpdate then
+    if InCombatLockdown() then
+        -- Only readable incremental aura records are used in combat. The full
+        -- snapshot is deliberately left at its pre-combat state so a safe
+        -- post-combat scan can recover any lasting buff the client hid.
+        return
+    elseif usedIncrementalUpdate then
         RefreshHelpfulAuraSnapshot(false)
     else
         local scanned, _, processedNewAuras = RefreshHelpfulAuraSnapshot(true)
@@ -807,8 +914,20 @@ local function HandleUnitAura(updateInfo)
 end
 
 local function HandleCombatLogEvent()
+    if not CombatLogGetCurrentEventInfo then
+        return
+    end
+
     local _, subevent, _, sourceGUID, sourceName, sourceFlags, _, destinationGUID, _, _, _, _, _, _, auraType =
         CombatLogGetCurrentEventInfo()
+
+    -- Forever may protect any individual combat-log value. Ignore that event
+    -- rather than performing comparisons or bit operations on secret values.
+    if IsSecret(subevent) or IsSecret(sourceGUID) or IsSecret(sourceName)
+        or IsSecret(sourceFlags) or IsSecret(destinationGUID) or IsSecret(auraType)
+    then
+        return
+    end
 
     if (subevent ~= "SPELL_AURA_APPLIED" and subevent ~= "SPELL_AURA_REFRESH")
         or auraType ~= "BUFF"
@@ -819,11 +938,16 @@ local function HandleCombatLogEvent()
         return
     end
 
-    if bit.band(sourceFlags or 0, COMBATLOG_OBJECT_TYPE_PLAYER) == 0 then
+    if not bit or not bit.band or not COMBATLOG_OBJECT_TYPE_PLAYER
+        or bit.band(sourceFlags or 0, COMBATLOG_OBJECT_TYPE_PLAYER) == 0
+    then
         return
     end
 
-    ScheduleThanks(sourceGUID, sourceName)
+    local targetName = GetWhisperTargetName(sourceName)
+    if ScheduleThanks(sourceGUID, targetName) then
+        Debug("Detected a buff from " .. targetName .. " through the combat log.")
+    end
 end
 
 local function ConfigureDetection()
@@ -831,7 +955,12 @@ local function ConfigureDetection()
         frame:RegisterEvent("UNIT_AURA")
         frame:RegisterEvent("UNIT_SPELLCAST_SENT")
         frame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+        frame:RegisterEvent("CHAT_MSG_SAY")
+        frame:RegisterEvent("CHAT_MSG_YELL")
+        frame:RegisterEvent("CHAT_MSG_EMOTE")
+        frame:RegisterEvent("CHAT_MSG_TEXT_EMOTE")
         frame:RegisterEvent("PLAYER_ENTERING_WORLD")
+        frame:RegisterEvent("PLAYER_REGEN_ENABLED")
     else
         frame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
     end
@@ -847,12 +976,14 @@ local function ResetTransientDetectionState()
     wipe(recentTargetedCasts)
     wipe(sentCastTargetsByGUID)
     wipe(pendingAnonymousAuraBySpellID)
+    wipe(recentSpeakerNamesByGUID)
 end
 
 frame:RegisterEvent("ADDON_LOADED")
 frame:RegisterEvent("PLAYER_LOGIN")
 
-frame:SetScript("OnEvent", function(_, event, arg1, arg2, arg3, arg4)
+frame:SetScript("OnEvent", function(_, event, ...)
+    local arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10, arg11, arg12 = ...
     if event == "ADDON_LOADED" and arg1 == ADDON_NAME then
         ThanksForTheBuffForeverDB = ThanksForTheBuffForeverDB or {}
         if ThanksForTheBuffForeverDB.enabled == nil then
@@ -892,6 +1023,21 @@ frame:SetScript("OnEvent", function(_, event, arg1, arg2, arg3, arg4)
                 worldEntryBaselineToken = nil
             end
         end)
+        return
+    end
+
+    if event == "PLAYER_REGEN_ENABLED" then
+        FlushDeferredThanks()
+        if auraDetectionArmed then
+            RefreshHelpfulAuraSnapshot(true)
+        end
+        return
+    end
+
+    if event == "CHAT_MSG_SAY" or event == "CHAT_MSG_YELL"
+        or event == "CHAT_MSG_EMOTE" or event == "CHAT_MSG_TEXT_EMOTE"
+    then
+        RememberNearbySpeaker(arg2, arg12)
         return
     end
 
