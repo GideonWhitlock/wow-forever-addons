@@ -1,51 +1,45 @@
 # Utility Helper: Forever changelog
 
+## 0.1.30
+
+- Active Battle Shout and Commanding Shout prompts now clear through Forever's
+  direct NeverSecret player-aura lookup when broad combat aura enumeration is
+  restricted.
+- A genuinely missing shout remains visible, including while Rage is low.
+- The protected action remains fixed until combat ends; only its presentation
+  is hidden after the buff is confirmed.
+
 ## 0.1.29
 
-- Battle Shout and Commanding Shout now clear their visible combat prompt as
-  soon as either shout is confirmed active.
-- Missing shouts still remain fully visible when Rage is temporarily low or
-  Forever restricts aura information.
-- The protected action remains fixed until combat ends, as required by WoW's
-  combat restrictions; only its icon, border and tooltip are hidden.
+- Battle Shout and Commanding Shout clear their visible combat prompt as soon
+  as either shout is confirmed active.
+- The protected combat action remains fixed while the icon, border and tooltip
+  are visually cleared.
 
 ## 0.1.28
 
-- Fixed the remaining case where Battle Shout and Commanding Shout could stay
-  invisible when Forever restricted aura information during combat.
-- Warrior shout reminders now remain visible unless an active shout is
-  positively confirmed.
-- Existing secure combat actions, buff-family detection and outside-combat
-  readiness rules are unchanged.
+- Missing warrior shouts now fail visible when Forever restricts broad combat
+  aura information.
 
 ## 0.1.27
 
-- Fixed Battle Shout and Commanding Shout reminders disappearing during combat
-  while the warrior temporarily lacks enough Rage.
-- A missing warrior shout now remains visible throughout combat and becomes
-  castable as soon as the game permits it.
-- Existing buff-family detection is unchanged: either active shout correctly
-  clears both reminders.
+- Missing Battle Shout and Commanding Shout remain prompted during combat even
+  while Rage is temporarily insufficient.
 
 ## 0.1.26
 
-- Fixed missing maintenance-buff prompts, including Battle Shout, sometimes
-  failing to activate during the global cooldown.
-- Genuine resource shortages are still respected, so Battle Shout waits until
-  the warrior has enough Rage.
-- Added focused coverage for GCD-only and insufficient-Rage states.
+- Missing maintenance-buff prompts remain visible when only the global
+  cooldown temporarily suppresses their cast.
 
 ## 0.1.25
 
-- The client’s explicit dead-pet error now overrides an incorrect Revive Pet
+- The client's explicit dead-pet error now overrides an incorrect Revive Pet
   usability result.
-- Revive Pet remains available after that correction even if Forever continues
-  reporting it as unavailable.
 
 ## 0.1.24
 
-- A failed Call Pet that reports a dead pet now switches to Revive Pet and
-  preserves the correction across reloads.
+- A failed Call Pet that reports a dead pet switches the helper to Revive Pet
+  and preserves the correction across reloads.
 
 ## 0.1.23
 
@@ -54,23 +48,44 @@
 
 ## 0.1.22
 
-- A living pet that despawns after being left on Stay now offers Call Pet
-  instead of Revive Pet.
+- Fixed a living hunter pet that despawns after being left on Stay incorrectly
+  showing Revive Pet.
+- Call Pet now takes priority when the client reports both Call Pet and Revive
+  Pet as usable.
+- Call Pet is now shown as a clickable out-of-combat utility when the living
+  pet is absent.
+- Tokenless and distant dead pets continue to offer Revive Pet.
 
 ## 0.1.21
 
-- Revive Pet now remains visible, clickable and bindable outside combat while
-  the pet is dead, while retaining its fixed combat action.
+- Revive Pet now remains visible and clickable outside combat while the pet is
+  dead instead of disappearing with the combat-only display.
+- Its configured keybind follows the dead-pet state outside combat and remains
+  preconfigured in combat.
+- Living, absent and dismissed pets hide the outside-combat button and release
+  its keybind.
+- Preserves the distant-corpse and tokenless dead-pet fixes from 0.1.20.
 
 ## 0.1.20
 
-- Revive Pet no longer applies an inappropriate range check or dead-pet target
-  token, allowing it to work for a distant corpse.
+- Fixed Revive Pet failing to appear for a distant pet corpse.
+- Revive Pet now acts on the hunter's stored pet without a corpse range check
+  or explicit dead-unit target.
+- Added guarded handling for a revivable pet whose unit token disappears,
+  while absent or dismissed pets remain suppressed.
+- Re-audited bandage input: readable low health enables the outside-combat
+  secure click and keybind; private health remains reminder-only to prevent an
+  invisible click area above the threshold.
 
 ## 0.1.19
 
-- Battle Shout and other learned maintenance buffs now retain fixed secure
-  buttons and can prompt when missing during combat.
+- Battle Shout and every supported learned maintenance buff can now appear and
+  remain clickable during combat when its buff family is missing.
+- Applying a maintenance buff clears its alert while preserving mutually
+  exclusive families and spell-specific conditions.
+- Bandages, profession tracking and Warlock stone creation remain restricted
+  to outside combat.
+- Fixed the return from arrange mode when combat interrupts editing.
 
 ## 0.1.18
 
