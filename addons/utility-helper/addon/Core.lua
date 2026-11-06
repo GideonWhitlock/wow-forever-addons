@@ -1,7 +1,8 @@
 local _, U = ...
 U.defaults = {size = 46, columns = 8, gap = 9, x = 0, y = -130, health = 50, mana = 50,
     pethealth = 50, idle = 0, compact = true, flash = true, party = false, incidental = true,
-    showManual = true, enabled = true, minimapAngle = 160, hidden = {}, bindings = {}, positions = {}, custom = {}}
+    showManual = true, enabled = true, minimapAngle = 160, petLastKnownDead = false,
+    hidden = {}, bindings = {}, positions = {}, custom = {}}
 U.UNKNOWN = "unknown"
 U.spellNames, U.itemInfo = {}, {}
 U.waitingSpells, U.waitingItems = {}, {}
@@ -64,10 +65,20 @@ function U.LoadSettings()
     end
     U.db.columns = math.floor(U.db.columns)
     U.class = select(2, UnitClass("player"))
+    U.petLastKnownDead = U.db.petLastKnownDead
 end
 function U.Alive(unit)
     if U.Public(UnitExists, unit) ~= true then return false end
     return U.Public(UnitIsDeadOrGhost, unit) == false
+end
+function U.RememberPetState()
+    local exists = U.Public(UnitExists, "pet")
+    if exists ~= true then return end
+    local dead = U.Public(UnitIsDeadOrGhost, "pet")
+    if dead ~= nil then
+        U.petLastKnownDead = dead
+        if U.db then U.db.petLastKnownDead = dead end
+    end
 end
 function U.FriendlyUnit()
     if U.Alive("target") and U.Public(UnitCanAssist, "player", "target") == true then return "target" end
@@ -348,6 +359,7 @@ function U.Condition(e, unit)
         if choice == nil then return nil, "Buff choice information restricted" end
     end
     if e.rule == "petmissing" then
+        U.RememberPetState()
         local exists = U.Public(UnitExists, "pet")
         if exists == true then return false, "Your pet is already present" end
         if exists ~= false then return nil, "Pet status unavailable" end
@@ -356,9 +368,13 @@ function U.Condition(e, unit)
         -- stored pet can be summoned; this also keeps Revive Pet suppressed.
         local callable = U.Public(C_Spell and C_Spell.IsSpellUsable, e.spellID)
         if callable == nil then return nil, "Pet status unavailable" end
+        if U.petLastKnownDead == true then
+            return false, "Your pet needs reviving"
+        end
         return callable, callable and "Call your pet" or "No callable pet"
     end
     if e.rule == "petdead" then
+        U.RememberPetState()
         local exists = U.Public(UnitExists, "pet")
         if exists == true then
             local dead = U.Public(UnitIsDeadOrGhost, "pet")
@@ -372,7 +388,11 @@ function U.Condition(e, unit)
             local callable = U.Public(C_Spell and C_Spell.IsSpellUsable, 883)
             local revivable = U.Public(C_Spell and C_Spell.IsSpellUsable, e.spellID)
             if callable == nil or revivable == nil then return nil, "Pet status unavailable" end
-            local dead = not callable and revivable
+            -- After a spirit-healer resurrection Forever can briefly report
+            -- both actions as usable even though the pet died first. Preserve
+            -- the last readable pet death state across the missing-token
+            -- transition; a previously living pet still gives Call Pet priority.
+            local dead = U.petLastKnownDead == true or (not callable and revivable)
             return dead, dead and "Revive your pet" or "No dead pet"
         end
         return nil, "Pet status unavailable"
@@ -487,11 +507,27 @@ function U.Readiness(e, unit)
     local casting = U.CastingEntry(e)
     if casting == true then return false, "Already casting or channeling this ability" end
     if casting == nil then return nil, "Current cast information restricted" end
-    local usable
+    local usable, insufficientPower
     if e.petSpell and e.slot and C_SpellBook.IsSpellBookItemUsable then
         usable = U.Public(C_SpellBook.IsSpellBookItemUsable, e.slot, e.bank)
-    else usable = U.Public(C_Spell.IsSpellUsable, e.spellID) end
-    if usable == false then return false, "Not usable: check resources, form, equipment or reagents" end
+    else
+        local ok, publicUsable, publicInsufficientPower = U.Call(C_Spell.IsSpellUsable, e.spellID)
+        if ok and not U.Secret(publicUsable) and not U.Secret(publicInsufficientPower) then
+            usable, insufficientPower = publicUsable, publicInsufficientPower
+        end
+    end
+    -- The client's explicit dead-pet error is more reliable than Forever's
+    -- transient Revive Pet usability flag after a spirit-healer resurrection.
+    -- During the global cooldown Forever may briefly return isUsable=false even
+    -- for a relevant spell. Keep the alert when the cooldown event confirms
+    -- GCD-only suppression, but still respect an explicit insufficient-power
+    -- result (notably Battle Shout's Rage cost).
+    local gcdSuppressed = e.maintenance and U.gcdOnly[e.spellID] == true and insufficientPower == false
+    if usable == false and not gcdSuppressed and not (e.rule == "petdead" and U.petLastKnownDead == true) then
+        return false, "Not usable: check resources, form, equipment or reagents"
+    end
+    if gcdSuppressed then usable = true end
+    if e.rule == "petdead" and U.petLastKnownDead == true then usable = true end
     -- Revive Pet acts on the hunter's stored pet and is not a ranged action
     -- against the current pet unit token, which may disappear after death.
     local rangeUnit = (e.selfCast or e.rule == "petdead") and "player" or unit

@@ -1,6 +1,28 @@
 # Utility Helper: Forever
 
-Version **0.1.22** for **WoW: Forever beta 1.60.1**, interface **16001**.
+Version **0.1.26** for **WoW: Forever 1.60.1**, interface **16001**.
+
+**Missing maintenance buffs now prompt reliably through the global cooldown.**
+This fixes Battle Shout sometimes failing to light up in combat immediately
+after another ability. A genuine insufficient-Rage result still suppresses the
+prompt until Battle Shout can actually be cast.
+
+**The client’s explicit dead-pet error now overrides Forever’s unreliable
+Revive Pet usability flag.** After Call Pet reports that the pet is dead,
+Utility Helper shows and enables Revive Pet even if the usability API still
+claims that Revive Pet is unavailable. A chat confirmation records detection.
+
+**A failed Call Pet now corrects an already-dead pet immediately.** When the
+client says “Your pet is dead. Use Revive Pet,” Utility Helper records that
+authoritative error, switches to Revive Pet, and preserves the correction
+across reloads. Seeing a living pet clears the saved death state.
+
+**Revive Pet now wins after a spirit-healer resurrection when the pet died
+first.** Forever can temporarily report both Call Pet and Revive Pet as usable
+after the hunter returns to life. Utility Helper now preserves the last readable
+pet-death state across that missing-token transition, shows Revive Pet for a
+known dead pet, and clears the remembered state as soon as a living pet is seen.
+The existing Stay/despawn case still offers Call Pet for a previously living pet.
 
 **A living hunter pet that despawns after being left on Stay now offers Call
 Pet instead of Revive Pet.** Forever can report both spells as usable after

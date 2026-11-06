@@ -1,7 +1,55 @@
-# Utility Helper: Forever 0.1.22 — verification record
+# Utility Helper: Forever 0.1.26 — verification record
 
-Updated: 10 October 2026. Target: WoW: Forever beta, interface 16001.
-Local installed client metadata: 1.60.1.70338.
+Updated: 6 November 2026. Target: WoW: Forever, interface 16001.
+Last locally assessed client metadata: 1.60.1.70790.
+
+## 0.1.26 Battle Shout global-cooldown prompt
+
+Forever can briefly return `isUsable=false` for Battle Shout during the global
+cooldown. The readiness check previously rejected that value before consuming
+the documented event-only `isOnGCD` snapshot, so a missing Battle Shout could
+remain at inactive opacity until the next refresh after the global cooldown.
+
+Maintenance buffs now retain their prompt when `SPELL_UPDATE_COOLDOWN` confirms
+that the restriction is GCD-only. The second public `IsSpellUsable` result still
+suppresses Battle Shout when Rage is genuinely insufficient. The focused
+regression covers both states, and the complete Lua 5.1 suite passes.
+
+## 0.1.25 explicit error overrides unreliable usability
+
+The native `ERR_PET_SPELL_DEAD` result is now authoritative. Once received,
+Utility Helper shows and enables Revive Pet even if Forever continues returning
+false from `C_Spell.IsSpellUsable(982)`. Call Pet is suppressed and a one-time
+chat line confirms that the error event was received. The focused regression
+forces this exact contradictory state and the complete suite passes.
+
+## 0.1.24 authoritative dead-pet error recovery
+
+For an already-dead pet loaded from an older add-on version, the missing pet
+token and dual-usable spell state are initially ambiguous. Utility Helper now
+listens for the documented UI_ERROR_MESSAGE event. If Call Pet produces the
+localized `ERR_PET_SPELL_DEAD` message, the add-on records the pet as dead,
+persists that correction in per-character settings, refreshes immediately and
+offers Revive Pet. A later readable living-pet state clears the saved flag.
+
+The focused test begins with no remembered state and both spells usable, emits
+the exact native error, then verifies persistent state, active Revive Pet and
+suppressed Call Pet. The full Lua 5.1 suite continues to pass.
+
+## 0.1.23 spirit-healer pet-death routing
+
+When a hunter pet dies before the hunter and the hunter then resurrects at a
+spirit healer, Forever can remove the pet unit token while reporting both Call
+Pet and Revive Pet as usable. Utility Helper now remembers the last readable
+dead/alive pet state across that transition. A known dead pet offers Revive Pet
+and suppresses Call Pet. Observing a living pet clears the remembered death
+state, preserving the 0.1.22 Call Pet behavior for a living pet left on Stay.
+
+The focused regression reproduces pet death, player death, token loss and
+PLAYER_UNGHOST with both spells usable. It verifies the visible, clickable
+Revive Pet button and verifies the state clears after a living pet returns.
+Lua 5.1 syntax and the complete suite pass: all nine classes, all 213 utility
+definitions and all existing secure-input, cooldown, buff, item and pet cases.
 
 ## 0.1.22 despawned hunter pet routing
 

@@ -129,6 +129,7 @@ f:SetScript("OnEvent", function(_, event, arg1, arg2)
         SLASH_UTILITYHELPER1, SLASH_UTILITYHELPER2 = "/uh", "/utilityhelper"
         SlashCmdList.UTILITYHELPER = U.Command
         for _, name in ipairs({"PLAYER_LOGIN", "PLAYER_ENTERING_WORLD", "PLAYER_REGEN_DISABLED", "PLAYER_REGEN_ENABLED",
+            "PLAYER_DEAD", "PLAYER_ALIVE", "PLAYER_UNGHOST",
             "SPELLS_CHANGED", "SKILL_LINES_CHANGED", "SPELL_TEXT_UPDATE", "SPELL_DATA_LOAD_RESULT", "UNIT_PET", "PET_BAR_UPDATE", "BAG_UPDATE_DELAYED", "GET_ITEM_INFO_RECEIVED",
             "UNIT_HEALTH", "UNIT_POWER_UPDATE", "UNIT_AURA", "PLAYER_TARGET_CHANGED", "PLAYER_FOCUS_CHANGED", "GROUP_ROSTER_UPDATE", "SPELL_UPDATE_COOLDOWN",
             "UNIT_SPELLCAST_START", "UNIT_SPELLCAST_STOP", "UNIT_SPELLCAST_CHANNEL_START", "UNIT_SPELLCAST_CHANNEL_STOP",
@@ -136,12 +137,27 @@ f:SetScript("OnEvent", function(_, event, arg1, arg2)
             "UNIT_SPELLCAST_INTERRUPTIBLE", "UNIT_SPELLCAST_NOT_INTERRUPTIBLE", "MINIMAP_UPDATE_TRACKING", "UI_SCALE_CHANGED"}) do
             U.RegisterEvent(name)
         end
+        U.RegisterEvent("UI_ERROR_MESSAGE")
         f:SetScript("OnUpdate", U.Tick)
         -- This small, independent control appears even while the bar is queued.
         if not InCombatLockdown() then U.BuildMinimap() end
         return
     end
     if not U.db then return end
+    if event == "UI_ERROR_MESSAGE" then
+        local message = arg2
+        local deadPetError = not U.Secret(message) and type(message) == "string"
+            and ((ERR_PET_SPELL_DEAD and message == ERR_PET_SPELL_DEAD)
+                or string.find(string.lower(message), "pet is dead", 1, true))
+        if U.class == "HUNTER" and deadPetError then
+            local newlyDetected = U.petLastKnownDead ~= true
+            U.petLastKnownDead = true
+            U.db.petLastKnownDead = true
+            U.dirty = true
+            if newlyDetected then U.Print("Dead pet confirmed; showing Revive Pet.") end
+        end
+        return
+    end
     if event == "GET_ITEM_INFO_RECEIVED" or event == "SPELL_TEXT_UPDATE" or event == "SPELL_DATA_LOAD_RESULT" then
         if U.Secret(arg1) or U.Secret(arg2) then return end
         local waiting = event == "GET_ITEM_INFO_RECEIVED" and U.waitingItems or U.waitingSpells
@@ -153,6 +169,9 @@ f:SetScript("OnEvent", function(_, event, arg1, arg2)
     if event == "UNIT_PET" and (U.Secret(arg1) or arg1 ~= "player") then return end
     if event:match("^UNIT_") and event ~= "UNIT_PET" then
         if U.Secret(arg1) or not (U.trackedUnits and U.trackedUnits[arg1]) then return end
+    end
+    if event == "UNIT_PET" or event == "PLAYER_DEAD" or (event == "UNIT_HEALTH" and arg1 == "pet") then
+        U.RememberPetState()
     end
     if event == "SPELL_UPDATE_COOLDOWN" then U.CaptureCooldownEvent() end
     if event == "PLAYER_REGEN_DISABLED" then
