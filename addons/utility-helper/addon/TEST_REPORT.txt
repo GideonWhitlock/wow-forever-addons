@@ -1,7 +1,17 @@
-# Utility Helper: Forever 0.1.27 — verification record
+# Utility Helper: Forever 0.1.28 — verification record
 
 Updated: 6 November 2026. Target: WoW: Forever, interface 16001.
 Last locally assessed client metadata: 1.60.1.70790.
+
+## 0.1.28 restricted combat-aura fallback
+
+The initial 0.1.27 repair still allowed an unknown combat aura scan to produce
+an invisible `unknown` state before the warrior-shout exception ran. Battle
+Shout and Commanding Shout now fail visible in combat whenever neither shout is
+confirmed active, including when Forever restricts the aura list. A confirmed
+active shout still suppresses both reminders. Focused coverage forces the aura
+API to fail during combat and confirms the button remains shown, fully opaque
+and clickable.
 
 ## 0.1.27 persistent warrior-shout combat reminder
 

@@ -1,11 +1,12 @@
 # Utility Helper: Forever
 
-Version **0.1.27** for **WoW: Forever 1.60.1**, interface **16001**.
+Version **0.1.28** for **WoW: Forever 1.60.1**, interface **16001**.
 
 **Missing warrior shouts now remain visible throughout combat.** Battle Shout
 and Commanding Shout no longer disappear merely because the warrior temporarily
-lacks enough Rage. The reminder stays visible whenever neither shout buff is
-active and becomes castable as soon as the game permits it.
+lacks enough Rage or Forever restricts aura information. The reminder stays
+visible whenever neither shout buff is confirmed active and becomes castable as
+soon as the game permits it.
 
 **The client’s explicit dead-pet error now overrides Forever’s unreliable
 Revive Pet usability flag.** After Call Pet reports that the pet is dead,

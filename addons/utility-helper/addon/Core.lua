@@ -565,8 +565,8 @@ function U.Evaluate(e)
     -- Keep their fixed combat button visible whenever the shout family is
     -- missing, even while Rage or another temporary usability condition means
     -- the client will not yet accept the cast.
-    if condition == true and e.combatPromptWhenMissing and InCombatLockdown() then
-        return "active", reason, unit, visual
+    if condition ~= false and e.combatPromptWhenMissing and InCombatLockdown() then
+        return "active", condition == nil and "Warrior shout state restricted; reminder kept visible" or reason, unit, visual
     end
     local ready, readyReason = U.Readiness(e, unit)
     if ready == false then return "idle", readyReason, unit end
