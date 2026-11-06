@@ -1,5 +1,13 @@
 # Utility Helper: Forever changelog
 
+## 0.1.32
+
+- Successful Battle Shout and Commanding Shout casts now clear their combat
+  reminder even when Forever makes the resulting aura secret.
+- The reminder stays hidden for the normal two-minute shout duration before
+  returning if no readable active aura is available.
+- Missing-shout visibility and the fixed protected combat action are unchanged.
+
 ## 0.1.31
 
 - Added every learned rank ID to mutually exclusive maintenance-buff families.
