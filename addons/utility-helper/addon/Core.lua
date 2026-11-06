@@ -154,6 +154,25 @@ function U.BuildEntries()
         if not learned or (source.replacedBy and U.ResolveSpell(source.replacedBy, source.petSpell)) then return end
         local e = {}; for k, v in pairs(source) do e[k] = v end
         e.spellID, e.name, e.icon, e.slot, e.bank = learned.id, learned.name, learned.icon, learned.slot, learned.bank
+        if e.choiceBuffs then
+            -- Catalogue IDs describe spell families, while Classic-style ranks
+            -- can place a different spell ID on the actual aura. Keep both the
+            -- family ID and every learned rank ID so restricted combat can use
+            -- GetUnitAuraBySpellID even when name lookup/enumeration is absent.
+            local expanded, seen = {}, {}
+            local function add(id)
+                if type(id) == "number" and not seen[id] then
+                    seen[id] = true
+                    expanded[#expanded + 1] = id
+                end
+            end
+            for _, familyID in ipairs(e.choiceBuffs) do
+                add(familyID)
+                local family = U.ResolveSpell(familyID, e.petSpell)
+                if family then add(family.id) end
+            end
+            e.choiceBuffs = expanded
+        end
         available[#available + 1] = e
         if not U.db.hidden[e.key] then entries[#entries + 1] = e end
         if e.party and U.db.party then
