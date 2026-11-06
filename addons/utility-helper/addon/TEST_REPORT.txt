@@ -1,4 +1,11 @@
-# Utility Helper: Forever 0.1.29 — verification record
+# Utility Helper: Forever 0.1.30 — verification record
+
+## 0.1.30 restricted-combat direct aura regression
+
+- The mock now reproduces indexed aura enumeration failing during combat while
+  Forever's NeverSecret identifier lookup still reports Battle Shout.
+- The prompt clears through that direct lookup and returns when the shout is
+  genuinely absent.
 
 Updated: 6 November 2026. Target: WoW: Forever, interface 16001.
 Last locally assessed client metadata: 1.60.1.70790.

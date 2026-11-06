@@ -1,6 +1,12 @@
 # Utility Helper: Forever
 
-Version **0.1.29** for **WoW: Forever 1.60.1**, interface **16001**.
+Version **0.1.30** for **WoW: Forever 1.60.1**, interface **16001**.
+
+**Active warrior shouts now clear correctly during restricted combat.** Utility
+Helper uses Forever's direct NeverSecret player-aura lookup for Battle Shout
+and Commanding Shout instead of relying solely on the broad aura scan that the
+live client blocks in combat. A confirmed active shout hides the icon, border
+and tooltip immediately; a genuinely missing shout remains prompted.
 
 **Missing warrior shouts now remain visible throughout combat.** Battle Shout
 and Commanding Shout no longer disappear merely because the warrior temporarily

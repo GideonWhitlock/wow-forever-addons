@@ -212,7 +212,46 @@ function U.Auras(unit, filter)
     U.auraCache[key] = {result, readable}
     return result, readable
 end
+function U.IdentifierAura(unit, ids, filter, ownOnly)
+    -- Forever blocks indexed aura enumeration in restricted combat, but keeps
+    -- NeverSecret identifier lookups readable. Use those lookups first so a
+    -- confirmed warrior shout can clear its prompt while the broad scan fails.
+    if filter and not tostring(filter):find("HELPFUL", 1, true) then return end
+    local api = C_UnitAuras
+    if not api then return end
+    local byID, byName = api.GetUnitAuraBySpellID, api.GetAuraDataBySpellName
+    if type(byID) ~= "function" and type(byName) ~= "function" then return end
+    local secrecy = C_Secrets and C_Secrets.GetSpellAuraSecrecy
+    local never = Enum and Enum.SecrecyLevel and Enum.SecrecyLevel.NeverSecret
+    local readable, attempted = type(secrecy) == "function" and never ~= nil, false
+    for _, id in ipairs(ids) do
+        local aura, success
+        if type(byID) == "function" then
+            success, aura = U.Call(byID, unit, id)
+            attempted = true
+            if not success then readable = false end
+        end
+        if not aura and type(byName) == "function" then
+            local name = U.SpellName(id)
+            if name then
+                local ok, named = U.Call(byName, unit, name, filter or "HELPFUL")
+                attempted = true
+                if ok then aura = named else readable = false end
+            end
+        end
+        if aura then
+            if ownOnly then
+                if U.Secret(aura.sourceUnit) or aura.sourceUnit == nil then readable = false
+                elseif aura.sourceUnit == "player" then return true end
+            else return true end
+        end
+        if readable and U.Public(secrecy, id) ~= never then readable = false end
+    end
+    if attempted and readable then return false end
+end
 function U.HasAura(unit, ids, filter, ownOnly)
+    local direct = U.IdentifierAura(unit, ids, filter or "HELPFUL", ownOnly)
+    if direct ~= nil then return direct end
     local names = {}
     for _, id in ipairs(ids) do
         local name = U.SpellName(id)
