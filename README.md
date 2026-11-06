@@ -1,15 +1,18 @@
 # WoW: Forever add-ons
 
+
 Source, release notes and issue reporting for Gideon Whitlock's World of Warcraft: Forever add-ons.
 
+
 [Add-on website](https://gideonwhitlock.github.io/wow-forever-addons/) · [CurseForge](https://www.curseforge.com/members/gideonwhitlock/projects) · [YouTube](https://www.youtube.com/@GideonWhitlockWoW) · [GitHub Sponsors](https://github.com/sponsors/GideonWhitlock) · [Ko-fi](https://ko-fi.com/gideonwhitlock)
+
 
 | Add-on | Version | Documentation | Download | Full video | Short |
 |---|---:|---|---|---|---|
 | Campfire Tooltips: Forever | 1.0.2 | [README](addons/campfire-tooltips/README.md) · [Changelog](addons/campfire-tooltips/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/campfire-tooltips) | [YouTube](https://youtu.be/3GcNEPl17y0) | [Short](https://youtube.com/shorts/z05B6QziquA) |
 | Feed Pet: Forever | 1.0.2 | [README](addons/feed-pet-forever/README.md) · [Changelog](addons/feed-pet-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/feed-pet-forever) | [YouTube](https://youtu.be/lVknLDpYFNc) | [Short](https://youtube.com/shorts/_3BZxxMcTTI) |
 | Campfire Stories: Forever | 3.0.3 | [README](addons/campfire-stories/README_SECTION.md) · [Changelog](addons/campfire-stories/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/campfire-stories) | [YouTube](https://youtu.be/WRWzFLMsZ3o) | [Short](https://youtube.com/shorts/JDaBCacZ1eE) |
-| Utility Helper: Forever | 0.1.29 | [README](addons/utility-helper/README.md) · [Changelog](addons/utility-helper/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/utility-helper) | [YouTube](https://youtu.be/Fpw8RDISIk4) | [Short](https://youtube.com/shorts/MyqN8RvalSc) |
+| Utility Helper: Forever | 0.1.30 | [README](addons/utility-helper/README.md) · [Changelog](addons/utility-helper/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/utility-helper) | [YouTube](https://youtu.be/Fpw8RDISIk4) | [Short](https://youtube.com/shorts/MyqN8RvalSc) |
 | Night Watch Torch Helper: Forever | 1.0.2 | [README](addons/night-watch-torch-helper/README.md) · [Changelog](addons/night-watch-torch-helper/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/night-watch-torch-helper-forever) | [YouTube](https://youtu.be/vM9aDFz9j7w) | [Short](https://youtube.com/shorts/Zmk_Rd_ZHJQ) |
 | Combo Points Plate: Forever | 1.0.6 | [README](addons/combo-points-plate-forever/README-section.md) · [Changelog](addons/combo-points-plate-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/combo-points-forever-addon) | [YouTube](https://youtu.be/lKikLVh04Y4) | [Short](https://youtube.com/shorts/4HB71g-2A3o) |
 | Minimap Button: Forever | 1.0.19 | [README](addons/minimap-button-forever/README.md) · [Changelog](addons/minimap-button-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/minimap-button-forever) | [YouTube](https://youtu.be/BOt04rqn8yk) | [Short](https://youtube.com/shorts/vVtjfRtm1Fs) |
@@ -21,9 +24,3 @@ Source, release notes and issue reporting for Gideon Whitlock's World of Warcraf
 | Addon Health Manager: Forever | 1.0.0 | [README](addons/addon-health-manager-forever/README.md) · [Changelog](addons/addon-health-manager-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/addon-health-manager-forever) | [YouTube](https://youtu.be/gJd5TI7flx4) | [Short](https://youtube.com/shorts/LHttUAj88eY) |
 | Objective Hider for RestedXP: Forever | 1.0.2 | [README](addons/objective-hider-for-restedxp-forever/README.md) · [Changelog](addons/objective-hider-for-restedxp-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/objective-hider-for-restedxp-forever) | [YouTube](https://youtu.be/ClDdbJD2sBA) | [Short](https://youtube.com/shorts/0-F5hl2etcM) |
 | Choose a Main: Forever | 1.0.2 | [README](addons/choose-a-main-forever/README.md) · [Changelog](addons/choose-a-main-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/choose-a-main-forever) | [YouTube](https://youtu.be/qU-Nen7UfXk) | [Short](https://youtube.com/shorts/oz6Up2AmQg8) |
-
-Use the repository's issue forms to report a problem. Choose the form for the affected add-on and include its version, the WoW: Forever version and build, clear reproduction steps, expected and actual behaviour, relevant add-ons, and a redacted error message when available.
-
-Each add-on's installable source is in its `addon/` folder. Licensing differs by add-on; see [LICENSING.md](LICENSING.md) and the licence file within the relevant folder before reusing code or content.
-
-Quest Immersion is still in development and is intentionally absent from this public repository until its owner explicitly approves publication.
