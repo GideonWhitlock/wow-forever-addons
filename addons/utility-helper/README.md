@@ -2,9 +2,9 @@
 
 Utility Helper presents fixed, configurable buttons for learned class utility, emergency recovery, dispels, interrupts, pet care and selected shared utilities in WoW: Forever.
 
-The current release is version **0.1.26** for WoW: Forever **1.60.1** (interface **16001**). Install the `UtilityHelper` folder in `_forever_/Interface/AddOns/`, enable the add-on, and use `/uh` to open settings.
+The current release is version **0.1.27** for WoW: Forever **1.60.1** (interface **16001**). Install the `UtilityHelper` folder in `_forever_/Interface/AddOns/`, enable the add-on, and use `/uh` to open settings.
 
-Version 0.1.26 keeps missing maintenance-buff prompts such as Battle Shout active when the spell is suppressed only by the global cooldown, while still waiting for genuinely insufficient Rage. Recent releases also improve Call Pet and Revive Pet routing for dead, distant and despawned pets.
+Version 0.1.27 keeps Battle Shout and Commanding Shout visible whenever their shared buff family is missing during combat, including while Rage is temporarily insufficient. The button becomes castable as soon as the game permits it. Recent releases also improve Call Pet and Revive Pet routing for dead, distant and despawned pets.
 
 The add-on preserves fixed secure actions during combat. Private combat values and protected-action rules limit what it can prove or change dynamically. A `?` indicator means the client withheld enough information to prevent a confirmed-ready result. Use `/uh why` for the most recent decision details.
 

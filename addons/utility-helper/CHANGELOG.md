@@ -1,5 +1,14 @@
 # Utility Helper: Forever changelog
 
+## 0.1.27
+
+- Fixed Battle Shout and Commanding Shout reminders disappearing during combat
+  while the warrior temporarily lacks enough Rage.
+- A missing warrior shout now remains visible throughout combat and becomes
+  castable as soon as the game permits it.
+- Existing buff-family detection is unchanged: either active shout correctly
+  clears both reminders.
+
 ## 0.1.26
 
 - Fixed missing maintenance-buff prompts, including Battle Shout, sometimes
