@@ -1,10 +1,11 @@
 # Utility Helper: Forever
 
-Version **0.1.28** for **WoW: Forever 1.60.1**, interface **16001**.
+Version **0.1.29** for **WoW: Forever 1.60.1**, interface **16001**.
 
 **Missing warrior shouts now remain visible throughout combat.** Battle Shout
 and Commanding Shout no longer disappear merely because the warrior temporarily
-lacks enough Rage or Forever restricts aura information. The reminder stays
+lacks enough Rage or Forever restricts aura information. Once either shout is
+confirmed active, its combat prompt disappears immediately. The reminder stays
 visible whenever neither shout buff is confirmed active and becomes castable as
 soon as the game permits it.
 

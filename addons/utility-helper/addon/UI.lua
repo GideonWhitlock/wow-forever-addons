@@ -449,6 +449,11 @@ function U.Render(b, state, reason, unit, visual)
     if b.entry.target:match("^party") then b.status:SetText(b.entry.target:gsub("party", "P")) end
     -- Rest-only recovery must stay absent above the threshold at every idle setting.
     local idle = b.entry.restOnly and 0 or U.db.idle
+    -- Warrior shout prompts must disappear as soon as either shout is active,
+    -- even if the player normally keeps inactive combat utilities visible.
+    -- The protected button and binding stay fixed until combat ends; only its
+    -- unprotected presentation is cleared in response to the public aura state.
+    if InCombatLockdown() and b.entry.combatPromptWhenMissing and state == "idle" then idle = 0 end
     local alpha, glow = idle, 0
     if U.editing or U.preview then alpha, glow = 1, 1
     elseif state == "active" then alpha, glow = 1, 1

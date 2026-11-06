@@ -1,7 +1,16 @@
-# Utility Helper: Forever 0.1.28 — verification record
+# Utility Helper: Forever 0.1.29 — verification record
 
 Updated: 6 November 2026. Target: WoW: Forever, interface 16001.
 Last locally assessed client metadata: 1.60.1.70790.
+
+## 0.1.29 active warrior shout combat suppression
+
+The focused warrior regression now verifies the complete transition while in
+combat: a missing Battle Shout is fully visible and clickable; applying either
+warrior-shout aura changes it to idle and clears the icon, border and tooltip;
+losing the aura restores the full prompt. The protected click area remains fixed
+until combat ends because WoW does not permit insecure protected-input changes
+during combat. Restricted aura information still fails visible.
 
 ## 0.1.28 restricted combat-aura fallback
 
