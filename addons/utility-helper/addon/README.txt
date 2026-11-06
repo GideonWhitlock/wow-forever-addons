@@ -1,11 +1,11 @@
 # Utility Helper: Forever
 
-Version **0.1.26** for **WoW: Forever 1.60.1**, interface **16001**.
+Version **0.1.27** for **WoW: Forever 1.60.1**, interface **16001**.
 
-**Missing maintenance buffs now prompt reliably through the global cooldown.**
-This fixes Battle Shout sometimes failing to light up in combat immediately
-after another ability. A genuine insufficient-Rage result still suppresses the
-prompt until Battle Shout can actually be cast.
+**Missing warrior shouts now remain visible throughout combat.** Battle Shout
+and Commanding Shout no longer disappear merely because the warrior temporarily
+lacks enough Rage. The reminder stays visible whenever neither shout buff is
+active and becomes castable as soon as the game permits it.
 
 **The client’s explicit dead-pet error now overrides Forever’s unreliable
 Revive Pet usability flag.** After Call Pet reports that the pet is dead,

@@ -1,7 +1,18 @@
-# Utility Helper: Forever 0.1.26 — verification record
+# Utility Helper: Forever 0.1.27 — verification record
 
 Updated: 6 November 2026. Target: WoW: Forever, interface 16001.
 Last locally assessed client metadata: 1.60.1.70790.
+
+## 0.1.27 persistent warrior-shout combat reminder
+
+Battle Shout and Commanding Shout now keep their fixed combat prompt active
+whenever neither shout buff is present, even if the public usability result says
+the warrior temporarily lacks enough Rage. The client still owns whether a click
+can cast at that instant. The bypass is restricted to the two warrior shout
+maintenance entries and to combat; outside combat, ordinary readiness gating is
+unchanged. The focused regression covers the missing-buff, insufficient-Rage,
+GCD-only, applied-buff and post-combat states, and the complete Lua 5.1 suite
+passes.
 
 ## 0.1.26 Battle Shout global-cooldown prompt
 

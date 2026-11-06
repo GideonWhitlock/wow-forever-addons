@@ -1,5 +1,5 @@
 local _, U = ...
-U.VERSION = "0.1.25"
+U.VERSION = "0.1.27"
 U.TITLE = "Utility Helper: Forever"
 U.catalog = {}
 -- IDs identify spell families. The spellbook supplies the learned rank and localized name.
@@ -177,8 +177,8 @@ a("WARRIOR", 871, "Shield Wall", "defensive", "player")
 a("WARRIOR", 12975, "Last Stand", "defensive", "player")
 a("WARRIOR", 18499, "Berserker Rage", "manual", "player")
 local warriorShouts = {6673, 469}
-a("WARRIOR", 6673, "Battle Shout", "buff", "player", {choiceBuffs = warriorShouts})
-a("WARRIOR", 469, "Commanding Shout", "buff", "player", {choiceBuffs = warriorShouts})
+a("WARRIOR", 6673, "Battle Shout", "buff", "player", {choiceBuffs = warriorShouts, combatPromptWhenMissing = true})
+a("WARRIOR", 469, "Commanding Shout", "buff", "player", {choiceBuffs = warriorShouts, combatPromptWhenMissing = true})
 
 -- Explicit self-heals: fixed self recipient, never redirected by an enemy target.
 a("PRIEST", 2050, "Lesser Heal (self)", "health", "player")

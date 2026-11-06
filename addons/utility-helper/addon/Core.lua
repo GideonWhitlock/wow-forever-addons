@@ -561,6 +561,13 @@ function U.Evaluate(e)
     local unit = U.UnitFor(e)
     local condition, reason, visual = U.Condition(e, unit)
     if condition == false then return "idle", reason, unit end
+    -- Warrior shouts are maintenance reminders as well as cast suggestions.
+    -- Keep their fixed combat button visible whenever the shout family is
+    -- missing, even while Rage or another temporary usability condition means
+    -- the client will not yet accept the cast.
+    if condition == true and e.combatPromptWhenMissing and InCombatLockdown() then
+        return "active", reason, unit, visual
+    end
     local ready, readyReason = U.Readiness(e, unit)
     if ready == false then return "idle", readyReason, unit end
     if condition == nil then return "unknown", "Situation data restricted; use this button manually", unit end
