@@ -1,4 +1,13 @@
-# Utility Helper: Forever 0.1.30 — verification record
+# Utility Helper: Forever 0.1.32 — verification record
+
+## 0.1.32 secret warrior-shout cast confirmation
+
+- The focused mock now reproduces both aura paths being unavailable: the shout
+  is secret to identifier lookup and broad enumeration errors in combat.
+- A successful player `UNIT_SPELLCAST_SUCCEEDED` event for the learned Battle
+  Shout rank clears the icon, border and tooltip for the shout duration.
+- The prompt returns when that confirmation expires, and the complete Lua 5.1
+  syntax and scenario suite passes.
 
 ## 0.1.30 restricted-combat direct aura regression
 

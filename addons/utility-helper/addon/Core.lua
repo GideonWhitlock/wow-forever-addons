@@ -259,18 +259,20 @@ function U.IdentifierAura(unit, ids, filter, ownOnly)
             end
         end
         if aura then
+            local expiration = aura.expirationTime
+            if U.Secret(expiration) or type(expiration) ~= "number" then expiration = nil end
             if ownOnly then
                 if U.Secret(aura.sourceUnit) or aura.sourceUnit == nil then readable = false
-                elseif aura.sourceUnit == "player" then return true end
-            else return true end
+                elseif aura.sourceUnit == "player" then return true, expiration end
+            else return true, expiration end
         end
         if readable and U.Public(secrecy, id) ~= never then readable = false end
     end
     if attempted and readable then return false end
 end
 function U.HasAura(unit, ids, filter, ownOnly)
-    local direct = U.IdentifierAura(unit, ids, filter or "HELPFUL", ownOnly)
-    if direct ~= nil then return direct end
+    local direct, directExpiration = U.IdentifierAura(unit, ids, filter or "HELPFUL", ownOnly)
+    if direct ~= nil then return direct, directExpiration end
     local names = {}
     for _, id in ipairs(ids) do
         local name = U.SpellName(id)
@@ -280,11 +282,33 @@ function U.HasAura(unit, ids, filter, ownOnly)
     for _, aura in ipairs(auras) do
         if U.Secret(aura.spellId) or U.Secret(aura.name) or (ownOnly and U.Secret(aura.sourceUnit)) then readable = false
         elseif not ownOnly or aura.sourceUnit == "player" then
-            for _, id in ipairs(ids) do if aura.spellId == id then return true end end
-            if aura.name and names[aura.name] then return true end
+            local expiration = aura.expirationTime
+            if U.Secret(expiration) or type(expiration) ~= "number" then expiration = nil end
+            for _, id in ipairs(ids) do if aura.spellId == id then return true, expiration end end
+            if aura.name and names[aura.name] then return true, expiration end
         end
     end
     if readable then return false end
+end
+function U.NoteSuccessfulMaintenance(spellID)
+    if U.Secret(spellID) or type(spellID) ~= "number" then return end
+    for _, e in ipairs(U.entries or {}) do
+        local matches = e.spellID == spellID
+        if not matches then
+            for _, id in ipairs(e.choiceBuffs or {}) do
+                if id == spellID then matches = true; break end
+            end
+        end
+        if e.combatPromptWhenMissing and matches then
+            -- Forever can make warrior shout auras secret during combat, so a
+            -- successful player cast is the only public confirmation available.
+            -- Classic shouts last at least two minutes; readable aura state
+            -- replaces this conservative latch as soon as the client exposes it.
+            U.combatPromptActiveUntil = GetTime() + 120
+            U.dirty = true
+            return true
+        end
+    end
 end
 function U.Dispellable(unit, types, hostile)
     local auras, readable = U.Auras(unit, hostile and "HELPFUL" or "HARMFUL")
@@ -412,8 +436,21 @@ function U.Condition(e, unit)
         if e.playerOnly and U.Public(UnitIsPlayer, unit) ~= true then return false, "Select a friendly player" end
     end
     if e.choiceBuffs then
-        local choice = U.HasAura(unit, e.choiceBuffs, "HELPFUL", e.choiceOwnOnly)
-        if choice == true then return false, "A mutually exclusive buff is already active" end
+        local choice, expiration = U.HasAura(unit, e.choiceBuffs, "HELPFUL", e.choiceOwnOnly)
+        if choice == true then
+            if e.combatPromptWhenMissing then
+                U.combatPromptActiveUntil = expiration and expiration > GetTime()
+                    and expiration or U.combatPromptActiveUntil
+            end
+            return false, "A mutually exclusive buff is already active"
+        end
+        if e.combatPromptWhenMissing then
+            if choice == false and not InCombatLockdown() then U.combatPromptActiveUntil = nil end
+            if InCombatLockdown() and U.combatPromptActiveUntil
+                and U.combatPromptActiveUntil > GetTime() then
+                return false, "Shout cast confirmed; aura details restricted"
+            end
+        end
         if choice == nil then return nil, "Buff choice information restricted" end
     end
     if e.rule == "petmissing" then

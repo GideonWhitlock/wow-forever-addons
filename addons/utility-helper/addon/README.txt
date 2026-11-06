@@ -1,6 +1,13 @@
 # Utility Helper: Forever
 
-Version **0.1.30** for **WoW: Forever 1.60.1**, interface **16001**.
+Version **0.1.32** for **WoW: Forever 1.60.1**, interface **16001**.
+
+**Successful warrior shout casts now clear the reminder even when the aura is
+secret in combat.** Forever can hide both broad aura enumeration and direct
+identifier results for Battle Shout and Commanding Shout. Utility Helper now
+uses the public `UNIT_SPELLCAST_SUCCEEDED` confirmation from the player to hide
+the shout prompt for its normal duration, while still restoring a genuinely
+missing reminder.
 
 **Active warrior shouts now clear correctly during restricted combat.** Utility
 Helper uses Forever's direct NeverSecret player-aura lookup for Battle Shout

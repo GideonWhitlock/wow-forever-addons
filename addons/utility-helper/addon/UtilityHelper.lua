@@ -122,7 +122,7 @@ function U.Tick(_, dt)
         U.Refresh()
     end
 end
-f:SetScript("OnEvent", function(_, event, arg1, arg2)
+f:SetScript("OnEvent", function(_, event, arg1, arg2, arg3)
     if event == "ADDON_LOADED" then
         if arg1 ~= addonName then return end
         f:UnregisterEvent("ADDON_LOADED"); U.LoadSettings()
@@ -174,6 +174,9 @@ f:SetScript("OnEvent", function(_, event, arg1, arg2)
         U.RememberPetState()
     end
     if event == "SPELL_UPDATE_COOLDOWN" then U.CaptureCooldownEvent() end
+    if event == "UNIT_SPELLCAST_SUCCEEDED" and arg1 == "player" then
+        U.NoteSuccessfulMaintenance(arg3)
+    end
     if event == "PLAYER_REGEN_DISABLED" then
         -- Unprotected editing overlays can close. Protected geometry/actions wait for combat end.
         local wasEditing = U.editing
@@ -188,6 +191,9 @@ f:SetScript("OnEvent", function(_, event, arg1, arg2)
         if wasEditing then U.QueueRebuild() end
     end
     if rebuildEvents[event] then U.QueueRebuild() end
+    if event == "PLAYER_DEAD" or event == "PLAYER_ENTERING_WORLD" then
+        U.combatPromptActiveUntil = nil
+    end
     if event == "PLAYER_REGEN_ENABLED" then
         if U.pending or not U.started then U.QueueRebuild() end
         if U.dragging then U.layoutDirty = true end
