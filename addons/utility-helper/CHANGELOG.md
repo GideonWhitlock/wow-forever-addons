@@ -1,5 +1,14 @@
 # Utility Helper: Forever changelog
 
+## 0.1.29
+
+- Battle Shout and Commanding Shout now clear their visible combat prompt as
+  soon as either shout is confirmed active.
+- Missing shouts still remain fully visible when Rage is temporarily low or
+  Forever restricts aura information.
+- The protected action remains fixed until combat ends, as required by WoW's
+  combat restrictions; only its icon, border and tooltip are hidden.
+
 ## 0.1.28
 
 - Fixed the remaining case where Battle Shout and Commanding Shout could stay
