@@ -1,5 +1,12 @@
 # Utility Helper: Forever changelog
 
+## 0.1.31
+
+- Added every learned rank ID to mutually exclusive maintenance-buff families.
+- Fixed active higher-rank Battle Shout and Commanding Shout auras being missed
+  when restricted combat blocks enumeration and name lookup.
+- Kept the missing-shout prompt and protected combat action behavior unchanged.
+
 ## 0.1.30
 
 - Active Battle Shout and Commanding Shout prompts now clear through Forever's
