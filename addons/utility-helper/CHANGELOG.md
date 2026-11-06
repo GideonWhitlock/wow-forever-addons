@@ -1,5 +1,14 @@
 # Utility Helper: Forever changelog
 
+## 0.1.28
+
+- Fixed the remaining case where Battle Shout and Commanding Shout could stay
+  invisible when Forever restricted aura information during combat.
+- Warrior shout reminders now remain visible unless an active shout is
+  positively confirmed.
+- Existing secure combat actions, buff-family detection and outside-combat
+  readiness rules are unchanged.
+
 ## 0.1.27
 
 - Fixed Battle Shout and Commanding Shout reminders disappearing during combat
