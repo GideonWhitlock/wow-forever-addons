@@ -1,45 +1,49 @@
 # Utility Helper: Forever changelog
 
+## 0.1.26
+
+- Fixed missing maintenance-buff prompts, including Battle Shout, sometimes
+  failing to activate during the global cooldown.
+- Genuine resource shortages are still respected, so Battle Shout waits until
+  the warrior has enough Rage.
+- Added focused coverage for GCD-only and insufficient-Rage states.
+
+## 0.1.25
+
+- The client’s explicit dead-pet error now overrides an incorrect Revive Pet
+  usability result.
+- Revive Pet remains available after that correction even if Forever continues
+  reporting it as unavailable.
+
+## 0.1.24
+
+- A failed Call Pet that reports a dead pet now switches to Revive Pet and
+  preserves the correction across reloads.
+
+## 0.1.23
+
+- Preserved a known dead-pet state across spirit-healer resurrection so Revive
+  Pet wins when Forever temporarily reports both pet actions as usable.
+
 ## 0.1.22
 
-- Fixed a living hunter pet that despawns after being left on Stay incorrectly
-  showing Revive Pet.
-- Call Pet now takes priority when the client reports both Call Pet and Revive
-  Pet as usable.
-- Call Pet is now shown as a clickable out-of-combat utility when the living
-  pet is absent.
-- Tokenless and distant dead pets continue to offer Revive Pet.
+- A living pet that despawns after being left on Stay now offers Call Pet
+  instead of Revive Pet.
 
 ## 0.1.21
 
-- Revive Pet now remains visible and clickable outside combat while the pet is
-  dead instead of disappearing with the combat-only display.
-- Its configured keybind follows the dead-pet state outside combat and remains
-  preconfigured in combat.
-- Living, absent and dismissed pets hide the outside-combat button and release
-  its keybind.
-- Preserves the distant-corpse and tokenless dead-pet fixes from 0.1.20.
+- Revive Pet now remains visible, clickable and bindable outside combat while
+  the pet is dead, while retaining its fixed combat action.
 
 ## 0.1.20
 
-- Fixed Revive Pet failing to appear for a distant pet corpse.
-- Revive Pet now acts on the hunter's stored pet without a corpse range check
-  or explicit dead-unit target.
-- Added guarded handling for a revivable pet whose unit token disappears,
-  while absent or dismissed pets remain suppressed.
-- Re-audited bandage input: readable low health enables the outside-combat
-  secure click and keybind; private health remains reminder-only to prevent an
-  invisible click area above the threshold.
+- Revive Pet no longer applies an inappropriate range check or dead-pet target
+  token, allowing it to work for a distant corpse.
 
 ## 0.1.19
 
-- Battle Shout and every supported learned maintenance buff can now appear and
-  remain clickable during combat when its buff family is missing.
-- Applying a maintenance buff clears its alert while preserving mutually
-  exclusive families and spell-specific conditions.
-- Bandages, profession tracking and Warlock stone creation remain restricted
-  to outside combat.
-- Fixed the return from arrange mode when combat interrupts editing.
+- Battle Shout and other learned maintenance buffs now retain fixed secure
+  buttons and can prompt when missing during combat.
 
 ## 0.1.18
 
