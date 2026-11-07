@@ -1,0 +1,16 @@
+## Interface: 16001
+## Title: LFG Messenger: Forever
+## Notes: Adds a one-click class-and-role whisper to the WoW: Forever Group Finder.
+## Author: Gideon Whitlock
+## Version: 1.0.3
+## SavedVariables: LFGMessengerForeverDB, LFGQuickWhisperForeverDB
+## IconTexture: Interface\Icons\INV_Letter_15
+## X-Category: Group Finder
+## X-License: MIT
+## X-Website: https://github.com/GideonWhitlock/wow-forever-addons
+
+Core.lua
+Options.lua
+Minimap.lua
+UI.lua
+Main.lua
