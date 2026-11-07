@@ -1,6 +1,6 @@
-# LFG Messenger: Forever
+# Looking for Group: Forever
 
-LFG Messenger: Forever adds a single, deliberate contact button to World of
+Looking for Group: Forever adds a single, deliberate contact button to World of
 Warcraft: Forever's Looking For Group browser. Select a listing and click once to
 whisper the leader with your class and chosen Group Finder role, for example:
 

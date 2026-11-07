@@ -1,8 +1,8 @@
 local addonName, Q = ...
 
 Q.ADDON_NAME = addonName
-Q.TITLE = "LFG Messenger: Forever"
-Q.VERSION = "1.0.3"
+Q.TITLE = "Looking for Group: Forever"
+Q.VERSION = "1.0.4"
 Q.BLIZZARD_ADDON = "Blizzard_GroupFinder_VanillaStyle"
 Q.ICON = "Interface\\Icons\\INV_Letter_15"
 Q.DEFAULTS = {
@@ -31,7 +31,7 @@ end
 
 function Q.Print(message)
     if DEFAULT_CHAT_FRAME then
-        DEFAULT_CHAT_FRAME:AddMessage("|cffffd45cLFG Messenger:|r " .. tostring(message))
+        DEFAULT_CHAT_FRAME:AddMessage("|cffffd45cLooking for Group:|r " .. tostring(message))
     end
 end
 
