@@ -1,17 +1,8 @@
 # WoW: Forever add-ons
 
-
-
-
 Source, release notes and issue reporting for Gideon Whitlock's World of Warcraft: Forever add-ons.
 
-
-
-
 [Add-on website](https://gideonwhitlock.github.io/wow-forever-addons/) · [CurseForge](https://www.curseforge.com/members/gideonwhitlock/projects) · [YouTube](https://www.youtube.com/@GideonWhitlockWoW) · [GitHub Sponsors](https://github.com/sponsors/GideonWhitlock) · [Ko-fi](https://ko-fi.com/gideonwhitlock)
-
-
-
 
 | Add-on | Version | Documentation | Download | Full video | Short |
 |---|---:|---|---|---|---|
@@ -30,4 +21,4 @@ Source, release notes and issue reporting for Gideon Whitlock's World of Warcraf
 | Addon Health Manager: Forever | 1.0.0 | [README](addons/addon-health-manager-forever/README.md) · [Changelog](addons/addon-health-manager-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/addon-health-manager-forever) | [YouTube](https://youtu.be/gJd5TI7flx4) | [Short](https://youtube.com/shorts/LHttUAj88eY) |
 | Objective Hider for RestedXP: Forever | 1.0.2 | [README](addons/objective-hider-for-restedxp-forever/README.md) · [Changelog](addons/objective-hider-for-restedxp-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/objective-hider-for-restedxp-forever) | [YouTube](https://youtu.be/ClDdbJD2sBA) | [Short](https://youtube.com/shorts/0-F5hl2etcM) |
 | Choose a Main: Forever | 1.0.2 | [README](addons/choose-a-main-forever/README.md) · [Changelog](addons/choose-a-main-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/choose-a-main-forever) | [YouTube](https://youtu.be/qU-Nen7UfXk) | [Short](https://youtube.com/shorts/oz6Up2AmQg8) |
-
+| LFG Messenger: Forever | 1.0.3 | [README](addons/lfg-messenger-forever/README.md) · [Changelog](addons/lfg-messenger-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/lfg-messenger-forever) | — | — |
