@@ -1,6 +1,6 @@
-name: LFG Messenger issue
-description: Report a problem with LFG Messenger: Forever
-title: "[LFG Messenger] "
+name: Looking for Group issue
+description: Report a problem with Looking for Group: Forever
+title: "[Looking for Group] "
 labels:
   - "addon: lfg-messenger"
 body:
