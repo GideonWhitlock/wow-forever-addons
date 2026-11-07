@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.4 — 2026-11-07
+
+- Renamed the public add-on to **Looking for Group: Forever**.
+- Kept the existing add-on folder, saved variables and slash commands so current installations and settings continue to work.
+
 ## 1.0.3 — 2026-11-07
 
 - Renamed the add-on to **LFG Messenger: Forever** before public release.
