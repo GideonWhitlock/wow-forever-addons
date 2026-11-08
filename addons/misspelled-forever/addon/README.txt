@@ -1,5 +1,7 @@
 MISSPELLED: FOREVER
 
+Version 1.1.1
+
 Misspelled: Forever checks the words you type into World of Warcraft chat.
 Completed words that are not in the selected dictionary are coloured light blue.
 Right-click a highlighted word to replace it with a suggestion, ignore it for the
@@ -15,7 +17,8 @@ FEATURES
 - English (UK), English (US), French, German, Italian, Russian and Spanish.
 - Friend and guild-member names are accepted automatically when available.
 - WIM compatibility inherited from the established Misspelled engine.
-- Minimap button using the project artwork, with a saved draggable position.
+- Minimap button using the project artwork, positioned on the minimap ring with a
+  saved draggable angle that adapts to the minimap's current size and scale.
 
 COMMANDS
 

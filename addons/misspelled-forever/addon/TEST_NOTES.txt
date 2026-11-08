@@ -1,10 +1,12 @@
 MISSPELLED: FOREVER - LIVE TEST CHECKLIST
 
-1. Enable the add-on, log in, and confirm there are no Lua errors. Confirm the new
-   parchment-and-quill minimap button is visible.
+1. Enable the add-on, log in, and confirm there are no Lua errors. Confirm the
+   parchment-and-quill minimap button is visible and centred on the minimap border,
+   not inside the circular map area.
 2. Left-click the minimap button and confirm settings open. Right-click it and
    confirm the personal dictionary opens. Drag it around the minimap, reload, and
-   confirm its position is retained. Test the visibility checkbox and /mf reset.
+   confirm its angle is retained on the border. Test the visibility checkbox and
+   /mf reset. If UI scale or minimap size changes, confirm the button remains on the ring.
 3. Open chat and type: "This is a sentnce ". Confirm "sentnce" turns light blue
    after the trailing space is entered.
 4. Right-click "sentnce" and choose "sentence". Confirm only that word changes.

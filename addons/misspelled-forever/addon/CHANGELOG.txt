@@ -1,3 +1,9 @@
+Misspelled: Forever 1.1.1
+
+- Fixed the minimap button sitting inside the minimap instead of on its border.
+- Minimap placement now follows the current minimap width, height and effective scale.
+- Existing saved angles, dragging, visibility controls and position reset are preserved.
+
 Misspelled: Forever 1.1.0
 
 - Added a draggable minimap button using the approved project artwork.

@@ -3,13 +3,23 @@
 local Misspelled = _G.Misspelled
 if not Misspelled then return end
 
-local BUTTON_RADIUS = 80
+local RING_OFFSET = 4
 local DEFAULT_ANGLE = 220
 
 local function SetButtonPosition(button)
 	local angle = math.rad(MisspelledForeverDB.MinimapAngle or DEFAULT_ANGLE)
+	local minimapScale = Minimap:GetEffectiveScale()
+	local buttonScale = button:GetEffectiveScale()
+	if not minimapScale or not buttonScale or buttonScale == 0 then return end
+	local scale = minimapScale / buttonScale
+	local width, height = Minimap:GetWidth(), Minimap:GetHeight()
+	if not width or width <= 0 then width = 140 end
+	if not height or height <= 0 then height = 140 end
+	width, height = width * scale, height * scale
 	button:ClearAllPoints()
-	button:SetPoint("CENTER", Minimap, "CENTER", math.cos(angle) * BUTTON_RADIUS, math.sin(angle) * BUTTON_RADIUS)
+	button:SetPoint("CENTER", Minimap, "CENTER",
+		math.cos(angle) * (width / 2 + RING_OFFSET),
+		math.sin(angle) * (height / 2 + RING_OFFSET))
 end
 
 local function UpdateDragPosition(button)
@@ -53,7 +63,7 @@ end
 function Misspelled:CreateMinimapButton()
 	if self.MinimapButton or not Minimap then return end
 
-	local button = CreateFrame("Button", "MisspelledForeverMinimapButton", Minimap)
+	local button = CreateFrame("Button", "MisspelledForeverMinimapButton", Minimap:GetParent() or UIParent)
 	button:SetSize(33, 33)
 	button:SetFrameStrata("MEDIUM")
 	button:SetFrameLevel(Minimap:GetFrameLevel() + 8)
@@ -112,6 +122,7 @@ function Misspelled:CreateMinimapButton()
 	button:SetScript("OnLeave", function()
 		GameTooltip:Hide()
 	end)
+	button:SetScript("OnShow", SetButtonPosition)
 
 	self.MinimapButton = button
 	SetButtonPosition(button)
