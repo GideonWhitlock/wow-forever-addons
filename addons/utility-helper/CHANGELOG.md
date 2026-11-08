@@ -1,5 +1,14 @@
 # Utility Helper: Forever changelog
 
+## 0.1.33
+
+- Added a separate low-health Recovery item button for Forever Student Fodder,
+  Tea with Sugar, Whipper Root Tuber, Lily Root and Night Dragon's Breath.
+- Added Major/Minor Rejuvenation Potions and Wildvine Potion to the direct-healing
+  potion selector.
+- Kept potion, recovery item and Healthstone buttons independent, and excluded
+  long-duration regeneration elixirs from emergency healing.
+
 ## 0.1.32
 
 - Successful Battle Shout and Commanding Shout casts now clear their combat
