@@ -95,11 +95,58 @@ local function watchCollectedButton(button)
     end)
 end
 
+local function vectorAngleDegrees(y, x)
+    if x == 0 then return y >= 0 and 90 or 270 end
+    local angle = math.deg(math.atan(y / x))
+    if x < 0 then angle = angle + 180 elseif y < 0 then angle = angle + 360 end
+    return angle % 360
+end
+
+local function minimapRadii()
+    if not Minimap or not Minimap.GetSize then return nil end
+    local width, height = Minimap:GetSize()
+    if not width or not height or width <= 0 or height <= 0 then return nil end
+    local padding = math.max(2, (F.db and F.db.size or 32) * 0.25)
+    return width / 2 + padding, height / 2 + padding
+end
+
+function F.SaveMinimapAngle()
+    if not F.launcher or not Minimap or not F.db then return false end
+    local launcherX, launcherY = F.launcher:GetCenter()
+    local minimapX, minimapY = Minimap:GetCenter()
+    local radiusX, radiusY = minimapRadii()
+    if not launcherX or not launcherY or not minimapX or not minimapY or
+            not radiusX or not radiusY then return false end
+    local x = (launcherX - minimapX) / radiusX
+    local y = (launcherY - minimapY) / radiusY
+    if math.abs(x) < 0.0001 and math.abs(y) < 0.0001 then return false end
+    F.db.minimapAngle = vectorAngleDegrees(y, x)
+    return true
+end
+
+local function minimapRimTarget()
+    if not F.db.clampToMinimap or not Minimap then return nil end
+    local minimapX, minimapY = Minimap:GetCenter()
+    local parentX, parentY = UIParent:GetCenter()
+    local radiusX, radiusY = minimapRadii()
+    if not minimapX or not minimapY or not parentX or not parentY or
+            not radiusX or not radiusY then return nil end
+    local angle = math.rad(F.db.minimapAngle or 225)
+    return minimapX - parentX + math.cos(angle) * radiusX,
+        minimapY - parentY + math.sin(angle) * radiusY
+end
+
+function F.GetPositionOffsets()
+    local rimX, rimY = minimapRimTarget()
+    if rimX and rimY then return rimX, rimY end
+    return F.db.x, F.db.y
+end
+
 function F.ApplyPosition()
     if not F.container or F.dragging then return end
     local width, height = F.container:GetSize()
     local size = F.db.size
-    local x, y = F.db.x, F.db.y
+    local x, y = F.GetPositionOffsets()
     if F.db.vertical then
         local launcherOffsetY
         if y < 0 then
@@ -122,6 +169,10 @@ function F.ApplyPosition()
 end
 
 function F.SavePosition()
+    if F.db.clampToMinimap then
+        F.SaveMinimapAngle()
+        return
+    end
     local x, y = F.launcher:GetCenter()
     local px, py = UIParent:GetCenter()
     if x and y and px and py then
@@ -318,6 +369,7 @@ function F.Layout()
     if InCombatLockdown() or not F.container then return end
     F.layingOut = true
     local size, spacing = F.db.size, F.db.spacing
+    local positionX, positionY = F.GetPositionOffsets()
     local visible = {}
     for _, info in ipairs(F.collected or {}) do
         local button = info.button
@@ -342,7 +394,7 @@ function F.Layout()
     if F.db.vertical then
         F.background:SetSize(thickness, fullLength)
         F.buttonHolder:SetSize(thickness, fullLength)
-        if F.db.y < 0 then
+        if positionY < 0 then
             F.background:SetPoint("BOTTOM", F.container, "BOTTOM")
             F.buttonHolder:SetPoint("BOTTOM", F.container, "BOTTOM")
         else
@@ -352,7 +404,7 @@ function F.Layout()
     else
         F.background:SetSize(fullLength, thickness)
         F.buttonHolder:SetSize(fullLength, thickness)
-        if F.db.x > 0 then
+        if positionX > 0 then
             F.background:SetPoint("RIGHT", F.container, "RIGHT")
             F.buttonHolder:SetPoint("RIGHT", F.container, "RIGHT")
         else
@@ -407,13 +459,13 @@ function F.Layout()
         button:SetFrameLevel(F.buttonHolder:GetFrameLevel() + 2)
         local offset = 4 + size / 2 + (index - 1) * (size + spacing)
         if F.db.vertical then
-            if F.db.y < 0 then
+            if positionY < 0 then
                 anchor:SetPoint("CENTER", F.container, "BOTTOM", 0, offset)
             else
                 anchor:SetPoint("CENTER", F.container, "TOP", 0, -offset)
             end
         else
-            if F.db.x > 0 then
+            if positionX > 0 then
                 anchor:SetPoint("CENTER", F.container, "RIGHT", -offset, 0)
             else
                 anchor:SetPoint("CENTER", F.container, "LEFT", offset, 0)
@@ -438,7 +490,9 @@ local function launcherTooltip()
     GameTooltip:SetText("Minimap Button: Forever", 1, 0.82, 0.3)
     GameTooltip:AddLine(F.db.expanded and "Left-click: hide collected icons" or "Left-click: show collected icons", 1, 1, 1)
     GameTooltip:AddLine("Right-click: open settings", 1, 1, 1)
-    GameTooltip:AddLine("Alt-drag: move the button bar", 0.72, 0.72, 0.72)
+    GameTooltip:AddLine(F.db.clampToMinimap and
+        "Alt-drag: move around the minimap rim" or
+        "Alt-drag: move the button bar", 0.72, 0.72, 0.72)
     GameTooltip:AddLine((F.db.vertical and "Vertical" or "Horizontal") .. " layout - size " .. F.db.size, 0.72, 0.9, 0.72)
     GameTooltip:AddLine((F.db.buttonShape == "circle" and "Circle" or "Square") ..
         " controller - " .. math.floor(F.db.idleOpacity * 100 + 0.5) .. "% idle opacity", 0.72, 0.9, 0.72)
@@ -605,6 +659,7 @@ function F.SyncOptions()
     F.options.enabled:SetChecked(F.db.enabled)
     F.options.vertical:SetChecked(F.db.vertical)
     F.options.background:SetChecked(F.db.showBackground)
+    F.options.rim:SetChecked(F.db.clampToMinimap)
     F.options.shapeSquare:SetChecked(F.db.buttonShape == "square")
     F.options.shapeCircle:SetChecked(F.db.buttonShape == "circle")
     F.options.size:SetValue(F.db.size)
@@ -622,7 +677,7 @@ function F.ToggleOptions()
     if not F.options then
         local panel = CreateFrame("Frame", "MinimapButtonForeverOptions", UIParent, "BackdropTemplate")
         F.options = panel
-        panel:SetSize(380, 560)
+        panel:SetSize(380, 600)
         panel:SetPoint("CENTER", UIParent, "CENTER", 250, 0)
         panel:SetFrameStrata("DIALOG")
         panel:SetClampedToScreen(true)
@@ -640,7 +695,7 @@ function F.ToggleOptions()
         close:SetPoint("TOPRIGHT", -4, -4)
         local help = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         help:SetPoint("TOP", 0, -52)
-        help:SetText("Alt-drag the gold icon to move it.\nThe bar opens inward from the nearest screen edge.")
+        help:SetText("Alt-drag the gold icon to move it.\nOptional rim mode keeps the controller on the minimap.")
 
         local function checkbox(y, label, action)
             local check = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
@@ -658,11 +713,14 @@ function F.ToggleOptions()
         panel.background = checkbox(-156, "Show the bar background", function(checked)
             F.db.showBackground = checked; F.Layout()
         end)
+        panel.rim = checkbox(-188, "Clamp the controller to the minimap rim", function(checked)
+            F.SetMinimapClamp(checked)
+        end)
         local shapeLabel = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        shapeLabel:SetPoint("TOPLEFT", 30, -198); shapeLabel:SetText("Button shape")
+        shapeLabel:SetPoint("TOPLEFT", 30, -230); shapeLabel:SetText("Button shape")
         local function shapeRadio(x, label, value)
             local radio = CreateFrame("CheckButton", nil, panel, "UIRadioButtonTemplate")
-            radio:SetPoint("TOPLEFT", x, -214)
+            radio:SetPoint("TOPLEFT", x, -246)
             local radioLabel = radio.Text or radio.text
             if radioLabel then radioLabel:SetText(label) end
             radio:SetScript("OnClick", function() F.SetButtonShape(value) end)
@@ -670,11 +728,11 @@ function F.ToggleOptions()
         end
         panel.shapeSquare = shapeRadio(28, "Square", "square")
         panel.shapeCircle = shapeRadio(138, "Circle", "circle")
-        panel.size = createSlider(panel, "MinimapButtonForeverSizeSlider", -280,
+        panel.size = createSlider(panel, "MinimapButtonForeverSizeSlider", -312,
             F.MIN_SIZE, F.MAX_SIZE, 1, F.SetSize)
-        panel.spacing = createSlider(panel, "MinimapButtonForeverSpacingSlider", -345,
+        panel.spacing = createSlider(panel, "MinimapButtonForeverSpacingSlider", -377,
             F.MIN_SPACING, F.MAX_SPACING, 1, F.SetSpacing)
-        panel.opacity = createSlider(panel, "MinimapButtonForeverOpacitySlider", -410,
+        panel.opacity = createSlider(panel, "MinimapButtonForeverOpacitySlider", -442,
             20, 100, 1, function(value) F.SetIdleOpacity(value / 100) end)
 
         local exclusions = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")

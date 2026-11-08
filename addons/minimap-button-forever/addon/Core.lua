@@ -1,6 +1,6 @@
 local _, F = ...
 
-F.VERSION = "1.0.19"
+F.VERSION = "1.0.21"
 F.MIN_SIZE = 20
 F.MAX_SIZE = 64
 F.MIN_SPACING = 0
@@ -20,6 +20,8 @@ local DEFAULTS = {
     enabled = true,
     buttonShape = "square",
     idleOpacity = 1,
+    clampToMinimap = false,
+    minimapAngle = 225,
 }
 
 local blockedNames = {
@@ -49,6 +51,7 @@ local blockedNames = {
 local blockedPatterns = {
     "^QuestieFrame%d+$",
     "^questieLineFrame%d+$",
+    "^GatherLite%d+$",
     "^GatherMatePin",
     "^HandyNotesPin",
     "^pfMiniMapPin",
@@ -151,6 +154,11 @@ function F.LoadSettings()
     if type(F.db.expanded) ~= "boolean" then F.db.expanded = DEFAULTS.expanded end
     if type(F.db.showBackground) ~= "boolean" then F.db.showBackground = DEFAULTS.showBackground end
     if type(F.db.enabled) ~= "boolean" then F.db.enabled = DEFAULTS.enabled end
+    if type(F.db.clampToMinimap) ~= "boolean" then
+        F.db.clampToMinimap = DEFAULTS.clampToMinimap
+    end
+    F.db.minimapAngle = finite(F.db.minimapAngle) and
+        (F.db.minimapAngle % 360) or DEFAULTS.minimapAngle
     if F.db.buttonShape ~= "square" and F.db.buttonShape ~= "circle" then
         F.db.buttonShape = DEFAULTS.buttonShape
     end
@@ -341,12 +349,28 @@ function F.SetIdleOpacity(value)
     F.SyncOptions()
 end
 
+function F.SetMinimapClamp(enabled)
+    if InCombatLockdown() then
+        F.Print("Minimap-rim positioning can be changed after combat.")
+        return
+    end
+    enabled = enabled and true or false
+    if enabled == F.db.clampToMinimap then return end
+    if enabled and F.SaveMinimapAngle then F.SaveMinimapAngle() end
+    F.db.clampToMinimap = enabled
+    F.Layout()
+    F.SyncOptions()
+    F.Print(enabled and "Controller clamped to the minimap rim." or
+        "Controller returned to its saved free position.")
+end
+
 function F.ResetLayout()
     if InCombatLockdown() then return end
     F.db.x, F.db.y = DEFAULTS.x, DEFAULTS.y
     F.db.size, F.db.spacing = DEFAULTS.size, DEFAULTS.spacing
     F.db.vertical, F.db.expanded, F.db.showBackground, F.db.enabled = false, false, true, true
     F.db.buttonShape, F.db.idleOpacity = DEFAULTS.buttonShape, DEFAULTS.idleOpacity
+    F.db.clampToMinimap, F.db.minimapAngle = DEFAULTS.clampToMinimap, DEFAULTS.minimapAngle
     F.ApplyLauncherStyle()
     F.ApplyPosition()
     F.ScanButtons()
@@ -371,6 +395,14 @@ function F.Command(message)
         F.SetButtonShape(value)
     elseif command == "opacity" and tonumber(value) then
         F.SetIdleOpacity(tonumber(value) / 100)
+    elseif command == "rim" or command == "clamp" then
+        if value == "on" then
+            F.SetMinimapClamp(true)
+        elseif value == "off" then
+            F.SetMinimapClamp(false)
+        else
+            F.SetMinimapClamp(not F.db.clampToMinimap)
+        end
     elseif command == "scan" then
         F.ScanButtons(true)
     elseif command == "exclusions" or command == "exclude" then
@@ -382,8 +414,9 @@ function F.Command(message)
         F.Print("Version " .. F.VERSION .. "; " .. count .. " button(s); " ..
             (F.db.vertical and "vertical" or "horizontal") .. "; size " .. F.db.size ..
             "; " .. F.db.buttonShape .. "; idle opacity " ..
-            math.floor(F.db.idleOpacity * 100 + 0.5) .. "%.")
+            math.floor(F.db.idleOpacity * 100 + 0.5) .. "%; " ..
+            (F.db.clampToMinimap and "minimap rim" or "free position") .. ".")
     else
-        F.Print("Commands: /mbf, /mbf exclusions, /mbf horizontal, /mbf vertical, /mbf size 40, /mbf spacing 4, /mbf shape circle, /mbf opacity 70, /mbf scan, /mbf reset, /mbf status")
+        F.Print("Commands: /mbf, /mbf exclusions, /mbf horizontal, /mbf vertical, /mbf size 40, /mbf spacing 4, /mbf shape circle, /mbf opacity 70, /mbf rim on|off, /mbf scan, /mbf reset, /mbf status")
     end
 end

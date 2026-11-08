@@ -1,5 +1,10 @@
 MINIMAP BUTTON FOREVER - LIVE TEST CHECKLIST
 
+VERSION 1.0.21 GATHERLITE PIN CHECK
+- With GatherLite enabled and nearby herb or mining nodes visible on the minimap,
+  click Scan buttons. Confirm no numbered GatherLite resource pins enter the bar.
+- Confirm the genuine GatherLite launcher remains collected and clickable.
+
 VERSION 1.0.19 EXCLUSION CHECK
 - Open settings, choose exclusions, and tick a named chat/message minimap button.
   Confirm it returns to its original minimap position immediately, remains there
@@ -45,3 +50,16 @@ VERSION 1.0.19 EXCLUSION CHECK
 15. Set Circle and 60% opacity, Alt-drag to a new position, toggle the bar and
     orientation, then /reload. Confirm shape, idle opacity, expanded state,
     orientation and position persist and all launcher click/drag actions work.
+16. Record the controller's free position, enable "Clamp the controller to the
+    minimap rim", and confirm it snaps to the nearest point on the minimap rim.
+17. With rim mode enabled, Alt-drag clockwise and anticlockwise around the
+    minimap. Confirm the controller snaps to the rim on release and its new angle
+    survives /reload, relogging, an icon-size change and a UI-scale change.
+18. Open the collected bar at the left, right, top and bottom of the minimap.
+    Confirm the controller remains fixed and the icons extend toward the screen
+    interior rather than leaving the visible area.
+19. Disable rim mode and confirm the controller returns to the free position
+    recorded before step 16. Re-enable it and confirm the rim angle returns.
+20. Load an existing SavedVariables file without `clampToMinimap` or
+    `minimapAngle`. Confirm its controller does not move until rim mode is
+    deliberately enabled.

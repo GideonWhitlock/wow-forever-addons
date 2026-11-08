@@ -1,3 +1,17 @@
+1.0.21 - 2026-11-05
+- Excludes GatherLite's numbered herb, mining and other resource-node map pins
+  from the collected button bar while retaining its genuine minimap launcher.
+
+1.0.20 - 2026-10-20
+- Adds an optional saved minimap-rim mode for the gold controller.
+- Alt-drag changes the controller's angle around the minimap while rim mode is
+  enabled; disabling it restores the character's previous free position.
+- Keeps free positioning as the default and migrates existing settings without
+  moving established layouts.
+- Adds a settings checkbox plus `/mbf rim on`, `/mbf rim off` and toggle support.
+- Recalculates the rim position after icon-size and UI-scale changes while the
+  collected bar continues to open inward from the relevant screen edge.
+
 1.0.19 - 2026-10-14
 - Adds a saved exclusion list for named add-on minimap buttons.
 - Adds a Choose exclusions window that restores selected buttons to their original
@@ -126,3 +140,13 @@
 - Adds size, spacing, orientation, background, rescan and reset settings.
 - Preserves collected buttons' original parent, position, size, scale and layer
   so disabling collection can return them to the minimap.
+1.0.20
+- Adds an optional saved minimap-rim mode for the gold controller.
+- Alt-drag changes the controller's angle around the minimap while rim mode is
+  enabled; disabling it restores the character's previous free position.
+- Keeps free positioning as the default and migrates existing settings without
+  moving established layouts.
+- Adds a settings checkbox plus `/mbf rim on`, `/mbf rim off` and toggle support.
+- Recalculates the rim position after icon-size and UI-scale changes while the
+  collected bar continues to open inward from the relevant screen edge.
+

@@ -1,4 +1,4 @@
-MINIMAP BUTTON: FOREVER - 1.0.19
+MINIMAP BUTTON: FOREVER - 1.0.21
 For WoW: Forever 1.60.1 (interface 16001).
 
 GET STARTED
@@ -15,11 +15,13 @@ them beside one gold controller icon. The bar can run horizontally or vertically
 It opens inward from the nearest screen edge so collected icons stay visible.
 It collects buttons created by installed add-ons while leaving Blizzard controls,
 quest markers, resource nodes and other map-location pins on the minimap.
+GatherLite's numbered resource-node pins are excluded while its genuine launcher
+remains eligible for collection.
 
 CONTROLS
 Left-click gold icon   Show or hide the collected minimap icons.
 Right-click gold icon  Open or close the add-on settings.
-Alt-drag gold icon     Move the gold controller around the screen.
+Alt-drag gold icon     Move freely, or around the minimap when rim mode is on.
 /mbf                   Open or close settings.
 /mbf horizontal        Use a horizontal bar.
 /mbf vertical          Use a vertical bar.
@@ -27,6 +29,8 @@ Alt-drag gold icon     Move the gold controller around the screen.
 /mbf spacing 4         Set the gap between icons from 0 to 16.
 /mbf shape circle      Use the circular gold controller; "square" restores it.
 /mbf opacity 70        Set the controller's idle opacity from 20% to 100%.
+/mbf rim on            Clamp the controller to the minimap rim; "off" restores
+                       its saved free position.
 /mbf scan              Look for newly loaded minimap buttons.
 /mbf exclusions        Choose buttons that must stay on the minimap.
 /mbf reset             Restore the default layout and settings.
@@ -36,8 +40,9 @@ SETTINGS
 The settings window can enable or release collected buttons, choose named add-on
 buttons that must remain on the minimap, change orientation,
 show or hide the bar background, choose a square or circular controller, adjust
-the controller's idle opacity, change icon size and spacing, scan again, or reset
-the layout. The controller returns to full opacity while hovered. Size is changed
+the controller's idle opacity, optionally clamp it to the minimap rim, change icon
+size and spacing, scan again, or reset the layout. Rim mode saves its angle and
+keeps the previous free position unchanged. The controller returns to full opacity while hovered. Size is changed
 in settings, not by left-clicking the icon.
 Settings, open/closed state and position save separately for each character.
 
