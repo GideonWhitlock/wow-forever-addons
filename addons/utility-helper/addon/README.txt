@@ -1,6 +1,13 @@
 # Utility Helper: Forever
 
-Version **0.1.32** for **WoW: Forever 1.60.1**, interface **16001**.
+Version **0.1.33** for **WoW: Forever 1.60.1**, interface **16001**.
+
+**Emergency recovery now recognises more than ordinary healing potions.** A
+separate low-health Recovery item button can select WoW: Forever's Student
+Fodder, Tea with Sugar, Whipper Root Tuber, Lily Root or Night Dragon's Breath.
+The Healing potion button also recognises Major/Minor Rejuvenation Potions and
+Wildvine Potion. Long-duration regeneration elixirs and seated food are not
+treated as emergency healing.
 
 **Successful warrior shout casts now clear the reminder even when the aura is
 secret in combat.** Forever can hide both broad aura enumeration and direct
@@ -295,7 +302,7 @@ with the advanced command below. Group changes can change the person occupying
 a party/raid slot, as with standard unit frames.
 
 For example, a hunter targeting a beast can have **Scare Beast**, **Mend Pet**,
-**Healing potion** and **Healthstone** highlighted together if the corresponding
+**Healing potion**, **Recovery item** and **Healthstone** highlighted together if the corresponding
 conditions are present. Druid forms are checked using the game's reported
 creature type, not by assuming every druid is always a beast.
 
@@ -312,7 +319,7 @@ creature type, not by assuming every druid is always a beast.
 | Shaman | Available interrupt, Purge, poison/disease removal, recovery and utility totems, water utility, Ancestral Spirit |
 | Warlock | Health Funnel, Fear/Banish/Enslave, active pet's Spell Lock/Devour Magic/Seduction/Sacrifice, Unending Breath |
 | Warrior | Pummel/Shield Bash, Disarm, Intimidating Shout, Shield Wall, Last Stand, Berserker Rage |
-| Shared | Learned racial utilities, classic healing/mana potions, healthstones and out-of-combat self-bandaging |
+| Shared | Learned racial utilities, direct-healing potions, separate emergency recovery items, healthstones and out-of-combat self-bandaging |
 
 Only learned player or current pet spells appear. Highest learned ranks are
 resolved by localized spell-family name. Talents/racials that are absent are
@@ -337,7 +344,9 @@ Health Funnel consumes your health; Sacrifice consumes the Voidwalker.
 Each recovery family chooses the strongest eligible classic item present in
 bags while outside combat. The selected item remains bound during combat. If
 it runs out, the button returns to inactive visibility; the next eligible item is selected after combat.
-Healing potion and healthstone have separate buttons. Shared cooldowns are
+Healing potion, recovery item and healthstone have separate buttons. The
+recovery slot covers Student Fodder and direct health-restoring quest/world
+consumables that can use a different cooldown from ordinary potions. Shared cooldowns are
 respected when readable. Empty item slots keep their position at inactive visibility.
 Both the action button and settings list use the selected item's icon.
 Bandages have a separate self-use alert, from Linen through Heavy Runecloth.
@@ -350,8 +359,10 @@ With readable health it is clickable only at or below the threshold. Unknown
 usability, aura/cast information or failed display evaluation never enables a
 bandage button. No bandage is used automatically.
 
-The included list covers the standard classic potion/healthstone/bandage tiers; newly
-introduced Forever consumables need a catalogue update.
+The included list covers the standard classic potion/healthstone/bandage tiers,
+known direct recovery items and Forever Student Fodder. Lesser Troll's Blood
+Elixir and similar long-duration regeneration buffs are intentionally excluded:
+they do not provide potion-like emergency healing at the 50% threshold.
 
 ## Extra utilities and commands
 

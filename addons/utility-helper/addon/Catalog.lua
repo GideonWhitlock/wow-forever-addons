@@ -1,5 +1,5 @@
 local _, U = ...
-U.VERSION = "0.1.32"
+U.VERSION = "0.1.33"
 U.TITLE = "Utility Helper: Forever"
 U.catalog = {}
 -- IDs identify spell families. The spellbook supplies the learned rank and localized name.
@@ -267,8 +267,14 @@ a("ALL", 2481, "Find Treasure", "tracking", "player", {tracking = true, restOnly
 
 U.itemGroups = {
     {key = "ITEM:healing", label = "Healing potion", rule = "health", target = "player", icon = 134831,
-        -- Strongest classic potion in bags that the character can use.
-        items = {13446, 3928, 1710, 929, 858, 118}},
+        -- Strongest direct-healing potion in bags that the character can use.
+        -- Rejuvenation and Wildvine potions restore health as well as mana.
+        items = {18253, 13446, 9144, 3928, 1710, 929, 2456, 858, 118}},
+    {key = "ITEM:recovery", label = "Recovery item", rule = "health", target = "player", icon = 134062,
+        -- Instant/direct recovery consumables on cooldowns separate from the
+        -- ordinary potion slot. Long-duration regeneration elixirs and seated
+        -- food are deliberately excluded from this emergency-health group.
+        items = {216619, 15723, 11951, 14894, 11952}},
     {key = "ITEM:mana", label = "Mana potion", rule = "mana", target = "player", icon = "Interface\\Icons\\INV_Potion_70",
         items = {13444, 6149, 3827, 3385, 2455}},
     {key = "ITEM:healthstone", label = "Healthstone", rule = "health", target = "player", icon = 135230,

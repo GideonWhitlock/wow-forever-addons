@@ -1,4 +1,14 @@
-# Utility Helper: Forever 0.1.32 — verification record
+# Utility Helper: Forever 0.1.33 — verification record
+
+## 0.1.33 expanded recovery consumables
+
+- `tests/recovery_consumables.lua` verifies Major Rejuvenation Potion can fill
+  the potion slot and Forever Student Fodder can fill an independent Recovery
+  item slot.
+- Both activate at the configured 50% health boundary and return idle above it.
+- Bag refresh selects Whipper Root Tuber when Student Fodder is absent, while a
+  Lesser Troll's Blood regeneration elixir does not enter either emergency slot.
+- The complete Lua 5.1 syntax and scenario suite passes.
 
 ## 0.1.32 secret warrior-shout cast confirmation
 
