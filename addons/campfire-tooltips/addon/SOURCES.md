@@ -34,4 +34,4 @@ The separate tent acquisition effect remains unchanged. The supplied campfire su
 
 ### Future updates
 
-Recheck client/API support and all changed placements, durations and literal level branches. Update `ns.checkedBuild` only after verifying the new build. Update the generator and regenerate Data.lua together; keep Names.lua fallback additions exact and conservative. Live-test at least a base object and an upgrade, and rerun the simulated tests. Keep the permanent display name **Campfire Tooltips**.
+Recheck client/API support and all changed placements, durations and literal level branches. Update `ns.checkedBuild` only after verifying the new build. Update the generator and regenerate Data.lua together; keep Names.lua fallback additions exact and conservative. Live-test at least a base object and an upgrade, and rerun the simulated tests. Keep the permanent display name **Campfire Tooltips: Forever**.

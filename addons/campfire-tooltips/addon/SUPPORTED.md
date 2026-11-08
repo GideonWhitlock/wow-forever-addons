@@ -2,7 +2,7 @@
 
 Checked against client build 1.60.1.70009. This table describes verified data coverage, not 39 completed live tests. Recognition requires a readable supported ID or an explicitly allowed exact name; see TESTING.md.
 
-On the tested client, real object tooltips exposed names but no GUID/entry ID. Thus ID-only entries remain unavailable in those tooltips. The 27 exact-name fallbacks are English only; most profession names still need live confirmation. A Camp Chair was actually labelled "Chair", which is deliberately left unchanged because the name alone is ambiguous.
+On the tested client, real object tooltips exposed names but no GUID/entry ID. Thus ID-only entries remain unavailable in those tooltips. The 28 exact-name fallbacks are English only; most profession names still need live confirmation. Owner screenshots on 4 October confirmed the camp chair's world title is `Chair` and the banner's is `Faction Banner`; 1.0.2 adds the observed Chair title and a player-faction-aware banner fallback.
 
 | Object or service | Entry ID | Placement spell | Recognition | Benefit | Additional utility |
 |---|---:|---:|---|---|---|
@@ -26,11 +26,11 @@ On the tested client, real object tooltips exposed names but no GUID/entry ID. T
 | Lodestone | 651956 | 1307254 | ID or exact name | Increases melee attack power. | — |
 | Molten Foundry | 612134 | 1307264 | ID or exact name | Increases melee attack power. | Required by some crafting recipes. |
 | Rock Garden | 654285 | 1307386 | ID or exact name | Increases melee attack power. | Grows a common mining node over time. |
-| Camp Chair | 612275 | 1307229 | ID or exact name | Increases critical strike chance with spells and attacks. | — |
+| Camp Chair | 612275 | 1307229 | ID, `Camp Chair`, or observed `Chair` title | Increases critical strike chance with spells and attacks. | — |
 | Field Guide | 612088 | 1307243 | ID only | Increases critical strike chance with spells and attacks. | Read it to gain Track Beasts. |
 | Trapper's Workbench | 612082 | 1307397 | ID or exact name | Increases critical strike chance with spells and attacks. | Contains one trap. |
-| Faction Banner | 612351 | 1307239 | ID only | Increases Spirit for members of the banner's faction. | This banner benefits Alliance players. |
-| Faction Banner | 612350 | 1307240 | ID only | Increases Spirit for members of the banner's faction. | This banner benefits Horde players. |
+| Faction Banner | 612351 | 1307239 | ID or exact name for Alliance player | Increases Spirit for members of the banner's faction. | This banner benefits Alliance players. |
+| Faction Banner | 612350 | 1307240 | ID or exact name for Horde player | Increases Spirit for members of the banner's faction. | This banner benefits Horde players. |
 | Loom | 612142 | 1307255 | ID only | Increases Spirit for members of the banner's faction. | Required by some crafting recipes. |
 | Spinning Wheel | 612123 | 1307393 | ID only | Increases Spirit for members of the banner's faction. | Craft certain reagents. |
 | Camp Tent | 528996 | 1307230 | ID or exact name | Adds rested experience. | — |

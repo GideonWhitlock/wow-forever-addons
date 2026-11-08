@@ -30,5 +30,10 @@ local english = {
     ["Anarchist's Workbench"] = 612145,
     ["Iron Oven"] = 612132,
     ["Cookie's Feast"] = 612073,
+    ["Chair"] = 612275,
+}
+local factional = {
+    ["Faction Banner"] = { Alliance=612351, Horde=612350 },
 }
 ns.names = { enUS=english, enGB=english }
+ns.factionNames = { enUS=factional, enGB=factional }

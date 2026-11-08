@@ -4,7 +4,7 @@
 -- Level brackets are literal client description branches, not inferred formulas.
 -- See SOURCES.md / NOTICE.md for provenance and verification limits.
 local _, ns = ...
-ns.checkedBuild, ns.version = "70009", "1.0.1"
+ns.checkedBuild, ns.version = "70009", "1.0.2"
 
 ns.benefits = {
     ["mana"] = {

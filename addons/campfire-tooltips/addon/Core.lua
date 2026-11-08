@@ -45,8 +45,16 @@ function ns.Identify(data)
     local title = ns.Field(ns.Field(ns.Field(data, "lines"), 1), "leftText")
     local names = ns.names[ns.locale]
     local entry = type(title) == "string" and names and names[title]
+    local method = "exact object name"
+    if not entry and type(title) == "string" then
+        local factionNames = ns.factionNames and ns.factionNames[ns.locale]
+        local byFaction = factionNames and factionNames[title]
+        local faction = byFaction and safeCall(UnitFactionGroup, "player")
+        entry = faction and byFaction[faction]
+        if entry then method = "faction object name" end
+    end
     local object = entry and ns.objects[entry]
-    if object and object.nameFallback then return object, entry, "exact object name" end
+    if object and (object.nameFallback or method == "faction object name") then return object, entry, method end
 end
 
 local function auraAccessAllowed()
@@ -177,7 +185,7 @@ end
 function ns.Report()
     local version, build, date, interface = GetBuildInfo()
     local lines = {
-        "Campfire Tooltips - version " .. ns.version,
+        "Campfire Tooltips: Forever - version " .. ns.version,
         "Client: " .. version .. " / " .. build .. " / " .. date .. " / Interface " .. interface,
         "Locale: " .. ns.locale,
         "Object callback registered: " .. tostring(hooked),

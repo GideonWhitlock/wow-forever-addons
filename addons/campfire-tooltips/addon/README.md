@@ -1,4 +1,4 @@
-# Campfire Tooltips
+# Campfire Tooltips: Forever
 
 Adds short, separated benefit lines to the normal tooltip when you hover over a recognised camping object. The original name, game information and tooltip position are preserved. This is a standalone addon; it does not require Feed Pet, CampfireStory or Tweaks Forever.
 
@@ -26,9 +26,9 @@ To remove, exit the game and remove only that folder. Preferences are stored sep
 
 Checked against **WoW: Forever 1.60.1, build 70009, Interface 16001**, English client, 27 September 2026. The mapping covers 39 researched placements, including profession upgrades and three camp service creatures. See **SUPPORTED.md** for the full list and **TESTING.md** for the distinction between data verification and actual in-game tests.
 
-Version **1.0.1** updates the campfire instructions for the September 24 eligibility changes reported in the maintenance audit. Local checks were run on 28 September; the last actual in-game checks remain those for 1.0.0 on 27 September. The newly described poses have not been tested in-game by this project.
+Version **1.0.2** recognises the observed world titles `Chair` and `Faction Banner` when the client supplies no readable object ID. Faction Banner selects the Alliance or Horde placement from the player's faction. The full mapping and behavior suite pass locally; the two corrected fallbacks still need an in-game reload check on 1.0.2.
 
-Object IDs take priority. There are 27 distinctive exact English name fallbacks, used only for world-object tooltips without a readable GUID. This client exposed no object IDs in the observed real hovers. Entries marked “ID only” in SUPPORTED.md therefore cannot be recognised in those tooltips. Generic names such as “Chair” or “Anvil” alone are insufficient and are left unchanged. Most profession upgrade names still need a live check. Unrecognised objects and unrelated items, spells, players and creatures are left unchanged.
+Object IDs take priority. There are 28 exact English name fallbacks, including the owner-confirmed camp `Chair` title, used only for world-object tooltips without a readable GUID. `Faction Banner` uses a separate faction-aware exact fallback. This client exposed no object IDs in the observed real hovers. Entries marked “ID only” in SUPPORTED.md therefore cannot be recognised in those tooltips. Other generic names such as `Anvil` remain unchanged without an ID. Most profession upgrade names still need a live check. Unrecognised objects and unrelated items, spells, players and creatures are left unchanged.
 
 Numerical predictions are shown only on the checked build and with a readable level from 1–60. After a client update, general descriptions remain available but need rechecking against that build. Hotfixes can also change data. Restricted or unavailable active-buff information is omitted; it is never treated as “not active”. Timers refresh on the next tooltip refresh or hover.
 
@@ -42,6 +42,6 @@ The settings page has clickable **Start hover checks**, **Refresh report** and *
 
 `Data.lua` holds effects, level brackets, spell IDs and placement IDs. `Names.lua` holds exact language-specific fallback names. Both are generated from `tools/build_data.py` and checked research records; update the generator as well as any hand edits. `Core.lua` handles safe identification and tooltip additions; `Settings.lua` provides the native settings page. The source bundle includes the generator, reduced research records and simulated tests. No Python, external library or executable is needed in-game.
 
-The display name stays **Campfire Tooltips** in every update. Version numbers belong in metadata, not the name.
+The display name stays **Campfire Tooltips: Forever** in every update. Version numbers belong in metadata, not the name.
 
 Licence: GPL-3.0-or-later. See LICENSE, NOTICE.md and SOURCES.md.

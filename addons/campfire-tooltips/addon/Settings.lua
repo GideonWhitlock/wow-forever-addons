@@ -18,8 +18,8 @@ end
 function ns.CreateSettings()
     if panel or not ns.db then return end
     panel = CreateFrame("Frame")
-    panel.name = "Campfire Tooltips"
-    label(panel, "Campfire Tooltips", 20, -20, 560, "GameFontNormalLarge")
+    panel.name = "Campfire Tooltips: Forever"
+    label(panel, "Campfire Tooltips: Forever", 20, -20, 560, "GameFontNormalLarge")
     label(panel, "Hover over a supported object at a campsite to read its benefit in the normal tooltip.", 20, -55, 560)
     local function check(text, key, y)
         local button = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
