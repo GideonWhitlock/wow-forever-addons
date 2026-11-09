@@ -51,6 +51,41 @@ function Q.AttachToGroupFinder()
         if elapsed >= 0.2 then elapsed = 0; Q.UpdateLFGButton() end
     end)
     LFGBrowseFrame:HookScript("OnShow", Q.UpdateLFGButton)
+    local roleFilter = CreateFrame("DropdownButton", "LFGMessengerForeverRoleFilter", LFGBrowseFrame,
+        "WowStyle1DropdownTemplate")
+    Q.roleFilter = roleFilter
+    -- Span the same width as Category plus Activity so this reads as a
+    -- deliberate results-filter row rather than a misplaced third dropdown.
+    roleFilter:SetSize(349, 24)
+    roleFilter:SetPoint("TOPLEFT", LFGBrowseFrame, "TOPLEFT", 70, -76)
+    local labels = { ALL = "All roles", TANK = "Tank", HEALER = "Healer", DAMAGER = "DPS" }
+    local function setupRoleFilter()
+        local selected = (Q.db and Q.db.roleFilter) or "ALL"
+        roleFilter:SetDefaultText("Role filter: " .. (labels[selected] or labels.ALL))
+        roleFilter:SetupMenu(function(_, root)
+            local function isSelected(value) return Q.db.roleFilter == value end
+            local function setSelected(value)
+                Q.db.roleFilter = value
+                setupRoleFilter()
+                LFGBrowseFrame:UpdateResultList()
+            end
+            root:CreateRadio(labels.ALL, isSelected, setSelected, "ALL")
+            root:CreateRadio(labels.TANK, isSelected, setSelected, "TANK")
+            root:CreateRadio(labels.HEALER, isSelected, setSelected, "HEALER")
+            root:CreateRadio(labels.DAMAGER, isSelected, setSelected, "DAMAGER")
+        end)
+    end
+    setupRoleFilter()
+    if type(hooksecurefunc) == "function" and type(LFGBrowseFrame.UpdateResultList) == "function" then
+        hooksecurefunc(LFGBrowseFrame, "UpdateResultList", function(frame)
+            local filtered = Q.FilterResultsByRole(frame.results)
+            if filtered ~= frame.results then
+                frame.results = filtered
+                frame.totalResults = #filtered
+                frame:UpdateResults()
+            end
+        end)
+    end
     -- The mixin's methods have already been copied onto the live frame by the
     -- time this load-on-demand UI exists. Hook the frame method itself so the
     -- post-hook runs when a result row is right-clicked.
@@ -61,7 +96,6 @@ function Q.AttachToGroupFinder()
             if not searchEntry or type(searchEntry.resultID) ~= "number" or not MenuUtil then return end
             local resultID = searchEntry.resultID
             local player = Q.GetResultPlayer(resultID)
-            local leader = Q.GetPartyLeader()
             MenuUtil.CreateContextMenu(LFGBrowseFrame.SearchEntryDropDown, function(owner, root)
                 local info = C_LFGList.GetSearchResultInfo(resultID)
                 if not info then return end
@@ -77,7 +111,7 @@ function Q.AttachToGroupFinder()
                 local suggest = root:CreateButton("Suggest invite to party leader", function()
                     Q.SuggestInvite(resultID)
                 end)
-                suggest:SetEnabled(player ~= nil and leader ~= nil and not Q.ChatLocked())
+                suggest:SetEnabled(player ~= nil and type((C_PartyInfo and C_PartyInfo.InviteUnit) or InviteUnit) == "function")
                 root:CreateDivider()
                 root:CreateButton(LFG_LIST_REPORT_GROUP_FOR or "Report Group", function()
                     if LFGBrowseUtil_ReportListing then LFGBrowseUtil_ReportListing(resultID, info.leaderName) end

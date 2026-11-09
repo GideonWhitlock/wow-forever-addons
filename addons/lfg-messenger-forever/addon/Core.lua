@@ -2,12 +2,12 @@ local addonName, Q = ...
 
 Q.ADDON_NAME = addonName
 Q.TITLE = "Looking for Group: Forever"
-Q.VERSION = "1.0.4"
+Q.VERSION = "1.0.5"
 Q.BLIZZARD_ADDON = "Blizzard_GroupFinder_VanillaStyle"
 Q.ICON = "Interface\\Icons\\INV_Letter_15"
 Q.DEFAULTS = {
     template = "{class} {role} here",
-    suggestionTemplate = "Please invite {target} - {class} {role}.",
+    roleFilter = "ALL",
     minimap = { hidden = false, angle = 215 },
 }
 
@@ -52,10 +52,10 @@ function Q.InitializeDB()
         Q.db.template = Q.DEFAULTS.template
     end
     Q.db.template = Q.db.template:sub(1, 120)
-    if type(Q.db.suggestionTemplate) ~= "string" or Q.db.suggestionTemplate == "" then
-        Q.db.suggestionTemplate = Q.DEFAULTS.suggestionTemplate
+    if Q.db.roleFilter ~= "TANK" and Q.db.roleFilter ~= "HEALER"
+        and Q.db.roleFilter ~= "DAMAGER" then
+        Q.db.roleFilter = "ALL"
     end
-    Q.db.suggestionTemplate = Q.db.suggestionTemplate:sub(1, 160)
     Q.db.minimap.angle = tonumber(Q.db.minimap.angle) or Q.DEFAULTS.minimap.angle
     Q.db.minimap.hidden = Q.db.minimap.hidden and true or false
 end
@@ -182,33 +182,39 @@ function Q.GetResultPlayer(resultID)
     return { name = target, class = class, role = role, resultID = resultID }
 end
 
-function Q.BuildSuggestion(player, template)
-    if type(player) ~= "table" then return "" end
-    template = type(template) == "string" and template or (Q.db and Q.db.suggestionTemplate)
-        or Q.DEFAULTS.suggestionTemplate
-    local values = { target = player.name or "", class = player.class or "Player", role = player.role or "DPS" }
-    local message = template:gsub("{(%w+)}", function(key)
-        return values[key] or ("{" .. key .. "}")
-    end)
-    message = message:gsub("[\r\n]+", " "):gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "")
-    return message:sub(1, 255)
+local function hasRole(flags, role)
+    if type(flags) ~= "table" then return false end
+    if role == "TANK" then return flags.TANK or flags.tank end
+    if role == "HEALER" then return flags.HEALER or flags.healer end
+    if role == "DAMAGER" then return flags.DAMAGER or flags.DPS or flags.dps end
+    return true
 end
 
-function Q.GetPartyLeader()
-    if not IsInGroup or not IsInGroup() then return nil, false, "Join a party first" end
-    if UnitIsGroupLeader and UnitIsGroupLeader("player") then
-        return UnitName("player"), true
+function Q.ResultMatchesRole(resultID, role)
+    if role == nil or role == "ALL" then return true end
+    if not (C_LFGList and type(C_LFGList.GetSearchResultInfo) == "function"
+        and type(C_LFGList.GetSearchResultPlayerInfo) == "function") then
+        return true
     end
-    local count = type(GetNumSubgroupMembers) == "function" and GetNumSubgroupMembers() or 4
+    local okInfo, info = pcall(C_LFGList.GetSearchResultInfo, resultID)
+    if not okInfo or type(info) ~= "table" or Q.IsSecret(info.numMembers) then return true end
+    local count = tonumber(info.numMembers) or 1
     for index = 1, count do
-        local unit = "party" .. index
-        if UnitExists(unit) and UnitIsGroupLeader(unit) then
-            local name = UnitName(unit)
-            if Q.IsSecret(name) then return nil, false, "Party leader is unavailable during this combat" end
-            if type(name) == "string" and name ~= "" then return name, false end
-        end
+        local okPlayer, player = pcall(C_LFGList.GetSearchResultPlayerInfo, resultID, index)
+        if not okPlayer or Q.IsSecret(player) then return true end
+        if type(player) == "table" and hasRole(player.lfgRoles, role) then return true end
     end
-    return nil, false, "Party leader could not be identified"
+    return false
+end
+
+function Q.FilterResultsByRole(results, role)
+    role = role or (Q.db and Q.db.roleFilter) or "ALL"
+    if type(results) ~= "table" or role == "ALL" then return results or {} end
+    local filtered = {}
+    for _, resultID in ipairs(results) do
+        if Q.ResultMatchesRole(resultID, role) then filtered[#filtered + 1] = resultID end
+    end
+    return filtered
 end
 
 function Q.ChatLocked()
@@ -272,30 +278,22 @@ end
 function Q.SuggestInvite(resultID)
     local player, reason = Q.GetResultPlayer(resultID)
     if not player then Q.Print(reason); return false end
-    local leader, leaderIsPlayer, leaderReason = Q.GetPartyLeader()
-    if not leader then Q.Print(leaderReason); return false end
-    if Q.ChatLocked() then Q.Print("Messaging is restricted during this combat."); return false end
     local now = GetTime()
     if Q.lastSuggestedResult == resultID and now - (Q.lastSuggestedAt or 0) < 3 then
         Q.Print("That invite was already suggested.")
         return false
     end
-    local message = Q.BuildSuggestion(player)
-    local send = (C_ChatInfo and C_ChatInfo.SendChatMessage) or SendChatMessage
-    if type(send) ~= "function" then Q.Print("Chat sending is unavailable."); return false end
-    local partyOK, partyResult = pcall(send, message, "PARTY")
-    local whisperOK = true
-    local whisperResult
-    if not leaderIsPlayer then
-        whisperOK, whisperResult = pcall(send, message, "WHISPER", nil, leader)
-    end
-    if partyOK and sendResultSucceeded(partyResult)
-        and whisperOK and (leaderIsPlayer or sendResultSucceeded(whisperResult)) then
+    local invite = C_PartyInfo and C_PartyInfo.InviteUnit or InviteUnit
+    if type(invite) ~= "function" then Q.Print("Inviting is unavailable."); return false end
+    local ok, result = pcall(invite, player.name)
+    if ok and result ~= false then
         Q.lastSuggestedResult, Q.lastSuggestedAt = resultID, now
-        Q.Print("Suggested " .. player.name .. " to your party leader.")
+        local isLeader = not IsInGroup or not IsInGroup()
+            or (UnitIsGroupLeader and UnitIsGroupLeader("player"))
+        Q.Print((isLeader and "Invited " or "Sent an invite suggestion for ") .. player.name .. ".")
         return true
     end
-    Q.Print("The invite suggestion could not be sent.")
+    Q.Print("The invite request could not be sent.")
     return false
 end
 

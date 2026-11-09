@@ -14,12 +14,15 @@ whisper the leader with your class and chosen Group Finder role, for example:
 - Editable message template with `{class}`, `{role}`, `{name}` and `{level}`.
 - Three-second duplicate-click protection for the same leader.
 - Right-click an individual player listing and choose **Suggest invite to party
-  leader**. The suggestion is posted in party chat and whispered to the leader;
-  when you are the leader, the party message is sufficient.
+  leader**. This uses WoW's native invite action: party members send the
+  leader an approval prompt, while party leaders invite the player directly.
+- A role filter above the results can show only listings containing a Tank,
+  Healer or DPS. Multi-role players match each role they selected.
 - If chat is restricted, prepares the message in the whisper box instead of losing it.
 - Draggable minimap button: left-click opens or closes Looking For Group;
   right-click opens settings.
-- No automatic searches, applications, invitations or unsolicited messages.
+- No automatic searches, applications, invitations or unsolicited messages;
+  both the refresh and invite actions still require your click.
 
 ## Commands
 
@@ -31,7 +34,7 @@ whisper the leader with your class and chosen Group Finder role, for example:
 
 ## Support and source
 
-- [Report an issue](https://github.com/GideonWhitlock/wow-forever-addons/issues/new/choose)
+- [Report an issue](https://github.com/GideonWhitlock/wow-forever-addons/issues/new?template=lfg-messenger-forever.yml)
 - [Source](https://github.com/GideonWhitlock/wow-forever-addons/tree/main/addons/lfg-messenger-forever/addon)
 - [Changelog](https://github.com/GideonWhitlock/wow-forever-addons/blob/main/addons/lfg-messenger-forever/CHANGELOG.md)
 

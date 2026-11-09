@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.0.5 — 2026-11-09
+
+- Changed **Suggest invite to party leader** to use WoW's native invite action.
+  Party members now trigger the leader's built-in approval prompt instead of
+  posting an instruction in party chat; leaders invite directly.
+- Added an All/Tank/Healer/DPS filter above the search results. Multi-role
+  players and groups match every role they advertise.
+- Preserved complete Forever player names when submitting invite requests.
+- Removed the obsolete editable party-chat suggestion template.
+
 ## 1.0.4 — 2026-11-07
 
 - Renamed the public add-on to **Looking for Group: Forever**.
