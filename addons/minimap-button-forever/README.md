@@ -2,7 +2,7 @@
 
 **Repository identifier:** `minimap-button-forever`  
 **Issue label:** `addon:minimap-button-forever`  
-**Current release:** 1.0.19  
+**Current release:** 1.0.22
 **Game flavour:** WoW: Forever 1.60.1, interface 16001
 
 Minimap Button: Forever gathers eligible add-on minimap buttons into one movable,
@@ -13,6 +13,9 @@ from the nearest screen edge.
 It is deliberately limited to buttons created by installed add-ons. Blizzard
 controls, protected buttons, quest markers, resource nodes and other map-location
 pins remain untouched.
+
+Frames that expose protected or secret geometry are rejected before collection,
+preventing restricted dimensions from being compared, scaled or restored.
 
 ## Installation
 

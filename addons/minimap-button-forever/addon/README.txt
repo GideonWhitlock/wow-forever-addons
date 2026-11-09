@@ -1,4 +1,4 @@
-MINIMAP BUTTON: FOREVER - 1.0.21
+MINIMAP BUTTON: FOREVER - 1.0.22
 For WoW: Forever 1.60.1 (interface 16001).
 
 GET STARTED
@@ -17,6 +17,8 @@ It collects buttons created by installed add-ons while leaving Blizzard controls
 quest markers, resource nodes and other map-location pins on the minimap.
 GatherLite's numbered resource-node pins are excluded while its genuine launcher
 remains eligible for collection.
+Frames with protected or secret geometry are rejected before collection so their
+restricted dimensions are never compared, scaled or restored by this add-on.
 
 CONTROLS
 Left-click gold icon   Show or hide the collected minimap icons.

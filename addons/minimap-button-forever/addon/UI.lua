@@ -318,21 +318,25 @@ function F.ScanButtons(report)
     end
     F.knownButtons = F.knownButtons or {}
     for _, button in ipairs(children) do
-        if F.IsCollectable(button, true) then
-            local name = F.GetButtonIdentifier(button)
+        local collectable, width, height = F.IsCollectable(button, true)
+        local name
+        if collectable then
+            name = F.GetButtonIdentifier(button)
             if name then F.knownButtons[name] = button end
         end
-        if F.IsCollectable(button) and not F.collectedByButton[button] then
-            local info = F.CaptureButton(button)
-            F.collected[#F.collected + 1] = info
-            F.collectedByButton[button] = info
-            watchCollectedButton(button)
-            F.BrightenButton(info)
-            -- Button-bag add-ons sometimes install an OnShow handler whose only
-            -- job is to hide the button again. The original is restored on release.
-            button:SetScript("OnShow", nil)
-            button:SetParent(F.buttonHolder)
-            added = added + 1
+        if collectable and not F.IsButtonExcluded(name) and not F.collectedByButton[button] then
+            local info = F.CaptureButton(button, width, height)
+            if info then
+                F.collected[#F.collected + 1] = info
+                F.collectedByButton[button] = info
+                watchCollectedButton(button)
+                F.BrightenButton(info)
+                -- Button-bag add-ons sometimes install an OnShow handler whose only
+                -- job is to hide the button again. The original is restored on release.
+                button:SetScript("OnShow", nil)
+                button:SetParent(F.buttonHolder)
+                added = added + 1
+            end
         end
     end
     table.sort(F.collected, function(left, right) return left.order < right.order end)

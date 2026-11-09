@@ -1,5 +1,12 @@
 MINIMAP BUTTON FOREVER - LIVE TEST CHECKLIST
 
+VERSION 1.0.22 SECRET-GEOMETRY CHECK
+- With the add-on that creates the unnamed `Bar.lua:63` button enabled, scan
+  before combat, during ordinary combat and after combat. Confirm no secret-value
+  error occurs and that the restricted button is not collected.
+- Confirm ordinary 8-80 pixel add-on minimap buttons still collect, resize and
+  return to their original size and position when organisation is disabled.
+
 VERSION 1.0.21 GATHERLITE PIN CHECK
 - With GatherLite enabled and nearby herb or mining nodes visible on the minimap,
   click Scan buttons. Confirm no numbered GatherLite resource pins enter the bar.

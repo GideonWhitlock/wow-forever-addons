@@ -2,7 +2,7 @@
 ## Title: Minimap Button: Forever
 ## Author: Gideon
 ## Notes: Organises add-on minimap buttons into a movable horizontal or vertical bar.
-## Version: 1.0.21
+## Version: 1.0.22
 ## SavedVariablesPerCharacter: MinimapButtonForeverDB
 ## IconTexture: Interface\Icons\INV_Misc_PocketWatch_01
 

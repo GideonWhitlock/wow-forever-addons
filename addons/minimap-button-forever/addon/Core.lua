@@ -1,6 +1,6 @@
 local _, F = ...
 
-F.VERSION = "1.0.21"
+F.VERSION = "1.0.22"
 F.MIN_SIZE = 20
 F.MAX_SIZE = 64
 F.MIN_SPACING = 0
@@ -183,21 +183,61 @@ function F.IsButtonExcluded(buttonOrName)
     return name and F.db and F.db.excludedButtons and F.db.excludedButtons[name] == true or false
 end
 
+function F.CanAccessValue(value)
+    if type(canaccessvalue) == "function" then
+        local ok, accessible = pcall(canaccessvalue, value)
+        return ok and accessible == true
+    end
+    if type(issecretvalue) == "function" then
+        local ok, secret = pcall(issecretvalue, value)
+        return ok and secret ~= true
+    end
+    return true
+end
+
+local function hasUnsafeFrameState(button, methodName)
+    local method = button and button[methodName]
+    if type(method) ~= "function" then return false end
+    local ok, state = pcall(method, button)
+    if not ok or not F.CanAccessValue(state) then return true end
+    return state == true
+end
+
+function F.GetAccessibleButtonSize(button)
+    if not button or type(button.GetWidth) ~= "function" or
+            type(button.GetHeight) ~= "function" then
+        return nil
+    end
+    local widthOK, width = pcall(button.GetWidth, button)
+    local heightOK, height = pcall(button.GetHeight, button)
+    if not widthOK or not heightOK or type(width) ~= "number" or
+            type(height) ~= "number" then
+        return nil
+    end
+    if not F.CanAccessValue(width) or not F.CanAccessValue(height) then return nil end
+    return width, height
+end
+
 function F.IsCollectable(button, includeExcluded)
     if not button or button == F.launcher or button == F.container or button == F.options then return false end
+    if hasUnsafeFrameState(button, "IsForbidden") or
+            hasUnsafeFrameState(button, "IsProtected") or
+            hasUnsafeFrameState(button, "HasSecretValues") or
+            hasUnsafeFrameState(button, "IsAnchoringSecret") then
+        return false
+    end
     if F.IsBlizzardMinimapControl(button) then return false end
-    if button.IsForbidden and button:IsForbidden() then return false end
-    if button.IsProtected and button:IsProtected() then return false end
     if not button.GetObjectType or button:GetObjectType() ~= "Button" then return false end
     local name = button.GetName and button:GetName()
     if name and (blockedNames[name] or name:match("^MinimapButtonForever")) then return false end
     if isIgnoredByButtonBag(name) then return false end
     if F.IsMapLocationPin(button) then return false end
-    local width, height = button:GetWidth() or 0, button:GetHeight() or 0
+    local width, height = F.GetAccessibleButtonSize(button)
+    if not width then return false end
     if width < 8 or height < 8 or width > 80 or height > 80 then return false end
     if not isMinimapRelative(button) then return false end
     if not includeExcluded and F.IsButtonExcluded(name) then return false end
-    return true
+    return true, width, height
 end
 
 function F.SetButtonExcluded(name, excluded)
@@ -226,7 +266,12 @@ function F.SetButtonExcluded(name, excluded)
     return true
 end
 
-function F.CaptureButton(button)
+function F.CaptureButton(button, width, height)
+    if type(width) ~= "number" or type(height) ~= "number" or
+            not F.CanAccessValue(width) or not F.CanAccessValue(height) then
+        width, height = F.GetAccessibleButtonSize(button)
+    end
+    if not width then return nil end
     local name = button:GetName()
     local icon = button.icon
     local iconR, iconG, iconB, iconA
@@ -234,8 +279,8 @@ function F.CaptureButton(button)
     local info = {
         button = button,
         parent = button:GetParent(),
-        width = button:GetWidth(),
-        height = button:GetHeight(),
+        width = width,
+        height = height,
         scale = button:GetScale(),
         strata = button:GetFrameStrata(),
         level = button:GetFrameLevel(),

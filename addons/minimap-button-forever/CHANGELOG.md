@@ -3,6 +3,23 @@
 This changelog records released add-on versions. Changes that were later replaced
 or reverted remain listed under the version in which they shipped.
 
+## 1.0.22 — 2026-11-09
+
+- Rejects protected, forbidden and secret-geometry frames before collection.
+- Guards third-party button dimensions with the Forever secret-value access API
+  and reuses the approved dimensions during capture, scaling and restoration.
+
+## 1.0.21 — 2026-11-05
+
+- Excludes GatherLite's numbered herb, mining and other resource-node map pins
+  while retaining its genuine minimap launcher.
+
+## 1.0.20 — 2026-10-20
+
+- Added an optional saved minimap-rim mode for the gold controller.
+- Alt-drag now changes the controller's angle around the minimap while rim mode
+  is enabled; disabling it restores the saved free position.
+
 ## 1.0.19 — 2026-10-14
 
 - Added a saved exclusion list for named add-on minimap buttons.
