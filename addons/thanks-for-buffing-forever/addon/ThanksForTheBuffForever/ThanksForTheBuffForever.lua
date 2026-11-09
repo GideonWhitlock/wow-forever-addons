@@ -9,6 +9,7 @@ local WORLD_ENTRY_BASELINE_DELAY_SECONDS = 2
 local RECENT_SPEAKER_SECONDS = 120
 local DEFERRED_DELIVERY_TIMEOUT_SECONDS = 15 * 60
 local CHAT_LOCKDOWN_RETRY_SECONDS = 1
+local AURA_FALLBACK_LIFETIME_SECONDS = 30 * 60
 
 local THANK_YOU_MESSAGES = {
     "thanks!",
@@ -47,6 +48,7 @@ local recentTargetedCasts = {}
 local sentCastTargetsByGUID = {}
 local pendingAnonymousAuraBySpellID = {}
 local recentSpeakerNamesByGUID = {}
+local seenAuraApplications = {}
 local knownHelpfulAuras = {}
 local auraSnapshotInitialized = false
 local auraDetectionArmed = false
@@ -195,12 +197,80 @@ local function PickMessage(casterKey)
     return THANK_YOU_MESSAGES[index]
 end
 
-local function ScheduleThanks(casterKey, targetName, buffDetectedAt)
+local function GetReadableAuraNumber(aura, field)
+    if not aura or IsSecret(aura) then
+        return nil
+    end
+
+    local value = aura[field]
+    if IsSecret(value) or type(value) ~= "number" then
+        return nil
+    end
+
+    return value
+end
+
+local function ClaimAuraApplication(casterKey, spellID, aura)
+    if not casterKey or IsSecret(casterKey) or IsSecret(spellID) or type(spellID) ~= "number" then
+        return true
+    end
+
+    local now = GetTime()
+    local key = tostring(casterKey) .. ":" .. spellID
+    local expirationTime = GetReadableAuraNumber(aura, "expirationTime")
+    local duration = GetReadableAuraNumber(aura, "duration")
+    local auraInstanceID = aura and not IsSecret(aura) and aura.auraInstanceID or nil
+    if IsSecret(auraInstanceID) then
+        auraInstanceID = nil
+    end
+
+    local previous = seenAuraApplications[key]
+    if previous and previous.validUntil > now then
+        if expirationTime and previous.expirationTime then
+            -- A real reapplication moves the expiry forward. Ordinary aura
+            -- updates, zone transitions and duration ticks do not.
+            if expirationTime <= previous.expirationTime + 1 then
+                return false
+            end
+        elseif auraInstanceID and previous.auraInstanceID == auraInstanceID then
+            return false
+        else
+            -- If Forever protects the duration fields, prefer missing a thank
+            -- over guessing that a second instance is a fresh application.
+            return false
+        end
+    end
+
+    local validUntil = now + AURA_FALLBACK_LIFETIME_SECONDS
+    if expirationTime and expirationTime > now then
+        validUntil = expirationTime + 1
+    elseif duration and duration > 0 then
+        validUntil = now + duration + 1
+    end
+
+    seenAuraApplications[key] = {
+        auraInstanceID = auraInstanceID,
+        expirationTime = expirationTime,
+        validUntil = validUntil,
+    }
+    return true
+end
+
+local function ScheduleThanks(casterKey, targetName, buffDetectedAt, spellID, aura)
     if not IsEnabled() or not casterKey or not targetName or targetName == "" then
         return false
     end
 
     if casterKey == playerGUID then
+        return false
+    end
+
+    -- Claim the exact caster/spell application before applying group and
+    -- cooldown suppression. This prevents a buff first seen in a dungeon from
+    -- being replayed as new after leaving the group, and prevents ordinary
+    -- updates to one continuous aura from sending another whisper later.
+    if not ClaimAuraApplication(casterKey, spellID, aura) then
+        Debug("Ignored an update to an already-seen buff from " .. targetName .. ".")
         return false
     end
 
@@ -675,15 +745,17 @@ local function QueueAnonymousAuraMatch(spellID, auraInstanceID)
         if not casterGUID then
             casterGUID, targetName = FindRecentCaster(spellID)
         end
-        if not casterGUID then
-            casterGUID, targetName = FindRecentTargetedCaster()
-        end
         if not casterGUID or not targetName then
             Debug("WoW did not expose one unambiguous caster for buff spell " .. spellID .. ".")
             return
         end
 
-        if ScheduleThanks(casterGUID, targetName, detectedAt) then
+        local refreshedAura = C_UnitAuras and C_UnitAuras.GetAuraDataByAuraInstanceID
+            and C_UnitAuras.GetAuraDataByAuraInstanceID("player", auraInstanceID)
+        if ScheduleThanks(casterGUID, targetName, detectedAt, spellID, refreshedAura or {
+            spellId = spellID,
+            auraInstanceID = auraInstanceID,
+        }) then
             Debug("Matched buff spell " .. spellID .. " to " .. targetName .. ".")
         end
     end)
@@ -757,7 +829,7 @@ local function HandleAura(aura)
         return false
     end
 
-    if ScheduleThanks(casterGUID, targetName) then
+    if ScheduleThanks(casterGUID, targetName, nil, spellID, aura) then
         Debug("Detected a buff from " .. targetName .. ".")
         return true
     end
