@@ -42,7 +42,7 @@ function CreateFrame()
 end
 
 function GetTime() return now end
-function GetBuildInfo() return "1.60.1.70450", "70450", "Oct 2026", 16001 end
+function GetBuildInfo() return "1.60.1.70205", "70205", "Oct 2026", 16001 end
 function InCombatLockdown() return combat end
 function IsInGroup() return grouped end
 function issecretvalue(value) return value == SECRET end
@@ -81,20 +81,26 @@ SlashCmdList.THANKSFORTHEBUFFFOREVER("debug")
 
 eventHandler(nil, "PLAYER_LOGIN")
 eventHandler(nil, "PLAYER_ENTERING_WORLD")
-assert(registered.UNIT_AURA == true, "build 1.60.1.70450 should register global UNIT_AURA and filter player events")
-assert(registered.UNIT_SPELLCAST_SUCCEEDED, "build 1.60.1.70450 should register cast correlation")
-assert(registered.PLAYER_ENTERING_WORLD, "build 1.60.1.70450 should baseline helpful auras on world entry")
-assert(registered.PLAYER_REGEN_ENABLED, "build 1.60.1.70450 should flush deferred whispers after combat")
+assert(registered.UNIT_AURA == true, "build 1.60.1.70205 should register global UNIT_AURA and filter player events")
+assert(registered.UNIT_SPELLCAST_SUCCEEDED, "build 1.60.1.70205 should register cast correlation")
+assert(registered.PLAYER_ENTERING_WORLD, "build 1.60.1.70205 should baseline helpful auras on world entry")
+assert(registered.PLAYER_REGEN_ENABLED, "Forever should flush deferred thank-yous when combat ends")
 assert(not registered.COMBAT_LOG_EVENT_UNFILTERED, "Forever must not register the protected combat log")
 
 local directAura = {
     isFullUpdate = false,
     addedAuras = {
-        { isHelpful = true, sourceUnit = "nameplate1", spellId = 1001 },
-        { isHelpful = true, sourceUnit = "nameplate1", spellId = 1002 },
-        { isHelpful = true, sourceUnit = "nameplate4", spellId = 1003 },
+        { auraInstanceID = 10001, isHelpful = true, sourceUnit = "nameplate1", spellId = 1001, duration = 3600, expirationTime = 4600 },
+        { auraInstanceID = 10002, isHelpful = true, sourceUnit = "nameplate1", spellId = 1002, duration = 3600, expirationTime = 4600 },
+        { auraInstanceID = 10003, isHelpful = true, sourceUnit = "nameplate4", spellId = 1003, duration = 3600, expirationTime = 4600 },
     },
 }
+
+local function SetDirectAuraExpiration(expirationTime)
+    for _, aura in ipairs(directAura.addedAuras) do
+        aura.expirationTime = expirationTime
+    end
+end
 
 eventHandler(nil, "UNIT_AURA", "player", directAura)
 assert(#scheduled == 1, "multiple buffs with alternate GUID routes for one named caster should create one pending whisper")
@@ -112,35 +118,39 @@ scheduled[1].callback()
 assert(#whispers == 0, "entering a group before the timer fires should cancel delivery")
 
 grouped = false
+SetDirectAuraExpiration(4700)
 eventHandler(nil, "UNIT_AURA", "player", directAura)
-assert(#scheduled == 2, "a dropped grouped whisper should not start the cooldown")
+assert(#scheduled == 2, "a genuinely reapplied buff after leaving the group should be eligible")
 combat = true
 scheduled[2].callback()
 assert(#whispers == 0, "entering combat before the timer fires should defer delivery")
 
 combat = false
 eventHandler(nil, "PLAYER_REGEN_ENABLED")
-assert(#whispers == 1 and whispers[1].target == "One Realm", "leaving combat should deliver the deferred whisper to the complete Forever name")
-assert(whispers[1].chatType == "WHISPER", "deferred combat delivery must remain private")
-
+assert(#whispers == 1 and whispers[1].target == "One Realm", "combat-deferred delivery should send when combat ends")
 now = now + 600
+SetDirectAuraExpiration(5300)
 eventHandler(nil, "UNIT_AURA", "player", directAura)
 chatLocked = true
 scheduled[3].callback()
 assert(#whispers == 1, "chat lockdown should defer delivery")
-assert(#scheduled == 4 and scheduled[4].delay == 1, "chat lockdown should schedule the bounded retry")
+assert(#scheduled == 4 and scheduled[4].delay == 1, "chat lockdown should schedule a bounded retry")
 
 chatLocked = false
 scheduled[4].callback()
-assert(#whispers == 2 and whispers[2].target == "One Realm", "the retry should deliver to the caster's complete Forever name")
-assert(whispers[2].chatType == "WHISPER", "chat-lockdown retry must remain private")
+assert(#whispers == 2 and whispers[2].target == "One Realm", "chat-deferred delivery should use the caster's complete Forever name")
+assert(whispers[2].chatType == "WHISPER", "delivery must remain private")
 
 now = now + 599
+SetDirectAuraExpiration(5900)
 eventHandler(nil, "UNIT_AURA", "player", directAura)
 assert(#scheduled == 4, "the caster cooldown should still apply at 9:59")
 now = now + 1
 eventHandler(nil, "UNIT_AURA", "player", directAura)
-assert(#scheduled == 5, "the caster should become eligible at exactly 10:00")
+assert(#scheduled == 4, "a buff applied during cooldown must not replay when the cooldown expires")
+SetDirectAuraExpiration(6500)
+eventHandler(nil, "UNIT_AURA", "player", directAura)
+assert(#scheduled == 5, "a genuinely new application at 10:00 should become eligible")
 scheduled[5].callback()
 assert(#whispers == 3, "the eligible repeat should send after ten minutes")
 
@@ -188,14 +198,18 @@ eventHandler(nil, "UNIT_AURA", "player", {
 assert(#scheduled == 9, "secret caster names should be ignored")
 secretThirdName = false
 
+combat = true
 eventHandler(nil, "UNIT_AURA", "player", {
     isFullUpdate = false,
     addedAuras = { { isHelpful = true, sourceUnit = "nameplate3", spellId = 3004 } },
 })
-assert(#scheduled == 10, "a third caster should be schedulable")
-SlashCmdList.THANKSFORTHEBUFFFOREVER("off")
+assert(#scheduled == 10, "a readable exact caster should still be detected during combat")
 scheduled[10].callback()
-assert(#whispers == 4, "disabling the addon should invalidate pending whispers")
+assert(#whispers == 4, "combat-time detection should defer its whisper")
+combat = false
+eventHandler(nil, "PLAYER_REGEN_ENABLED")
+assert(#whispers == 5 and whispers[5].target == "Three Realm", "a combat-time buff should be thanked after combat")
+SlashCmdList.THANKSFORTHEBUFFFOREVER("off")
 
 assert(#printed > 0, "debug and command status should remain local chat output")
-print("Forever 1.60.1.70450 edge-case tests passed")
+print("Forever 1.60.1.70205 edge-case tests passed")
