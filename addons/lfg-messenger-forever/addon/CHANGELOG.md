@@ -1,14 +1,11 @@
 # Changelog
 
-## 1.0.5 — 2026-11-09
+## 1.0.6 — 2026-11-10
 
-- Changed **Suggest invite to party leader** to use WoW's native invite action.
-  Party members now trigger the leader's built-in approval prompt instead of
-  posting an instruction in party chat; leaders invite directly.
-- Added an All/Tank/Healer/DPS filter above the search results. Multi-role
-  players and groups match every role they advertise.
-- Preserved complete Forever player names when submitting invite requests.
-- Removed the obsolete editable party-chat suggestion template.
+- Added activity-and-role whispers for direct invites and party-member invite
+  suggestions.
+- Suggested players are told to wait for the party leader's invite.
+- Added duplicate protection for invite whispers.
 
 ## 1.0.4 — 2026-11-07
 

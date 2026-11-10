@@ -195,6 +195,9 @@ end
 function Q.GetResultActivity(resultID, info)
     info = info or (C_LFGList and C_LFGList.GetSearchResultInfo
         and C_LFGList.GetSearchResultInfo(resultID))
+
+    -- The browse dropdown identifies the activity the inviter is currently
+    -- viewing. Prefer it when a player has queued for several activities.
     local frame = _G.LFGBrowseFrame
     local dropdown = frame and (frame.ActivityDropdown or frame.activityDropdown)
     if dropdown then
@@ -210,9 +213,12 @@ function Q.GetResultActivity(resultID, info)
         text = cleanActivityName(text)
         if text then return text end
     end
+
     if type(info) ~= "table" then return "your selected activity" end
     local activityID = info.activityID
-    if type(info.activityIDs) == "table" and #info.activityIDs == 1 then activityID = info.activityIDs[1] end
+    if type(info.activityIDs) == "table" and #info.activityIDs == 1 then
+        activityID = info.activityIDs[1]
+    end
     if type(activityID) == "number" and C_LFGList then
         if type(C_LFGList.GetActivityInfoTable) == "function" then
             local ok, activity = pcall(C_LFGList.GetActivityInfoTable, activityID)
@@ -247,7 +253,9 @@ function Q.SendInviteWhisper(target, activity, role, suggested)
     message = message:sub(1, 255)
     local key = target .. "\031" .. purpose .. "\031" .. tostring(suggested and true or false)
     local now = GetTime()
-    if Q.lastInviteWhisperKey == key and now - (Q.lastInviteWhisperAt or 0) < 3 then return false end
+    if Q.lastInviteWhisperKey == key and now - (Q.lastInviteWhisperAt or 0) < 3 then
+        return false
+    end
     if Q.ChatLocked() then
         Q.OpenPreparedWhisper(target, message)
         Q.Print("Chat is restricted here; the activity message is ready for you to send.")

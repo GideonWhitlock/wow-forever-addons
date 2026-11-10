@@ -67,6 +67,17 @@ function Q.AttachToGroupFinder()
             local function setSelected(value)
                 Q.db.roleFilter = value
                 setupRoleFilter()
+                LFGBrowseFrame:UpdateResultList()
+            end
+            root:CreateRadio(labels.ALL, isSelected, setSelected, "ALL")
+            root:CreateRadio(labels.TANK, isSelected, setSelected, "TANK")
+            root:CreateRadio(labels.HEALER, isSelected, setSelected, "HEALER")
+            root:CreateRadio(labels.DAMAGER, isSelected, setSelected, "DAMAGER")
+        end)
+    end
+    setupRoleFilter()
+    -- Blizzard's footer invite button is outside our menu. Post-hook it so a
+    -- normal Group Invite click gets the same activity-and-role whisper.
     if not Q.footerInviteHooked then
         local footerInvite = LFGBrowseFrame.InviteButton or LFGBrowseFrame.GroupInviteButton
             or _G.LFGBrowseFrameInviteButton
@@ -89,15 +100,6 @@ function Q.AttachToGroupFinder()
             end)
         end
     end
-                LFGBrowseFrame:UpdateResultList()
-            end
-            root:CreateRadio(labels.ALL, isSelected, setSelected, "ALL")
-            root:CreateRadio(labels.TANK, isSelected, setSelected, "TANK")
-            root:CreateRadio(labels.HEALER, isSelected, setSelected, "HEALER")
-            root:CreateRadio(labels.DAMAGER, isSelected, setSelected, "DAMAGER")
-        end)
-    end
-    setupRoleFilter()
     if type(hooksecurefunc) == "function" and type(LFGBrowseFrame.UpdateResultList) == "function" then
         hooksecurefunc(LFGBrowseFrame, "UpdateResultList", function(frame)
             local filtered = Q.FilterResultsByRole(frame.results)

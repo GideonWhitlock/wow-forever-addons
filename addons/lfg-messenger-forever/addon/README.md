@@ -16,6 +16,8 @@ whisper the leader with your class and chosen Group Finder role, for example:
 - Right-click an individual player listing and choose **Suggest invite to party
   leader**. This uses WoW's native invite action: party members send the
   leader an approval prompt, while party leaders invite the player directly.
+- Direct invites and invite suggestions automatically tell the player which
+  activity and selected role the invitation is for.
 - A role filter above the results can show only listings containing a Tank,
   Healer or DPS. Multi-role players match each role they selected.
 - If chat is restricted, prepares the message in the whisper box instead of losing it.
