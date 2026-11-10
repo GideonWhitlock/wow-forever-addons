@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.6 — 2026-11-10
+
+- Added an automatic whisper after a direct invite that identifies the activity
+  and, when selected, the role being recruited.
+- Added a distinct automatic whisper after a party-member invite suggestion,
+  asking the player to wait for the party leader's invite.
+- Activity and role wording follows the inviter's active Group Finder filters,
+  so players queued for several dungeons or roles know which specific place is
+  being offered.
+- Added duplicate protection so a single invite cannot produce repeated
+  activity whispers.
+
 ## 1.0.5 — 2026-11-09
 
 - Changed **Suggest invite to party leader** to use WoW's native invite action.
