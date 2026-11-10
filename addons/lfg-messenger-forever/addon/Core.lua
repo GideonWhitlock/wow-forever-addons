@@ -2,7 +2,7 @@ local addonName, Q = ...
 
 Q.ADDON_NAME = addonName
 Q.TITLE = "Looking for Group: Forever"
-Q.VERSION = "1.0.5"
+Q.VERSION = "1.0.6"
 Q.BLIZZARD_ADDON = "Blizzard_GroupFinder_VanillaStyle"
 Q.ICON = "Interface\\Icons\\INV_Letter_15"
 Q.DEFAULTS = {
@@ -157,6 +157,8 @@ function Q.GetSelectedTarget()
     return target, nil, resultID
 end
 
+local sendResultSucceeded
+
 function Q.GetResultPlayer(resultID)
     if not (C_LFGList and type(C_LFGList.GetSearchResultInfo) == "function") then
         return nil, "Group Finder information is unavailable"
@@ -179,7 +181,115 @@ function Q.GetResultPlayer(resultID)
     local class = classToken and LOCALIZED_CLASS_NAMES_MALE and LOCALIZED_CLASS_NAMES_MALE[classToken]
     if type(class) ~= "string" or class == "" then class = classToken or "Player" end
     local role = roleTextFromFlags(member and member.lfgRoles)
-    return { name = target, class = class, role = role, resultID = resultID }
+    return { name = target, class = class, role = role, resultID = resultID, info = info }
+end
+
+local function cleanActivityName(value)
+    if Q.IsSecret(value) or type(value) ~= "string" then return nil end
+    value = value:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "")
+        :gsub("^%s+", ""):gsub("%s+$", "")
+    if value == "" or value == "Filter by activity" or value == "All activities" then return nil end
+    return value
+end
+
+function Q.GetResultActivity(resultID, info)
+    info = info or (C_LFGList and C_LFGList.GetSearchResultInfo
+        and C_LFGList.GetSearchResultInfo(resultID))
+    local frame = _G.LFGBrowseFrame
+    local dropdown = frame and (frame.ActivityDropdown or frame.activityDropdown)
+    if dropdown then
+        local text
+        if type(dropdown.GetText) == "function" then
+            local ok, value = pcall(dropdown.GetText, dropdown)
+            if ok then text = value end
+        end
+        if not text and dropdown.Text and type(dropdown.Text.GetText) == "function" then
+            local ok, value = pcall(dropdown.Text.GetText, dropdown.Text)
+            if ok then text = value end
+        end
+        text = cleanActivityName(text)
+        if text then return text end
+    end
+    if type(info) ~= "table" then return "your selected activity" end
+    local activityID = info.activityID
+    if type(info.activityIDs) == "table" and #info.activityIDs == 1 then activityID = info.activityIDs[1] end
+    if type(activityID) == "number" and C_LFGList then
+        if type(C_LFGList.GetActivityInfoTable) == "function" then
+            local ok, activity = pcall(C_LFGList.GetActivityInfoTable, activityID)
+            if ok and type(activity) == "table" then
+                local name = cleanActivityName(activity.fullName or activity.name or activity.shortName)
+                if name then return name end
+            end
+        elseif type(C_LFGList.GetActivityInfo) == "function" then
+            local ok, name = pcall(C_LFGList.GetActivityInfo, activityID)
+            name = ok and cleanActivityName(name)
+            if name then return name end
+        end
+    end
+    return "your selected activity"
+end
+
+function Q.GetInviteRole()
+    local role = Q.db and Q.db.roleFilter or "ALL"
+    if role == "TANK" then return "Tank" end
+    if role == "HEALER" then return "Healer" end
+    if role == "DAMAGER" then return "DPS" end
+    return nil
+end
+
+function Q.SendInviteWhisper(target, activity, role, suggested)
+    if type(target) ~= "string" or target == "" then return false end
+    activity = cleanActivityName(activity) or "your selected activity"
+    local purpose = activity .. (role and (" as " .. role) or "")
+    local message = suggested
+        and ("Hi, I've suggested you for " .. purpose .. ". Please wait for the party leader's invite.")
+        or ("Hi, I've invited you for " .. purpose .. ".")
+    message = message:sub(1, 255)
+    local key = target .. "\031" .. purpose .. "\031" .. tostring(suggested and true or false)
+    local now = GetTime()
+    if Q.lastInviteWhisperKey == key and now - (Q.lastInviteWhisperAt or 0) < 3 then return false end
+    if Q.ChatLocked() then
+        Q.OpenPreparedWhisper(target, message)
+        Q.Print("Chat is restricted here; the activity message is ready for you to send.")
+        return false
+    end
+    local send = (C_ChatInfo and C_ChatInfo.SendChatMessage) or SendChatMessage
+    if type(send) == "function" then
+        local ok, result = pcall(send, message, "WHISPER", nil, target)
+        if ok and sendResultSucceeded(result) then
+            Q.lastInviteWhisperKey, Q.lastInviteWhisperAt = key, now
+            return true
+        end
+    end
+    Q.OpenPreparedWhisper(target, message)
+    Q.Print("The invite was sent, but the activity whisper is ready in chat for you to send.")
+    return false
+end
+
+function Q.InviteResult(resultID, inviteAction)
+    local player, reason = Q.GetResultPlayer(resultID)
+    if not player then Q.Print(reason); return false end
+    local invite = inviteAction or (C_PartyInfo and C_PartyInfo.InviteUnit) or InviteUnit
+    if type(invite) ~= "function" then Q.Print("Inviting is unavailable."); return false end
+    local wasInGroup = IsInGroup and IsInGroup()
+    local wasLeader = not wasInGroup or (UnitIsGroupLeader and UnitIsGroupLeader("player"))
+    local ok, result = pcall(invite, player.name)
+    if not ok or result == false then Q.Print("The invite request could not be sent."); return false end
+    local activity = Q.GetResultActivity(resultID, player.info)
+    local role = Q.GetInviteRole()
+    Q.SendInviteWhisper(player.name, activity, role, not wasLeader)
+    Q.Print((wasLeader and "Invited " or "Sent an invite suggestion for ")
+        .. player.name .. " for " .. activity .. (role and (" as " .. role) or "") .. ".")
+    return true
+end
+
+function Q.WhisperForResult(resultID)
+    local player = Q.GetResultPlayer(resultID)
+    if not player then return false end
+    local isLeader = not IsInGroup or not IsInGroup()
+        or (UnitIsGroupLeader and UnitIsGroupLeader("player"))
+    return Q.SendInviteWhisper(player.name, Q.GetResultActivity(resultID, player.info),
+        Q.GetInviteRole(), not isLeader)
 end
 
 local function hasRole(flags, role)
@@ -225,7 +335,7 @@ function Q.ChatLocked()
     return false
 end
 
-local function sendResultSucceeded(result)
+sendResultSucceeded = function(result)
     if result == nil or result == true or result == 0 then return true end
     local enum = Enum and Enum.SendChatMessageResult
     return enum and enum.Success ~= nil and result == enum.Success
@@ -283,17 +393,10 @@ function Q.SuggestInvite(resultID)
         Q.Print("That invite was already suggested.")
         return false
     end
-    local invite = C_PartyInfo and C_PartyInfo.InviteUnit or InviteUnit
-    if type(invite) ~= "function" then Q.Print("Inviting is unavailable."); return false end
-    local ok, result = pcall(invite, player.name)
-    if ok and result ~= false then
+    if Q.InviteResult(resultID) then
         Q.lastSuggestedResult, Q.lastSuggestedAt = resultID, now
-        local isLeader = not IsInGroup or not IsInGroup()
-            or (UnitIsGroupLeader and UnitIsGroupLeader("player"))
-        Q.Print((isLeader and "Invited " or "Sent an invite suggestion for ") .. player.name .. ".")
         return true
     end
-    Q.Print("The invite request could not be sent.")
     return false
 end
 
