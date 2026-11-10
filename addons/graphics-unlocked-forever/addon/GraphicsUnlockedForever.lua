@@ -83,9 +83,24 @@ frame:SetScript("OnEvent", function(_, event, argument)
         if EGF.db.autoApply and C_Timer and C_Timer.After then
             C_Timer.After(1.5, function() EGF.ApplySavedValues() end)
         end
+        if C_Timer and C_Timer.After then
+            C_Timer.After(2, function()
+                EGF.WarnIfHighRenderScale()
+                if EGF.RefreshSafetyWarning then EGF.RefreshSafetyWarning() end
+            end)
+        else
+            EGF.WarnIfHighRenderScale()
+        end
         if EGF.options and EGF.options:IsShown() then EGF.RefreshOptions() end
-    elseif event == "CVAR_UPDATE" and EGF.options and EGF.options:IsShown() and not EGF.options.sliderDragging then
-        EGF.RefreshOptions()
+    elseif event == "CVAR_UPDATE" then
+        local cvar = tostring(argument or ""):lower()
+        if cvar == "renderscale" then
+            EGF.WarnIfHighRenderScale()
+            if EGF.RefreshSafetyWarning then EGF.RefreshSafetyWarning() end
+        end
+        if EGF.options and EGF.options:IsShown() and not EGF.options.sliderDragging then
+            EGF.RefreshOptions()
+        end
     end
 end)
 

@@ -1,7 +1,7 @@
 local _, EGF = ...
 
 EGF.TITLE = "Graphics Unlocked: Forever"
-EGF.VERSION = "1.0.1"
+EGF.VERSION = "1.0.2"
 EGF.INTERFACE = 16001
 EGF.settings = {}
 EGF.settingsByID = {}
@@ -99,6 +99,34 @@ function EGF.GetValue(definition)
         return nil
     end
     return tonumber(raw)
+end
+
+function EGF.GetRenderScalePercent()
+    local definition = EGF.settingsByID and EGF.settingsByID["render-scale"]
+    if not definition then return nil end
+    return tonumber(EGF.GetValue(definition))
+end
+
+function EGF.GetRenderScaleWarning()
+    local percent = EGF.GetRenderScalePercent()
+    if not percent or percent <= 100.5 then return nil end
+    return string.format(
+        "Warning: WoW is currently rendering at %.0f%%. Values above 100%% supersample the 3D world and can dramatically increase GPU load, power use, heat and fan noise. Set 3D render scale to 100%% if this was not intentional.",
+        percent)
+end
+
+function EGF.WarnIfHighRenderScale(force)
+    local warning = EGF.GetRenderScaleWarning()
+    if not warning then
+        EGF.lastWarnedRenderScale = nil
+        return false
+    end
+    local percent = EGF.GetRenderScalePercent()
+    if force or EGF.lastWarnedRenderScale ~= percent then
+        EGF.lastWarnedRenderScale = percent
+        EGF.Print(warning)
+    end
+    return true
 end
 
 local function validateDefinition(definition)
@@ -231,5 +259,7 @@ function EGF.FindSetting(text)
 end
 
 function EGF.StatusText()
-    return string.format("Version %s; interface %d; %d verified control(s).", EGF.VERSION, EGF.INTERFACE, #EGF.settings)
+    local status = string.format("Version %s; interface %d; %d verified control(s).", EGF.VERSION, EGF.INTERFACE, #EGF.settings)
+    local warning = EGF.GetRenderScaleWarning()
+    return warning and (status .. " " .. warning) or status
 end

@@ -160,7 +160,7 @@ EGF.RegisterSetting({
     cvar = "RenderScale",
     kind = "slider",
     label = "3D render scale",
-    description = "Controls internal 3D resolution. Enabling always-on sharpening moves this to 98%, which activates the sharpening/resampling path with a small resolution reduction.",
+    description = "Controls internal 3D resolution. Above 100% supersamples the world and can sharply increase GPU load, power use, heat and fan noise. This add-on caps the control at 100%. Enabling always-on sharpening moves it to 98%.",
     category = "Sharpening and resolution",
     min = 50,
     max = 100,

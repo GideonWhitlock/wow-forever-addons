@@ -71,11 +71,27 @@ local function addProfileChips(row, definition, y)
     end
 end
 
+function EGF.RefreshSafetyWarning()
+    local warning = EGF.GetRenderScaleWarning()
+    if EGF.options and EGF.options.safetyWarning then
+        EGF.options.safetyWarning:SetText(warning or "")
+        EGF.options.safetyWarning:SetShown(warning ~= nil)
+    end
+    if EGF.nativeSettingsPanel and EGF.nativeSettingsPanel.safetyWarning then
+        EGF.nativeSettingsPanel.safetyWarning:SetText(warning or "No render-scale safety warning is active.")
+        EGF.nativeSettingsPanel.safetyWarning:SetTextColor(
+            warning and 1 or 0.45,
+            warning and 0.25 or 0.85,
+            warning and 0.2 or 0.55)
+    end
+end
+
 function EGF.RefreshOptions()
     local panel = EGF.options
     if not panel then return end
     for _, row in ipairs(panel.rows or {}) do row:Hide() end
     panel.rows = {}
+    EGF.RefreshSafetyWarning()
 
     local y = -8
     if #EGF.settings == 0 then
@@ -221,8 +237,14 @@ function EGF.BuildOptions()
         EGF.RefreshOptions()
     end)
 
+    panel.safetyWarning = label(panel, "", 22, -105, "GameFontNormal")
+    panel.safetyWarning:SetWidth(620)
+    panel.safetyWarning:SetJustifyH("LEFT")
+    panel.safetyWarning:SetTextColor(1, 0.25, 0.2)
+    panel.safetyWarning:Hide()
+
     local scroll = CreateFrame("ScrollFrame", "GraphicsUnlockedForeverScroll", panel, "UIPanelScrollFrameTemplate")
-    scroll:SetPoint("TOPLEFT", 20, -105)
+    scroll:SetPoint("TOPLEFT", 20, -145)
     scroll:SetPoint("BOTTOMRIGHT", -42, 62)
     local content = CreateFrame("Frame", nil, scroll)
     content:SetWidth(625)
@@ -288,9 +310,12 @@ function EGF.RegisterNativeSettings()
         EGF.RestoreAll()
         EGF.RefreshOptions()
     end)
-    local note = label(native, "The full panel contains every slider, toggle, per-setting P/L/M/H/UFO shortcut, warning and current value. The standard Settings API places add-on panels under Options → AddOns; it does not provide a supported way for add-ons to inject controls into Blizzard's protected Graphics canvas.", 18, -145, "GameFontHighlightSmall")
+    native.safetyWarning = label(native, "", 18, -145, "GameFontNormal")
+    native.safetyWarning:SetWidth(560)
+    local note = label(native, "The full panel contains every slider, toggle, per-setting P/L/M/H/UFO shortcut, warning and current value. The standard Settings API places add-on panels under Options → AddOns; it does not provide a supported way for add-ons to inject controls into Blizzard's protected Graphics canvas.", 18, -180, "GameFontHighlightSmall")
     note:SetWidth(560)
     note:SetTextColor(0.72, 0.78, 0.86)
+    EGF.RefreshSafetyWarning()
 
     if Settings and Settings.RegisterCanvasLayoutCategory and Settings.RegisterAddOnCategory then
         local category = Settings.RegisterCanvasLayoutCategory(native, EGF.TITLE)
