@@ -8,7 +8,9 @@ real click or keypress for item use; this add-on cannot apply it automatically.
 
 ## Conditions
 
-- Nighttime according to the game's day/night API, OR active non-clear weather.
+- Duskwood or Deadwind Pass, where the default prompt remains available during
+  daytime, OR nighttime according to the game's day/night API, OR active
+  non-clear weather.
 - Night Watchman's Torch (item 280612) is in your backpack or a carried bag.
   Copies in your bank or account bank do not qualify.
 - Both known torch buffs (spells 1309410 and 1321139) are absent. Active helpful
@@ -28,11 +30,12 @@ torch buff you already have when you move or when the weather clears.
 Uses `C_DateAndTime.IsDayTime()` and `C_Weather.GetCurrentWeather()`.
 Rain, snow, sandstorm and miscellaneous weather qualify when intensity is greater
 than zero. The weather API has no separate fog/mist category and no ambient-light
-measurement. Purely visual fog, caves, shade and permanently dark areas may not
-register. In such a place, `/nwt dim on` temporarily marks the area as dim while
-keeping every other condition. It clears on zone/subzone changes, loading screens
-or reload; `/nwt dim off` clears it immediately. The add-on does not pretend to
-detect fog that the game does not report.
+measurement. Purely visual fog, caves and shade may not register. Duskwood and
+Deadwind Pass are treated as always dark by default. In another dim place,
+`/nwt dim on` temporarily marks the area as dim while keeping every other
+condition. It clears on zone/subzone changes, loading screens or reload;
+`/nwt dim off` clears it immediately. The add-on does not pretend to detect fog
+that the game does not report.
 
 ## Installation
 

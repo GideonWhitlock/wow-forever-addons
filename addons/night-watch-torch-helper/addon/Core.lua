@@ -3,6 +3,14 @@ local _, N = ...
 N.ITEM_ID = 280612
 N.BUFF_ID = 1309410
 N.BUFF_IDS = { 1309410, 1321139 } -- Holding torch and its illumination aura.
+N.ALWAYS_DARK_MAPS = {
+    [42] = "Deadwind Pass",
+    [47] = "Duskwood",
+}
+N.ALWAYS_DARK_ZONES = {
+    ["Deadwind Pass"] = true,
+    ["Duskwood"] = true,
+}
 N.STILL_DELAY = 0.75
 N.DEFAULTS = { enabled = true, x = 0, y = -150, size = 52, minimapAngle = 160, minimapHidden = false }
 
@@ -54,6 +62,19 @@ end
 
 function N.EnvironmentReason()
     if N.dimArea then return "Dim area (manual)" end
+    if C_Map and C_Map.GetBestMapForUnit then
+        local mapID = C_Map.GetBestMapForUnit("player")
+        if readable(mapID) and N.ALWAYS_DARK_MAPS[mapID] then
+            return N.ALWAYS_DARK_MAPS[mapID] .. " (always dark)"
+        end
+    end
+    local zone = GetRealZoneText and GetRealZoneText()
+    if (not readable(zone) or type(zone) ~= "string" or zone == "") and GetZoneText then
+        zone = GetZoneText()
+    end
+    if readable(zone) and N.ALWAYS_DARK_ZONES[zone] then
+        return zone .. " (always dark)"
+    end
     if C_DateAndTime and C_DateAndTime.IsDayTime then
         local day = C_DateAndTime.IsDayTime()
         if readable(day) and day == false then return "Night-time" end

@@ -1,3 +1,10 @@
+# 1.0.3 — 10 November 2026
+
+- Added built-in daytime torch prompting in Duskwood and Deadwind Pass, where
+  the environment remains dark even when the game reports daytime.
+- The button still stays hidden while either known torch buff is active and all
+  existing bag, movement, combat, travel and cooldown safeguards remain intact.
+
 # 1.0.2 — 27 September 2026
 
 - Fixed the reminder reappearing while the Night Watchman's Torch illumination
