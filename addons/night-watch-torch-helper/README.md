@@ -9,7 +9,7 @@ The reminder appears only when:
 - The character is alive, out of combat and stationary for at least 0.75 seconds.
 - The character is not mounted, on a flight path, flying, in a vehicle, falling or swimming.
 - The character is not casting or channeling, and the merchant window is closed.
-- WoW reports night-time or active non-clear weather, or the temporary manual dim-area option is enabled.
+- The character is in Duskwood or Deadwind Pass, WoW reports night-time or active non-clear weather, or the temporary manual dim-area option is enabled.
 
 A real click or keypress is always required. WoW does not allow the add-on to use the item automatically.
 
@@ -17,7 +17,7 @@ A real click or keypress is always required. WoW does not allow the add-on to us
 
 | Item | Value |
 | --- | --- |
-| Current release | 1.0.2 |
+| Current release | 1.0.3 |
 | Game flavour | WoW: Forever |
 | Game version | 1.60.1 |
 | Interface | 16001 |

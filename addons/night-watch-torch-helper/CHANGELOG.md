@@ -2,6 +2,16 @@
 
 All released versions of Night Watch Torch Helper: Forever are listed here. The in-game add-on name is **Night Watch Torch**.
 
+## [1.0.3] — 2026-11-10
+
+### Added
+
+- Made Duskwood and Deadwind Pass built-in always-dark zones, so the torch prompt can appear there during daytime.
+
+### Preserved
+
+- Kept active-buff suppression and all bag, movement, combat, travel and cooldown safeguards.
+
 ## [1.0.2] — 2026-09-27
 
 ### Fixed
