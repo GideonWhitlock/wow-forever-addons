@@ -1,5 +1,12 @@
 # Graphics Unlocked: Forever changelog
 
+## 1.0.2
+
+- Added a one-time login warning when WoW is already rendering above 100% scale.
+- Added prominent live render-scale warnings to the full panel and native Options page.
+- Clarified the GPU load, power, heat and fan-noise cost of supersampling above 100%.
+- Kept the safeguard passive: it warns but never changes an existing render scale automatically.
+
 ## 1.0.1
 
 - Fixed sliders being interrupted after a click because `CVAR_UPDATE` rebuilt the controls during an active drag.
