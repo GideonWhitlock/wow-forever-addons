@@ -67,6 +67,28 @@ function Q.AttachToGroupFinder()
             local function setSelected(value)
                 Q.db.roleFilter = value
                 setupRoleFilter()
+    if not Q.footerInviteHooked then
+        local footerInvite = LFGBrowseFrame.InviteButton or LFGBrowseFrame.GroupInviteButton
+            or _G.LFGBrowseFrameInviteButton
+        if not footerInvite and type(LFGBrowseFrame.GetChildren) == "function" then
+            for _, child in ipairs({ LFGBrowseFrame:GetChildren() }) do
+                if type(child.GetText) == "function" then
+                    local ok, text = pcall(child.GetText, child)
+                    if ok and (text == (GROUP_INVITE or "Group Invite") or text == "Group Invite") then
+                        footerInvite = child
+                        break
+                    end
+                end
+            end
+        end
+        if footerInvite and type(footerInvite.HookScript) == "function" then
+            Q.footerInviteHooked = true
+            footerInvite:HookScript("OnClick", function()
+                local resultID = Q.GetSelectedResultID()
+                if resultID then Q.WhisperForResult(resultID) end
+            end)
+        end
+    end
                 LFGBrowseFrame:UpdateResultList()
             end
             root:CreateRadio(labels.ALL, isSelected, setSelected, "ALL")
@@ -105,7 +127,9 @@ function Q.AttachToGroupFinder()
                 end)
                 messageButton:SetEnabled(info.leaderName ~= nil)
                 local inviteText, inviteFunc = LFGBrowseUtil_GetInviteActionForResult(resultID)
-                local inviteButton = root:CreateButton(inviteText, inviteFunc)
+                local inviteButton = root:CreateButton(inviteText, function()
+                    Q.InviteResult(resultID, inviteFunc)
+                end)
                 inviteButton:SetEnabled(inviteFunc ~= nil)
                 root:CreateDivider()
                 local suggest = root:CreateButton("Suggest invite to party leader", function()
