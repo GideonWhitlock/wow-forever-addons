@@ -1,0 +1,12 @@
+## Interface: 16001
+## Title: Sleeping Bag Helper: Forever
+## Notes: Politely explains how to share and use the Cozy Sleeping Bag XP buff.
+## Author: Gideon Whitlock
+## Version: 0.1.5
+## SavedVariables: SleepingBagHelperForeverDB
+## IconTexture: Interface\Icons\INV_Misc_Bag_07_Green
+## X-Category: Chat & Communication
+## X-License: MIT
+## X-Website: https://github.com/GideonWhitlock/wow-forever-addons
+
+SleepingBagHelperForever.lua
