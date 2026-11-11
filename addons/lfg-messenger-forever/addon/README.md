@@ -4,13 +4,18 @@ Looking for Group: Forever adds a single, deliberate contact button to World of
 Warcraft: Forever's Looking For Group browser. Select a listing and click once to
 whisper the leader with your class and chosen Group Finder role, for example:
 
-> Warrior DPS here
+> Lvl 35 Warrior DPS here
+
+Below the level cap, the default message includes your current level. At max
+level it stays shorter, for example: `Warrior DPS here`.
 
 ## Features
 
 - One-click whisper for the currently selected Group Finder listing.
 - Uses the role or roles selected in the Group Finder: Tank, Healer and/or DPS.
 - Includes the player's localized class name.
+- Automatically includes the player's current level in the default message
+  until they reach the level cap.
 - Editable message template with `{class}`, `{role}`, `{name}` and `{level}`.
 - Three-second duplicate-click protection for the same leader.
 - Right-click an individual player listing and choose **Suggest invite to party

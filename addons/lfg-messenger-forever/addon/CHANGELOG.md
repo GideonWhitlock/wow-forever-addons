@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.7 — 2026-11-11
+
+- The default Quick Whisper now includes the player's current level below the
+  level cap, for example: `Lvl 35 Hunter DPS here`.
+- Max-level players keep the shorter message, for example: `Hunter DPS here`.
+
 ## 1.0.6 — 2026-11-10
 
 - Added activity-and-role whispers for direct invites and party-member invite

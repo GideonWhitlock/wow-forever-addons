@@ -2,7 +2,7 @@ local addonName, Q = ...
 
 Q.ADDON_NAME = addonName
 Q.TITLE = "Looking for Group: Forever"
-Q.VERSION = "1.0.6"
+Q.VERSION = "1.0.7"
 Q.BLIZZARD_ADDON = "Blizzard_GroupFinder_VanillaStyle"
 Q.ICON = "Interface\\Icons\\INV_Letter_15"
 Q.DEFAULTS = {
@@ -103,8 +103,22 @@ function Q.GetRoleText()
     return table.concat(selectedRoleTokens(), "/")
 end
 
+local function shouldShowPlayerLevel(level)
+    if type(level) ~= "number" or level <= 0 then return false end
+    local maxLevel = 60
+    if type(GetMaxPlayerLevel) == "function" then
+        local ok, value = pcall(GetMaxPlayerLevel)
+        if ok and type(value) == "number" and value > 0 then maxLevel = value end
+    elseif type(GetMaxLevelForPlayerExpansion) == "function" then
+        local ok, value = pcall(GetMaxLevelForPlayerExpansion)
+        if ok and type(value) == "number" and value > 0 then maxLevel = value end
+    end
+    return level < maxLevel
+end
+
 function Q.BuildMessage(template)
     template = type(template) == "string" and template or (Q.db and Q.db.template) or Q.DEFAULTS.template
+    local usingDefaultTemplate = template == Q.DEFAULTS.template
     local playerName = UnitName("player")
     local level = UnitLevel("player")
     if Q.IsSecret(playerName) then playerName = "" end
@@ -120,6 +134,9 @@ function Q.BuildMessage(template)
     end)
     message = message:gsub("[\r\n]+", " "):gsub("%s+", " "):gsub("^%s+", ""):gsub("%s+$", "")
     if message == "" then message = values.class .. " " .. values.role .. " here" end
+    if usingDefaultTemplate and shouldShowPlayerLevel(level) then
+        message = "Lvl " .. tostring(level) .. " " .. message
+    end
     return message:sub(1, 255)
 end
 
