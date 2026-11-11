@@ -1,6 +1,6 @@
 MISSPELLED: FOREVER
 
-Version 1.1.1
+Version 1.1.3
 
 Misspelled: Forever checks the words you type into World of Warcraft chat.
 Completed words that are not in the selected dictionary are coloured light blue.
