@@ -1,3 +1,13 @@
+Misspelled: Forever 1.1.3
+
+- Fixed longer messages containing highlighted spellings sometimes disappearing when Enter was pressed.
+- Highlight cleanup now runs before WoW sends manually typed chat.
+
+Misspelled: Forever 1.1.2
+
+- Removed the redundant chat-send API replacement that could block announcements from other add-ons.
+- Typed messages still have spellcheck highlighting removed safely before sending.
+
 Misspelled: Forever 1.1.1
 
 - Fixed the minimap button sitting inside the minimap instead of on its border.
