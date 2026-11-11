@@ -1,6 +1,6 @@
 MISSPELLED: FOREVER - LIVE TEST CHECKLIST
 
-Version 1.1.5 removes the Enter pre-hook entirely. Enter `/target` followed by
+Version 1.1.6 keeps the Enter pre-hook removed. Enter `/target` followed by
 the exact name of a nearby enemy and confirm the target changes without a blocked-action
 dialog. This was owner-tested successfully on 11 November 2026.
 
@@ -11,8 +11,8 @@ dialog. This was owner-tested successfully on 11 November 2026.
    confirm the personal dictionary opens. Drag it around the minimap, reload, and
    confirm its angle is retained on the border. Test the visibility checkbox and
    /mf reset. If UI scale or minimap size changes, confirm the button remains on the ring.
-3. Open chat and type: "This is a sentnce ". Confirm the ABC? spelling indicator
-   appears after the trailing space is entered.
+3. Open chat and type: "This is a sentnce ". Confirm `sentnce` itself appears
+   light blue after the trailing space is entered.
 4. Right-click "sentnce" and choose "sentence". Confirm only that word changes.
 5. Send the corrected message. Confirm the recipient sees plain text without colour
    codes and the game remains connected.

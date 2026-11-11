@@ -310,6 +310,100 @@ local function IsSlashCommand(text)
 	return type(text) == "string" and string_sub(text, 1, 1) == "/"
 end
 
+local function HideVisualHighlights(editbox)
+	if editbox.MisspelledHighlightPool then
+		for _, highlight in ipairs(editbox.MisspelledHighlightPool) do
+			highlight:Hide()
+		end
+	end
+end
+
+local function GetMatchingFontString(editbox, index)
+	editbox.MisspelledHighlightPool = editbox.MisspelledHighlightPool or {}
+	local highlight = editbox.MisspelledHighlightPool[index]
+	if not highlight then
+		highlight = editbox:CreateFontString(nil, "OVERLAY")
+		highlight:SetJustifyH("LEFT")
+		highlight:SetJustifyV("MIDDLE")
+		editbox.MisspelledHighlightPool[index] = highlight
+	end
+
+	local font, size, flags = editbox:GetFont()
+	if font and size then
+		highlight:SetFont(font, size, flags)
+	end
+	local shadowColorR, shadowColorG, shadowColorB, shadowColorA = editbox:GetShadowColor()
+	if shadowColorR then
+		highlight:SetShadowColor(shadowColorR, shadowColorG, shadowColorB, shadowColorA)
+	end
+	local shadowX, shadowY = editbox:GetShadowOffset()
+	if shadowX then
+		highlight:SetShadowOffset(shadowX, shadowY)
+	end
+	return highlight
+end
+
+-- Paint misspelled words over the edit box without ever changing its text.
+-- This keeps the familiar blue highlighting while avoiding colour codes and
+-- Enter-key hooks that can taint protected slash commands on Forever.
+function Misspelled:UpdateVisualHighlights(editbox)
+	HideVisualHighlights(editbox)
+
+	local text = editbox:GetText() or ""
+	if text == "" or IsSlashCommand(text) then
+		return
+	end
+
+	local locations = WordLocations[editbox:GetName()]
+	if not locations then
+		return
+	end
+
+	if not editbox.MisspelledMeasure then
+		local measure = editbox:CreateFontString(nil, "OVERLAY")
+		measure:Hide()
+		editbox.MisspelledMeasure = measure
+	end
+
+	local measure = editbox.MisspelledMeasure
+	local font, size, flags = editbox:GetFont()
+	if font and size then
+		measure:SetFont(font, size, flags)
+	end
+
+	local leftInset, rightInset = editbox:GetTextInsets()
+	leftInset = leftInset or 0
+	rightInset = rightInset or 0
+	measure:SetText(text)
+	local textWidth = measure:GetStringWidth()
+	local visibleWidth = math.max(0, editbox:GetWidth() - leftInset - rightInset)
+	local scrollOffset = math.max(0, textWidth - visibleWidth)
+	local shown = 0
+
+	for _, location in ipairs(locations) do
+		local cached = WordCache[location.Word]
+		if cached and cached.Correct == false then
+			local prefix = string_sub(text, 1, location.StartPos - 1)
+			local word = string_sub(text, location.StartPos, location.EndPos)
+			measure:SetText(prefix)
+			local prefixWidth = measure:GetStringWidth()
+			measure:SetText(word)
+			local wordWidth = measure:GetStringWidth()
+			local x = leftInset + prefixWidth - scrollOffset
+
+			if x + wordWidth > leftInset and x < editbox:GetWidth() - rightInset then
+				shown = shown + 1
+				local highlight = GetMatchingFontString(editbox, shown)
+				highlight:ClearAllPoints()
+				highlight:SetPoint("LEFT", editbox, "LEFT", x, 0)
+				highlight:SetText(word)
+				highlight:SetTextColor(0.49, 0.78, 0.98, 1)
+				highlight:Show()
+			end
+		end
+	end
+end
+
 function Misspelled:GUILD_ROSTER_UPDATE()
 	Misspelled:LoadGuildAndFriendRoster()
 end
@@ -404,9 +498,7 @@ function Misspelled.EditBox_OnTextChanged(editbox)
 	if IsSlashCommand(text) then
 		RightClickedWord = nil
 		WordLocations[editbox:GetName()] = {}
-		if editbox.MisspelledIndicator then
-			editbox.MisspelledIndicator:Hide()
-		end
+		HideVisualHighlights(editbox)
 		OldLineLength = #text
 		return
 	end
@@ -431,9 +523,7 @@ function Misspelled.EditBox_OnTextChanged(editbox)
 	--Check if we should clear the WordCache table to save memory, if it's gotten very large
 	if newLineLength == 0 then
 		WordLocations[editbox:GetName()] = {}
-		if editbox.MisspelledIndicator then
-			editbox.MisspelledIndicator:Hide()
-		end
+		HideVisualHighlights(editbox)
 		if WordCacheCount > WordCacheCountMax then
 			WordCache = {}
 			WordCacheCount = 0
@@ -462,9 +552,7 @@ end
 function Misspelled.EditBox_OnEscapePressed(editbox)
 	RightClickedWord = nil
 	WordLocations[editbox:GetName()] = {}
-	if editbox.MisspelledIndicator then
-		editbox.MisspelledIndicator:Hide()
-	end
+	HideVisualHighlights(editbox)
 end
 
 function Misspelled.EditBox_OnEnterPressed(editbox)
@@ -494,18 +582,9 @@ end
 function Misspelled:SpellCheckChat(editbox)
 	local editboxText = editbox:GetText()
 
-	if not editbox.MisspelledIndicator then
-		local indicator = editbox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-		indicator:SetPoint("RIGHT", editbox, "RIGHT", -6, 0)
-		indicator:SetText("ABC?")
-		indicator:SetTextColor(0.49, 0.78, 0.98)
-		indicator:Hide()
-		editbox.MisspelledIndicator = indicator
-	end
-
 	if #editboxText < 2 or IsSlashCommand(editboxText) then
 		WordLocations[editbox:GetName()] = {}
-		editbox.MisspelledIndicator:Hide()
+		HideVisualHighlights(editbox)
 		return
 	end
 
@@ -514,20 +593,7 @@ function Misspelled:SpellCheckChat(editbox)
 	WordLocations[editbox:GetName()] = {}
 	Misspelled:CheckLine(editboxText, editbox)
 
-	local hasMisspelling = false
-	for x = 1, #WordLocations[editbox:GetName()] do
-		local w = WordLocations[editbox:GetName()][x]
-		if WordCache[w.Word].Correct == false then
-			hasMisspelling = true
-			break
-		end
-	end
-
-	if hasMisspelling then
-		editbox.MisspelledIndicator:Show()
-	else
-		editbox.MisspelledIndicator:Hide()
-	end
+	Misspelled:UpdateVisualHighlights(editbox)
 end
 
 

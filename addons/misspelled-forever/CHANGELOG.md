@@ -2,6 +2,12 @@
 
 This file records public release versions and verified changes only.
 
+## 1.1.6 — 2026-11-11
+
+- Restored per-word light-blue misspelling highlighting through a non-mutating visual overlay.
+- Kept Blizzard's chat text untouched, preserving the verified `/target` protected-command fix.
+- Removed the ambiguous `ABC?`-only warning.
+
 ## 1.1.5 — 2026-11-11
 
 - Removed Misspelled's pre-hook from Blizzard's protected Enter handler, fixing the remaining `/target` blocked-action fault.

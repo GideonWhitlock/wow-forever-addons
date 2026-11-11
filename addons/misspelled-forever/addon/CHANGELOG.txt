@@ -1,3 +1,9 @@
+Misspelled: Forever 1.1.6
+
+- Restored per-word light-blue misspelling highlighting through a visual overlay.
+- The overlay never changes Blizzard's chat text, so protected slash commands remain safe.
+- Removed the ambiguous ABC?-only warning.
+
 Misspelled: Forever 1.1.5
 
 - Removed the remaining unsafe pre-hook from Blizzard's protected Enter handler.
