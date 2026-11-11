@@ -1,6 +1,6 @@
 local _, F = ...
 
-F.VERSION = "1.0.22"
+F.VERSION = "1.0.23"
 F.MIN_SIZE = 20
 F.MAX_SIZE = 64
 F.MIN_SPACING = 0

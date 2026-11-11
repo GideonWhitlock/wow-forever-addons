@@ -3,6 +3,12 @@
 This changelog records released add-on versions. Changes that were later replaced
 or reverted remain listed under the version in which they shipped.
 
+## 1.0.23 — 2026-11-11
+
+- Stops cursor-follow movement as soon as Alt or the left mouse button is
+  released, even if the world map, combat or another UI transition interrupts
+  the normal drag-stop callback.
+
 ## 1.0.22 — 2026-11-09
 
 - Rejects protected, forbidden and secret-geometry frames before collection.

@@ -38,13 +38,7 @@ loader:SetScript("OnEvent", function(_, event, arg1)
     end
     if not F.db then return end
     if event == "PLAYER_REGEN_DISABLED" then
-        if F.dragging then
-            F.container:SetScript("OnUpdate", nil)
-            F.dragging = false
-            F.dragCursorX, F.dragCursorY = nil, nil
-            F.dragContainerX, F.dragContainerY = nil, nil
-            F.SavePosition()
-        end
+        if F.StopLauncherDrag then F.StopLauncherDrag(true) end
         if F.options then F.options:Hide() end
         return
     end

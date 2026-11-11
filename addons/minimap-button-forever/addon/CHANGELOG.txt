@@ -1,3 +1,9 @@
+1.0.23 - 2026-11-11
+- Stops the controller's cursor-follow updater whenever Alt or the left mouse
+  button is released, even if the world map or combat interrupts OnDragStop.
+- Prevents a minimap-rim controller from jumping to the cursor and snapping back
+  when opening the map, entering combat or moving normally afterward.
+
 1.0.22 - 2026-11-09
 - Rejects protected, forbidden and secret-geometry frames before collection.
 - Guards third-party button dimensions with the Forever secret-value access API

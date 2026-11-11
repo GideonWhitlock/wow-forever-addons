@@ -180,6 +180,18 @@ function F.SavePosition()
     end
 end
 
+function F.StopLauncherDrag(savePosition)
+    if not F.dragging then return false end
+    if F.container then F.container:SetScript("OnUpdate", nil) end
+    F.dragging = false
+    F.dragCursorX, F.dragCursorY = nil, nil
+    F.dragContainerX, F.dragContainerY = nil, nil
+    if F.launcher then F.launcher.ignoreClickUntil = GetTime() + 0.2 end
+    if savePosition then F.SavePosition() end
+    if F.ready and not InCombatLockdown() then F.Layout() end
+    return true
+end
+
 function F.ReleaseButtons()
     if InCombatLockdown() or not F.collected then return end
     for _, info in ipairs(F.collected) do F.RestoreButton(info) end
@@ -608,6 +620,14 @@ function F.BuildUI()
         F.dragCursorX, F.dragCursorY = cursorX / scale, cursorY / scale
         F.dragContainerX, F.dragContainerY = containerX - parentX, containerY - parentY
         container:SetScript("OnUpdate", function()
+            -- WoW can hide or replace the active UI (for example when opening
+            -- the world map or entering combat) before OnDragStop is delivered.
+            -- Never leave the cursor-follow updater running after the physical
+            -- drag has ended.
+            if not IsAltKeyDown() or not IsMouseButtonDown("LeftButton") then
+                F.StopLauncherDrag(true)
+                return
+            end
             local currentX, currentY = GetCursorPosition()
             local currentScale = UIParent:GetEffectiveScale()
             if not currentX or not currentY or not currentScale or currentScale == 0 then return end
@@ -618,14 +638,7 @@ function F.BuildUI()
         end)
     end)
     launcher:SetScript("OnDragStop", function()
-        if not F.dragging then return end
-        container:SetScript("OnUpdate", nil)
-        F.dragging = false
-        F.dragCursorX, F.dragCursorY = nil, nil
-        F.dragContainerX, F.dragContainerY = nil, nil
-        launcher.ignoreClickUntil = GetTime() + 0.2
-        F.SavePosition()
-        F.Layout()
+        F.StopLauncherDrag(true)
     end)
     F.ApplyPosition()
     F.Layout()
