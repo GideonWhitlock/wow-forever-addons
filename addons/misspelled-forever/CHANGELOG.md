@@ -2,6 +2,12 @@
 
 This file records public release versions and verified changes only.
 
+## 1.1.5 — 2026-11-11
+
+- Removed Misspelled's pre-hook from Blizzard's protected Enter handler, fixing the remaining `/target` blocked-action fault.
+- Replaced injected inline colour codes in the default chat edit box with a non-mutating `ABC?` spelling indicator.
+- Preserved plain-text checking and right-click corrections without altering slash-command text.
+
 ## 1.1.3 — 2026-11-11
 
 - Fixed messages containing highlighted misspellings sometimes disappearing when Enter was pressed.

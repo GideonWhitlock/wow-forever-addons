@@ -259,7 +259,7 @@ function Misspelled:OnInitialize()
 		Misspelled:WireUpEditBox(ChatFrameEditBox)
 	end
 
-	-- EditBox_OnEnterPressed removes Misspelled's display markup before a
+	-- EditBox_OnEnterPressed already removes Misspelled's display markup before a
 	-- player sends typed chat. Do not replace SendChatMessage here: on Forever the
 	-- chat API is security-sensitive, and a raw hook taints unrelated add-ons that
 	-- legitimately send an announcement (for example Sleeping Bag Helper).
@@ -299,11 +299,15 @@ end
 
 function Misspelled:WireUpEditBox(editbox)
 	Misspelled:SecureHookScript(editbox, "OnEscapePressed", Misspelled.EditBox_OnEscapePressed)
-	-- This must run before Blizzard's OnEnterPressed handler. Otherwise WoW tries
-	-- to send Misspelled's temporary colour markup and silently drops the message.
-	Misspelled:HookScript(editbox, "OnEnterPressed", Misspelled.EditBox_OnEnterPressed)
+	-- Never pre-hook Blizzard's Enter handler. Even when an add-on leaves the
+	-- command text unchanged, a pre-hook can taint protected commands such as
+	-- /target on Forever. Default chat spell checking is non-mutating below.
 	Misspelled:SecureHookScript(editbox, "OnTextChanged", Misspelled.EditBox_OnTextChanged)
-	Misspelled:HookScript(editbox, "OnMouseUp", Misspelled.EditBox_OnMouseUp)  -- Used to hook mouse right-clicks to show suggestions frame
+	Misspelled:SecureHookScript(editbox, "OnMouseUp", Misspelled.EditBox_OnMouseUp)
+end
+
+local function IsSlashCommand(text)
+	return type(text) == "string" and string_sub(text, 1, 1) == "/"
 end
 
 function Misspelled:GUILD_ROSTER_UPDATE()
@@ -393,6 +397,20 @@ function Misspelled.EditBox_OnTextChanged(editbox)
 
 	--print("Editbox name:", editbox:GetName())
 
+	local text = editbox:GetText()
+
+	-- Slash commands can invoke protected Blizzard actions such as /target.
+	-- Never rewrite their edit-box text or run it through the spell checker.
+	if IsSlashCommand(text) then
+		RightClickedWord = nil
+		WordLocations[editbox:GetName()] = {}
+		if editbox.MisspelledIndicator then
+			editbox.MisspelledIndicator:Hide()
+		end
+		OldLineLength = #text
+		return
+	end
+
 	--Load the guild roster if needed
 	if GuildRosterCalled == false then
 		if IsInGuild() then
@@ -404,7 +422,6 @@ function Misspelled.EditBox_OnTextChanged(editbox)
 	end
 
 
-	local text = editbox:GetText()
 	local pos = editbox:GetCursorPosition()
 
 	--print ("TextChaged:", editbox:GetCursorPosition(), string.gsub(editbox:GetText(), "\124", "\124\124"))
@@ -413,27 +430,14 @@ function Misspelled.EditBox_OnTextChanged(editbox)
 
 	--Check if we should clear the WordCache table to save memory, if it's gotten very large
 	if newLineLength == 0 then
+		WordLocations[editbox:GetName()] = {}
+		if editbox.MisspelledIndicator then
+			editbox.MisspelledIndicator:Hide()
+		end
 		if WordCacheCount > WordCacheCountMax then
 			WordCache = {}
 			WordCacheCount = 0
 		end
-	end
-
-
-	--if the first char is a /, indicating some slash command, skip spellchecking the text.
-	if (string_sub(text, 1, 1) == "/" ) then
-		local cleanedChatMessage = Misspelled:RemoveHighlighting(text)
-		if text ~= cleanedChatMessage then
-			editbox:SetText(cleanedChatMessage)
-			if pos == 1 or pos== 0  then
-			  editbox:SetCursorPosition(pos)
-			end
-			OldLineLength = #text
-		end
-
-		RightClickedWord = nil
-		WordLocations[editbox:GetName()] = {}
-		return
 	end
 
 
@@ -458,16 +462,28 @@ end
 function Misspelled.EditBox_OnEscapePressed(editbox)
 	RightClickedWord = nil
 	WordLocations[editbox:GetName()] = {}
+	if editbox.MisspelledIndicator then
+		editbox.MisspelledIndicator:Hide()
+	end
 end
 
 function Misspelled.EditBox_OnEnterPressed(editbox)
 	RightClickedWord = nil
 	WordLocations[editbox:GetName()] = {}
+	local text = editbox:GetText()
+
+	-- Do not touch slash commands. Rewriting a /target command here taints the
+	-- protected targeting action that Blizzard runs immediately afterwards.
+	if IsSlashCommand(text) then
+		return
+	end
 
 	--before message is sent, remove and misspelled highlighting
-	local cleanedChatMessage = Misspelled:RemoveHighlighting(editbox:GetText())
+	local cleanedChatMessage = Misspelled:RemoveHighlighting(text)
 	WordLocations[editbox:GetName()] = {}
-	editbox:SetText(cleanedChatMessage)
+	if cleanedChatMessage ~= text then
+		editbox:SetText(cleanedChatMessage)
+	end
 end
 
 
@@ -478,90 +494,39 @@ end
 function Misspelled:SpellCheckChat(editbox)
 	local editboxText = editbox:GetText()
 
-	if #editboxText < 2 then return end
-
-	--Ensure we have hooked the MouseUp event
-	--Should fix Chatter changing the OnMouseUp script to nil.  Bad Chatter
-	local hooked, hookHandler  = Misspelled:IsHooked(editbox, "OnMouseUp")
-	if  hooked == false or (hooked == true and hookHandler ~= self.OnMouseUp) then
-		Misspelled:Unhook(editbox, "OnMouseUp")
-		Misspelled:RawHookScript(editbox, "OnMouseUp", Misspelled.EditBox_OnMouseUp)
+	if not editbox.MisspelledIndicator then
+		local indicator = editbox:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+		indicator:SetPoint("RIGHT", editbox, "RIGHT", -6, 0)
+		indicator:SetText("ABC?")
+		indicator:SetTextColor(0.49, 0.78, 0.98)
+		indicator:Hide()
+		editbox.MisspelledIndicator = indicator
 	end
 
-	local newText = editboxText
+	if #editboxText < 2 or IsSlashCommand(editboxText) then
+		WordLocations[editbox:GetName()] = {}
+		editbox.MisspelledIndicator:Hide()
+		return
+	end
 
-	--Watch how many characters we insert or remove from the left side of the cursor position.
-	--We'll adjust the cursor position to compensate for any misspelled word Hex code colored text added by Misspelled.
-	local newCPos
-
-	--remove any previous misspelling highlighting before checking the editboxText for misspellings.
-	newText, newCPos = Misspelled:RemoveHighlighting(editboxText, editbox:GetCursorPosition())
-
+	-- Inspect the plain text only. Never inject colour codes into Blizzard's
+	-- command edit box; doing so requires an unsafe Enter pre-hook to remove them.
 	WordLocations[editbox:GetName()] = {}
+	Misspelled:CheckLine(editboxText, editbox)
 
-	--If this is a command, don't spellcheck or highlight
-	if string_sub(editboxText, 1, 1) == "/" then
-		if newText ~= editboxText then
-			editbox:SetText(newText)
-			editbox:SetCursorPosition(newCPos)
-		end
-	end
-
-	--Find misspelled words & populate the WordLocations info.
-	Misspelled:CheckLine(newText, editbox)
-
-	local colorCodesAdded = 0
-	--Use the WordLocation info to march backwards through the input text,
-	--highlighting misspellings
-	--tprint(WordLocations)
-	local w
-	for x = #WordLocations[editbox:GetName()], 1, -1 do
-		w = WordLocations[editbox:GetName()][x]
-		if WordCache[w.Word].Correct == false then
-			--Insert highlighting
-			newText = string_sub(newText, 1, w.StartPos -1) .. SPELLED_WRONG_HIGHLIGHT .. string_sub(newText, w.StartPos, w.EndPos) .. FONT_COLOR_CODE_CLOSE .. string_sub(newText, w.EndPos + 1)
-
-			--Adjust cursor position if the cursor was to the right of the first char in the word we're highlighting.
-			if newCPos >= w.EndPos then
-				newCPos = newCPos + #SPELLED_WRONG_HIGHLIGHT + #FONT_COLOR_CODE_CLOSE
-			elseif newCPos >= w.StartPos then
-				newCPos = newCPos + #SPELLED_WRONG_HIGHLIGHT
-			end
-
-			colorCodesAdded = colorCodesAdded + 1
-			if colorCodesAdded >= MaxColorCodes then 
-				--Truncate WordLocations to here, because there are too many misspelled words.
-				--The WoW chatbox won't let us add more than so many color coded sections.
-				
-				--Delete all entries before x
-				WordLocations[editbox:GetName()] = { unpack( WordLocations[editbox:GetName()], x ) }
-				
-				break
-			end
-		end
-	end
-
-	--Adjust the word's WordLocation StartPos and EndPos, wherever we added highlighting.
-	--The right click handler uses this position info. to detect the misspelled word that was right clicked.
-	--March forward this time
-	local n = 0 --NewCharsAddedCounter
+	local hasMisspelling = false
 	for x = 1, #WordLocations[editbox:GetName()] do
-		w = WordLocations[editbox:GetName()][x]
+		local w = WordLocations[editbox:GetName()][x]
 		if WordCache[w.Word].Correct == false then
-			w.StartPos = w.StartPos + n + #SPELLED_WRONG_HIGHLIGHT
-			n = n + #SPELLED_WRONG_HIGHLIGHT
-			w.EndPos = w.EndPos + n
-			n = n + #FONT_COLOR_CODE_CLOSE
+			hasMisspelling = true
+			break
 		end
 	end
 
-	if newText ~= editboxText then
-		--When we call settext, an OnSetText event will fire.
-		--Execution of this event should be skipped to avoid SpellCheckChat from running twice.
-		--Use a local toggle to skip this second firing
-		SkipOnTextChanged = true
-		editbox:SetText(newText)
-		editbox:SetCursorPosition(newCPos)
+	if hasMisspelling then
+		editbox.MisspelledIndicator:Show()
+	else
+		editbox.MisspelledIndicator:Hide()
 	end
 end
 
@@ -1119,11 +1084,6 @@ function Misspelled:OnMouseUp(editbox, button)
 		--Show where the user right clicked.
 		--print("cursor position:" , ChatFrameEditBox:GetCursorPosition())
 
-		--If we are not positioned on a bad, word call and MouseUp handler that was hooked to the box.
-		if badWordFound == false then
-			--print("Trigger native OnMouseUp call")
-			self.hooks[editbox]["OnMouseUp"](editbox, button)
-		end
 	end
 end
 
@@ -1244,9 +1204,7 @@ function SuggestionsFrame_Click(value, editbox)
 		WordCache[RightClickedWord].Correct = true
 		WordCache[RightClickedWord].Suggestions = {}
 
-		--Remove the misspelled highlighting
-		newText = string_sub(newText, 1, RightClickedWordStartPos - 1 - #SPELLED_WRONG_HIGHLIGHT) .. RightClickedWord .. string_sub(newText, RightClickedWordEndPos + #FONT_COLOR_CODE_CLOSE + 1)
-		newCursorPos = RightClickedWordStartPos + #RightClickedWord - #SPELLED_WRONG_HIGHLIGHT - #FONT_COLOR_CODE_CLOSE + 1
+		newCursorPos = RightClickedWordEndPos
 
 	elseif value == "###AddToDictionary" then
 		-- Add this word to the user dictionary
@@ -1255,9 +1213,7 @@ function SuggestionsFrame_Click(value, editbox)
 		WordCache[RightClickedWord].Correct = true
 		WordCache[RightClickedWord].Suggestions = {}
 
-		--Remove the misspelled highlighting
-		newText = string_sub(newText, 1, RightClickedWordStartPos - 1 - #SPELLED_WRONG_HIGHLIGHT) .. RightClickedWord .. string_sub(newText, RightClickedWordEndPos + #FONT_COLOR_CODE_CLOSE + 1)
-		newCursorPos = RightClickedWordStartPos + #RightClickedWord - #SPELLED_WRONG_HIGHLIGHT - #FONT_COLOR_CODE_CLOSE + 1
+		newCursorPos = RightClickedWordEndPos
 
 	else
 		--replace this word with the selected suggestion.
@@ -1267,10 +1223,10 @@ function SuggestionsFrame_Click(value, editbox)
 		if isCapitalizedRightClickedWord == true then
 			value = string_upper(string_sub(value, 1, 1)) .. string_sub(value, 2)
 		end
-		newText = string_sub(newText, 1, RightClickedWordStartPos - 1 - #SPELLED_WRONG_HIGHLIGHT) .. value .. string_sub(newText, RightClickedWordEndPos + #FONT_COLOR_CODE_CLOSE + 1)
+		newText = string_sub(newText, 1, RightClickedWordStartPos - 1) .. value .. string_sub(newText, RightClickedWordEndPos + 1)
 
 		--save the cursor position just after the corrected word, so we can set it later
-		newCursorPos = RightClickedWordStartPos + #value - #SPELLED_WRONG_HIGHLIGHT - #FONT_COLOR_CODE_CLOSE + 1
+		newCursorPos = RightClickedWordStartPos + #value - 1
 
 		--Note: if the replacement word is a different length, then the WordLocations will be messed up.
 	end

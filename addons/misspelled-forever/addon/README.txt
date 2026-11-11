@@ -1,16 +1,16 @@
 MISSPELLED: FOREVER
 
-Version 1.1.3
+Version 1.1.5
 
 Misspelled: Forever checks the words you type into World of Warcraft chat.
-Completed words that are not in the selected dictionary are coloured light blue.
-Right-click a highlighted word to replace it with a suggestion, ignore it for the
+When completed words are not in the selected dictionary, an ABC? indicator appears.
+Right-click a flagged word to replace it with a suggestion, ignore it for the
 current session, or add it permanently to your personal dictionary.
 
 FEATURES
 
 - Checks completed words while you type without sending anything automatically.
-- Removes its colour markers before a message is sent.
+- Never rewrites Blizzard's chat or slash-command text.
 - Right-click correction suggestions.
 - Personal dictionary with add and remove controls.
 - Automatic dictionary choice from the game locale.
