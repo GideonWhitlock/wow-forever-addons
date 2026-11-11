@@ -1,26 +1,17 @@
 # Changelog
 
+## 1.0.7 — 2026-11-11
+
+- The default Quick Whisper now includes the player's current level below the
+  level cap, for example: `Lvl 35 Hunter DPS here`.
+- Max-level players keep the shorter message, for example: `Hunter DPS here`.
+
 ## 1.0.6 — 2026-11-10
 
-- Added an automatic whisper after a direct invite that identifies the activity
-  and, when selected, the role being recruited.
-- Added a distinct automatic whisper after a party-member invite suggestion,
-  asking the player to wait for the party leader's invite.
-- Activity and role wording follows the inviter's active Group Finder filters,
-  so players queued for several dungeons or roles know which specific place is
-  being offered.
-- Added duplicate protection so a single invite cannot produce repeated
-  activity whispers.
-
-## 1.0.5 — 2026-11-09
-
-- Changed **Suggest invite to party leader** to use WoW's native invite action.
-  Party members now trigger the leader's built-in approval prompt instead of
-  posting an instruction in party chat; leaders invite directly.
-- Added an All/Tank/Healer/DPS filter above the search results. Multi-role
-  players and groups match every role they advertise.
-- Preserved complete Forever player names when submitting invite requests.
-- Removed the obsolete editable party-chat suggestion template.
+- Added activity-and-role whispers for direct invites and party-member invite
+  suggestions.
+- Suggested players are told to wait for the party leader's invite.
+- Added duplicate protection for invite whispers.
 
 ## 1.0.4 — 2026-11-07
 
