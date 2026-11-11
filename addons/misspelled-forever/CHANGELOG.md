@@ -2,6 +2,17 @@
 
 This file records public release versions and verified changes only.
 
+## 1.1.3 — 2026-11-11
+
+- Fixed messages containing highlighted misspellings sometimes disappearing when Enter was pressed.
+- Moved highlight cleanup to run before WoW's chat-send handler without replacing the protected chat API.
+
+## 1.1.2 — 2026-11-11
+
+- Stopped replacing WoW's protected chat-send function.
+- Preserved spelling-highlight cleanup in the chat edit box before manually typed messages are sent.
+- Prevented Misspelled from blocking automatic announcements made by unrelated add-ons.
+
 ## 1.1.1 — 2026-10-11
 
 - Fixed the minimap button sitting inside the minimap instead of on its border.
