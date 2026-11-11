@@ -259,14 +259,10 @@ function Misspelled:OnInitialize()
 		Misspelled:WireUpEditBox(ChatFrameEditBox)
 	end
 
-	-- hooks for removing any misspelled word highlighting in the text before the chat message is sent
-	-- The Wow client will disconnect if you attempt to send a color tags in a chat message.
-	if C_ChatInfo and C_ChatInfo.SendChatMessage then
-		Misspelled:RawHook(C_ChatInfo, "SendChatMessage", Misspelled.SendChatMessage, true)
-		UseCChatInfoSend = true
-	else
-		Misspelled:RawHook("SendChatMessage", Misspelled.SendChatMessage, true) -- For non-retail game clients
-	end
+	-- EditBox_OnEnterPressed removes Misspelled's display markup before a
+	-- player sends typed chat. Do not replace SendChatMessage here: on Forever the
+	-- chat API is security-sensitive, and a raw hook taints unrelated add-ons that
+	-- legitimately send an announcement (for example Sleeping Bag Helper).
 end
 
 function Misspelled:OpenSettings()
@@ -303,7 +299,9 @@ end
 
 function Misspelled:WireUpEditBox(editbox)
 	Misspelled:SecureHookScript(editbox, "OnEscapePressed", Misspelled.EditBox_OnEscapePressed)
-	Misspelled:SecureHookScript(editbox, "OnEnterPressed", Misspelled.EditBox_OnEnterPressed)
+	-- This must run before Blizzard's OnEnterPressed handler. Otherwise WoW tries
+	-- to send Misspelled's temporary colour markup and silently drops the message.
+	Misspelled:HookScript(editbox, "OnEnterPressed", Misspelled.EditBox_OnEnterPressed)
 	Misspelled:SecureHookScript(editbox, "OnTextChanged", Misspelled.EditBox_OnTextChanged)
 	Misspelled:HookScript(editbox, "OnMouseUp", Misspelled.EditBox_OnMouseUp)  -- Used to hook mouse right-clicks to show suggestions frame
 end
