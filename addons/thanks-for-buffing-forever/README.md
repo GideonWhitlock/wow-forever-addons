@@ -2,11 +2,12 @@
 
 Thanks for Buffing: Forever is a lightweight World of Warcraft addon that privately thanks another player after they give you a helpful buff.
 
-It waits a random 3–10 seconds, chooses one of 15 short replies, and sends the response as a whisper. Several buffs from the same player are combined into one thank-you, and one continuous buff can never be replayed as another thank-you.
+It waits a random 3–10 seconds, chooses from a player-editable list of 15 default replies, and sends the response as a whisper. Several buffs from the same player are combined into one thank-you, and one continuous buff can never be replayed as another thank-you.
 
 ## Features
 
 - Sends thank-you messages by whisper only
+- Lets players list, add, remove and reset saved thank-you phrases in game
 - Uses 15 short, natural replies
 - Waits a random 3–10 seconds before replying
 - Combines several buffs from one player into one response
@@ -21,6 +22,10 @@ It waits a random 3–10 seconds, chooses one of 15 short replies, and sends the
 - `/tftbf on` — enable the addon
 - `/tftbf off` — disable the addon
 - `/tftbf debug` — toggle diagnostics for the current session; always off after login or `/reload`
+- `/tftbf phrases` — show the numbered thank-you phrase list
+- `/tftbf phrases add <text>` — add a new phrase
+- `/tftbf phrases remove <number>` — remove a phrase by its displayed number
+- `/tftbf phrases reset` — restore the 15 defaults
 
 ## Installation
 
@@ -30,7 +35,7 @@ It waits a random 3–10 seconds, chooses one of 15 short replies, and sends the
 
 ## Supported clients
 
-The prepared version 1.0.17 includes TOCs for:
+The prepared version 1.0.18 includes TOCs for:
 
 | Client | Interface |
 | --- | ---: |
@@ -40,9 +45,9 @@ The prepared version 1.0.17 includes TOCs for:
 | Burning Crusade Classic | 20506 |
 | Classic Era | 11509 |
 
-Only the Forever path is currently claimed for release targeting. Version 1.0.17 records each exact caster/spell application before group and cooldown suppression, requires a forward-moving expiration time for a same-instance refresh, and removes the generic recent-target fallback. Live testing previously confirmed that Forever blocks combat-log registration, so that API remains disabled on this branch. The other manifests remain source-visible but are not live-verified release targets.
+Only the Forever path is currently claimed for release targeting. Version 1.0.18 retains the exact caster/spell safeguards from 1.0.17 and adds a persistent player-editable phrase list. Live testing previously confirmed that Forever blocks combat-log registration, so that API remains disabled on this branch. The other manifests remain source-visible but are not live-verified release targets.
 
-The 1.0.17 source passes thirteen automated behaviour suites, including the observed multi-word recipient failures, protected aura fields, the Dax grouped-buff replay and the unsafe unrelated-recipient fallback.
+The 1.0.18 source passes fourteen automated behaviour suites, including phrase editing, the observed multi-word recipient failures, protected aura fields, the Dax grouped-buff replay and the unsafe unrelated-recipient fallback.
 
 ## How detection works
 
@@ -62,11 +67,11 @@ Classic clients use the combat log, which provides broader caster attribution.
 
 ## Privacy
 
-The addon stores only its enabled/disabled setting in `ThanksForTheBuffForeverDB`. Diagnostic mode is session-only, starts off on every login or `/reload`, and is never saved. It does not collect analytics or transmit data outside the one in-game whisper it sends.
+The addon stores its enabled/disabled setting and local phrase list in `ThanksForTheBuffForeverDB`. Diagnostic mode is session-only, starts off on every login or `/reload`, and is never saved. It does not collect analytics or transmit data outside the one in-game whisper it sends.
 
 ## Repository layout
 
-- `addon/ThanksForTheBuffForever/` — the prepared version 1.0.15 source and TOCs
+- `addon/ThanksForTheBuffForever/` — the prepared version 1.0.18 source and TOCs
 - `tests/` — standalone Lua behaviour tests for Forever and Classic detection paths
 - `.github/ISSUE_TEMPLATE/` — the project-specific public bug-report form
 

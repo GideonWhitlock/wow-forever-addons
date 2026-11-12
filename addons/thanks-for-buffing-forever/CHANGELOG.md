@@ -2,6 +2,13 @@
 
 All notable changes to Thanks for Buffing: Forever are recorded here.
 
+## 1.0.18 — 2026-11-12
+
+- Adds a persistent, editable thank-you phrase list.
+- Adds `/tftbf phrases` to show the complete numbered list.
+- Adds `/tftbf phrases add <text>`, `/tftbf phrases remove <number>` and `/tftbf phrases reset`.
+- Rejects blank, overlong and duplicate phrases and preserves at least one usable message.
+
 ## 1.0.17 — 2026-11-09
 
 - Prevents one continuous buff from being thanked again because WoW emitted an ordinary aura update, a zone transition, or a new aura instance for the same still-active effect.

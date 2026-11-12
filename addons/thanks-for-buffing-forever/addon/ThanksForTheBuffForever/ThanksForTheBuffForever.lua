@@ -11,7 +11,7 @@ local DEFERRED_DELIVERY_TIMEOUT_SECONDS = 15 * 60
 local CHAT_LOCKDOWN_RETRY_SECONDS = 1
 local AURA_FALLBACK_LIFETIME_SECONDS = 30 * 60
 
-local THANK_YOU_MESSAGES = {
+local DEFAULT_THANK_YOU_MESSAGES = {
     "thanks!",
     "ty!",
     "cheers!",
@@ -28,6 +28,8 @@ local THANK_YOU_MESSAGES = {
     "cheers mate!",
     "much appreciated!",
 }
+
+local MAX_THANK_YOU_MESSAGE_LENGTH = 120
 
 -- Confirmed player-owned or system-owned auras that can appear without a
 -- usable source. They must never enter external-caster correlation.
@@ -67,6 +69,87 @@ end
 
 local function IsEnabled()
     return ThanksForTheBuffForeverDB and ThanksForTheBuffForeverDB.enabled ~= false
+end
+
+local function Trim(value)
+    return (value or ""):match("^%s*(.-)%s*$")
+end
+
+local function CopyDefaultMessages()
+    local messages = {}
+    for index, message in ipairs(DEFAULT_THANK_YOU_MESSAGES) do
+        messages[index] = message
+    end
+    return messages
+end
+
+local function GetThankYouMessages()
+    if not ThanksForTheBuffForeverDB then
+        return DEFAULT_THANK_YOU_MESSAGES
+    end
+
+    local messages = ThanksForTheBuffForeverDB.messages
+    if type(messages) ~= "table" or #messages == 0 then
+        messages = CopyDefaultMessages()
+        ThanksForTheBuffForeverDB.messages = messages
+    end
+
+    return messages
+end
+
+local function ListThankYouMessages()
+    local messages = GetThankYouMessages()
+    Print("thank-you phrases (" .. #messages .. "):")
+    for index, message in ipairs(messages) do
+        Print(index .. ". " .. message)
+    end
+end
+
+local function AddThankYouMessage(message)
+    message = Trim(message)
+    if message == "" then
+        Print("Give me a phrase after /tftbf phrases add.")
+        return
+    end
+    if #message > MAX_THANK_YOU_MESSAGE_LENGTH then
+        Print("That phrase is too long. Keep it to " .. MAX_THANK_YOU_MESSAGE_LENGTH .. " characters or fewer.")
+        return
+    end
+
+    local messages = GetThankYouMessages()
+    local lowered = string.lower(message)
+    for _, existing in ipairs(messages) do
+        if string.lower(existing) == lowered then
+            Print("That phrase is already in the list.")
+            return
+        end
+    end
+
+    table.insert(messages, message)
+    Print("added phrase " .. #messages .. ": " .. message)
+end
+
+local function RemoveThankYouMessage(value)
+    local index = tonumber(Trim(value))
+    local messages = GetThankYouMessages()
+    if not index or index % 1 ~= 0 or index < 1 or index > #messages then
+        Print("Choose a phrase number from 1 to " .. #messages .. ".")
+        return
+    end
+    if #messages == 1 then
+        Print("Keep at least one phrase. Use /tftbf phrases reset to restore the defaults.")
+        return
+    end
+
+    local removed = table.remove(messages, index)
+    wipe(lastMessageIndexByCaster)
+    Print("removed phrase " .. index .. ": " .. removed)
+end
+
+local function ResetThankYouMessages()
+    ThanksForTheBuffForeverDB.messages = CopyDefaultMessages()
+    wipe(lastMessageIndexByCaster)
+    Print("restored the 15 default thank-you phrases.")
 end
 
 local function Debug(message)
@@ -186,15 +269,16 @@ local function IsCasterInPlayersGroup(casterKey, targetName)
 end
 
 local function PickMessage(casterKey)
+    local messages = GetThankYouMessages()
     local previousIndex = lastMessageIndexByCaster[casterKey]
-    local index = math.random(1, #THANK_YOU_MESSAGES)
+    local index = math.random(1, #messages)
 
-    if #THANK_YOU_MESSAGES > 1 and index == previousIndex then
-        index = (index % #THANK_YOU_MESSAGES) + 1
+    if #messages > 1 and index == previousIndex then
+        index = (index % #messages) + 1
     end
 
     lastMessageIndexByCaster[casterKey] = index
-    return THANK_YOU_MESSAGES[index]
+    return messages[index]
 end
 
 local function GetReadableAuraNumber(aura, field)
@@ -1061,6 +1145,7 @@ frame:SetScript("OnEvent", function(_, event, ...)
         if ThanksForTheBuffForeverDB.enabled == nil then
             ThanksForTheBuffForeverDB.enabled = true
         end
+        GetThankYouMessages()
 
         -- Diagnostics are deliberately session-only. Clear the legacy saved
         -- flag so upgrades from a test build cannot spam ordinary gameplay.
@@ -1138,7 +1223,9 @@ end)
 SLASH_THANKSFORTHEBUFFFOREVER1 = "/tftbf"
 SLASH_THANKSFORTHEBUFFFOREVER2 = "/thanksbuff"
 SlashCmdList.THANKSFORTHEBUFFFOREVER = function(input)
-    local command = string.lower((input or ""):match("^%s*(.-)%s*$"))
+    local trimmedInput = Trim(input)
+    local command, remainder = trimmedInput:match("^(%S+)%s*(.-)$")
+    command = string.lower(command or "")
 
     if command == "on" or command == "enable" then
         ThanksForTheBuffForeverDB.enabled = true
@@ -1150,11 +1237,25 @@ SlashCmdList.THANKSFORTHEBUFFFOREVER = function(input)
         Print("is now disabled.")
     elseif command == "status" or command == "" then
         Print(IsEnabled() and "is enabled." or "is disabled.")
-        Print("Use /tftbf on, /tftbf off, or /tftbf debug.")
+        Print("Use /tftbf phrases to view and edit the thank-you list.")
+    elseif command == "phrases" or command == "messages" then
+        local action, value = remainder:match("^(%S+)%s*(.-)$")
+        action = string.lower(action or "list")
+        if action == "list" or action == "show" then
+            ListThankYouMessages()
+        elseif action == "add" then
+            AddThankYouMessage(value)
+        elseif action == "remove" or action == "delete" then
+            RemoveThankYouMessage(value)
+        elseif action == "reset" or action == "defaults" then
+            ResetThankYouMessages()
+        else
+            Print("Phrase commands: /tftbf phrases, add <text>, remove <number>, reset")
+        end
     elseif command == "debug" then
         debugEnabled = not debugEnabled
         Print(debugEnabled and "debug messages are now on for this session." or "debug messages are now off.")
     else
-        Print("Commands: /tftbf on, /tftbf off, /tftbf status, /tftbf debug")
+        Print("Commands: /tftbf on, off, status, debug, phrases")
     end
 end
