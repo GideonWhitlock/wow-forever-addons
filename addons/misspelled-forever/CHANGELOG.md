@@ -2,6 +2,11 @@
 
 This file records public release versions and verified changes only.
 
+## 1.1.8 — 2026-11-13
+
+- Clears stale spelling highlights when you backspace, replace text, or edit a draft.
+- Waits for a word boundary before highlighting the word you are typing.
+
 ## 1.1.7 — 2026-11-13
 
 - Removed a duplicate call to Blizzard’s protected chat activation function that could interfere with chat in combat.
