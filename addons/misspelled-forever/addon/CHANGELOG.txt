@@ -1,3 +1,8 @@
+Misspelled: Forever 1.1.8
+
+- Refreshes spelling highlights when you backspace, replace text or edit a draft.
+- Clears the old highlight as soon as you return to typing an unfinished word.
+
 Misspelled: Forever 1.1.7
 
 - Fixed chat becoming unavailable in combat or after battleground entry.

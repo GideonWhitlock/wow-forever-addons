@@ -1,13 +1,13 @@
 MISSPELLED: FOREVER - LIVE TEST CHECKLIST
 
-Version 1.1.7 keeps the Enter pre-hook removed and no longer calls Blizzard's
+Version 1.1.8 keeps the Enter pre-hook removed and no longer calls Blizzard's
 protected chat-activation function from its secure post-hook. Enter `/target` followed by
 the exact name of a nearby enemy and confirm the target changes without a blocked-action
 dialog. This was owner-tested successfully on 11 November 2026.
 
-Before the general checks, enter combat and open/type/close chat several times. Then
-enter a battleground and repeat the check during preparation and combat. Chat must remain
-available, and no blocked-action or taint dialog may appear.
+For the keyboard-focus report, open chat during combat, type a draft, and click into
+the world. Press the normal Open Chat key, type again, and press Escape. If keyboard
+focus fails to return, compare the same steps with Misspelled disabled.
 
 1. Enable the add-on, log in, and confirm there are no Lua errors. Confirm the
    parchment-and-quill minimap button is visible and centred on the minimap border,
@@ -18,7 +18,9 @@ available, and no blocked-action or taint dialog may appear.
    /mf reset. If UI scale or minimap size changes, confirm the button remains on the ring.
 3. Open chat and type: "This is a sentnce ". Confirm `sentnce` itself appears
    light blue after the trailing space is entered.
-4. Right-click "sentnce" and choose "sentence". Confirm only that word changes.
+4. Backspace over the trailing space and part of the misspelling, then retype the
+   correct word. The old highlight should disappear immediately. Separately,
+   right-click a highlighted misspelling and confirm only the chosen word changes.
 5. Send the corrected message. Confirm the recipient sees plain text without colour
    codes and the game remains connected.
 6. Type a genuine custom name followed by a space. Right-click it and choose

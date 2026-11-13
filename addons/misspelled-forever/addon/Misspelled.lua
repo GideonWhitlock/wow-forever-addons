@@ -136,12 +136,10 @@ local WordCacheCount = 0       --Counter used to track when we should clean the 
 local WordCacheCountMax = 7000 --Number of entries tha can live in the WordCache before we clean the cache
 local WordLocations = {}       --Lookup table used by multiple functions to determine where each work starts and ends
 							   --There will be a sub-table for each EditBox:GetName() so we can store multiple sets of info at once.
-local SkipOnTextChanged = false -- use to avoid OnTextChanged event firing after spell checking highlights chat text.
 local RightClickedWord = nil   --The current word under the CursorPosition that was right-clicked
 local RightClickedWordStartPos --Where that word starts
 local RightClickedWordEndPos   --and where that word ends
 local RightClickedEditBox      --and what EditBox was right clicked
-local OldLineLength            --Tracks the previous length of the ChatEditBox.text
 local GuildRosterCalled = false
 local MaxColorCodes = 12       --The max amount of color codes we will add to the editbox text.
 
@@ -478,79 +476,30 @@ function Misspelled.SendChatMessage(message, chatType, languageID, target, ...)
 	end
 end
 
---Possible changes:
---A single new character was inserted at the end of the line (line length grew by 1)
---	  If this char is a word separator, then spell check the line
---
---Any other change in the line, requires we recheck the entire line.
---More than a single character was pasted or linked into the line.
---	remove any highlighting and recheck the entire line.
---
---A single character was removed from the line
+-- Rebuild the overlay and its word positions from the current draft on every edit.
 function Misspelled.EditBox_OnTextChanged(editbox)
-	if SkipOnTextChanged == true then
-		SkipOnTextChanged = false
-		return
-	end
-
-	--print("Editbox name:", editbox:GetName())
-
 	local text = editbox:GetText()
-
-	-- Slash commands can invoke protected Blizzard actions such as /target.
-	-- Never rewrite their edit-box text or run it through the spell checker.
-	if IsSlashCommand(text) then
-		RightClickedWord = nil
+	if text == "" or IsSlashCommand(text) then
 		WordLocations[editbox:GetName()] = {}
 		HideVisualHighlights(editbox)
-		OldLineLength = #text
+		if text == "" and WordCacheCount > WordCacheCountMax then
+			WordCache = {}
+			WordCacheCount = 0
+		end
 		return
 	end
 
-	--Load the guild roster if needed
-	if GuildRosterCalled == false then
+	if not GuildRosterCalled then
 		if IsInGuild() then
-			C_GuildInfo.GuildRoster() --Request updated guid roseter info from the server
+			C_GuildInfo.GuildRoster()
 		else
 			Misspelled:LoadGuildAndFriendRoster()
 		end
 		GuildRosterCalled = true
 	end
 
-
-	local pos = editbox:GetCursorPosition()
-
-	--print ("TextChaged:", editbox:GetCursorPosition(), string.gsub(editbox:GetText(), "\124", "\124\124"))
-
-	local newLineLength = #text
-
-	--Check if we should clear the WordCache table to save memory, if it's gotten very large
-	if newLineLength == 0 then
-		WordLocations[editbox:GetName()] = {}
-		HideVisualHighlights(editbox)
-		if WordCacheCount > WordCacheCountMax then
-			WordCache = {}
-			WordCacheCount = 0
-		end
-	end
-
-
-	--If we currently just added one new char to the end of the line, see if it's a word boundary char
-	--CursorPosition (pos) must be at the end of the line, and the line size must have had grown by
-	--one character.
-	if pos == #text and newLineLength -1 == OldLineLength then
-		local lastChar = string_sub(text, -1, -1)
-		if string_match(lastChar, "[ %(%);,%.!%?:\"]") ~= nil then
-			Misspelled:SpellCheckChat(editbox)
-		end
-	elseif pos ~= #text then
-		----We must be making some other kind of edit someplace other than at the end of the line.
-		----Recheck the entire line
-		Misspelled:SpellCheckChat(editbox)
-	end
-
-	--Save the new line length for use with the next round of OnTextChanged processing.
-	OldLineLength = #editbox:GetText()
+	-- Wait for a delimiter before marking the word being typed at the end.
+	Misspelled:SpellCheckChat(editbox, editbox:GetCursorPosition() == #text)
 end
 
 function Misspelled.EditBox_OnEscapePressed(editbox)
@@ -583,7 +532,7 @@ end
 --If this string is a slash command "/", don't perform any highlighting
 --We should keep track of the current edit cursor position,
 --so we can report it's new position after highlighting.
-function Misspelled:SpellCheckChat(editbox)
+function Misspelled:SpellCheckChat(editbox, skipTrailingWord)
 	local editboxText = editbox:GetText()
 
 	if #editboxText < 2 or IsSlashCommand(editboxText) then
@@ -595,7 +544,7 @@ function Misspelled:SpellCheckChat(editbox)
 	-- Inspect the plain text only. Never inject colour codes into Blizzard's
 	-- command edit box; doing so requires an unsafe Enter pre-hook to remove them.
 	WordLocations[editbox:GetName()] = {}
-	Misspelled:CheckLine(editboxText, editbox)
+	Misspelled:CheckLine(editboxText, editbox, skipTrailingWord)
 
 	Misspelled:UpdateVisualHighlights(editbox)
 end
@@ -616,7 +565,7 @@ end
 --any misspelled replacement suggestions.
 --
 --Trim the WordCache table if it's grown very large
-function Misspelled:CheckLine(text, editbox)
+function Misspelled:CheckLine(text, editbox, skipTrailingWord)
 	--Reset the info on where each word is located
 	WordLocations[editbox:GetName()] = {}
 
@@ -668,6 +617,9 @@ function Misspelled:CheckLine(text, editbox)
 	local word
 	local correct
 	while matchPosStart ~= nil do
+		if skipTrailingWord and matchPosEnd == #text then
+			break
+		end
 		word = string_sub(newText, matchPosStart, matchPosEnd)
 
 		--ignore all uppercase words
@@ -1262,7 +1214,11 @@ function SuggestionsFrame_Click(value, editbox)
 	local isCapitalizedRightClickedWord = false
 
 	--Check if the local (global) var RightClickedWord is populated with a non nil value
-    assert(RightClickedWord ~= nil, "Misspelled: SuggestionsFrame_Click, Unexpected: RightClickedWord == nil")
+	-- A suggestion menu can outlive the draft it was opened for.
+	if not RightClickedWord or editbox ~= RightClickedEditBox or IsSlashCommand(newText)
+		or string_sub(newText, RightClickedWordStartPos, RightClickedWordEndPos) ~= RightClickedWord then
+		return
+	end
 
 	if string_sub(RightClickedWord, 1, 1) == string_upper(string_sub(RightClickedWord, 1, 1)) then
 		isCapitalizedRightClickedWord = true
@@ -1317,6 +1273,7 @@ function SuggestionsFrame_Click(value, editbox)
 
 		editbox:SetCursorPosition(newCursorPos)
 	end
+	Misspelled:SpellCheckChat(editbox)
 
 	RightClickedWord = nil
 end
