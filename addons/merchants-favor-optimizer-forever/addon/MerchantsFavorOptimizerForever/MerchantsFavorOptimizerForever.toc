@@ -1,0 +1,18 @@
+## Interface: 16001
+## Title: Merchant's Favor Optimizer: Forever
+## Notes: Ranks Waylaid Crates by Auctionator cost per Merchant's Favor and guides each purchase.
+## Author: Gideon Whitlock
+## Version: 0.1.8
+## SavedVariables: MerchantsFavorOptimizerForeverDB
+## OptionalDeps: Auctionator, WaylaidCrates
+## IconTexture: Interface\Icons\INV_Misc_Coin_01
+## X-Category: Auction House
+## X-License: MIT
+## X-Website: https://github.com/GideonWhitlock/wow-forever-addons
+
+Data.lua
+Core.lua
+Inventory.lua
+Auctionator.lua
+UI.lua
+Main.lua
