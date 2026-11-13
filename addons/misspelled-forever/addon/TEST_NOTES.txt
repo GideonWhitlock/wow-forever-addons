@@ -1,8 +1,13 @@
 MISSPELLED: FOREVER - LIVE TEST CHECKLIST
 
-Version 1.1.6 keeps the Enter pre-hook removed. Enter `/target` followed by
+Version 1.1.7 keeps the Enter pre-hook removed and no longer calls Blizzard's
+protected chat-activation function from its secure post-hook. Enter `/target` followed by
 the exact name of a nearby enemy and confirm the target changes without a blocked-action
 dialog. This was owner-tested successfully on 11 November 2026.
+
+Before the general checks, enter combat and open/type/close chat several times. Then
+enter a battleground and repeat the check during preparation and combat. Chat must remain
+available, and no blocked-action or taint dialog may appear.
 
 1. Enable the add-on, log in, and confirm there are no Lua errors. Confirm the
    parchment-and-quill minimap button is visible and centred on the minimap border,

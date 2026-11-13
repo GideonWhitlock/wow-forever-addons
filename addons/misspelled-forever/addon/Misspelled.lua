@@ -448,14 +448,18 @@ end
 
 --Patch 3.5 Hook ChatFrame.lua ChatEdit_ActivateChat(editBox)
 function Misspelled:ChatEdit_ActivateChat(editBox)
-	--Make sure this editbox is hooked
-	--print("EditBox to hook: " .. editBox:GetName())
-	local hooked, hookHandler  = Misspelled:IsHooked(editBox, "OnTextChanged")
-	if  hooked == false then
-		Misspelled:WireUpEditBox(editBox)
+	-- SecureHook handlers run after Blizzard's protected function and must never
+	-- call the original again. Installing new script hooks during combat can also
+	-- taint protected chat activation, so defer any late edit-box discovery until
+	-- the next out-of-combat activation. The startup scan wires normal chat boxes.
+	if InCombatLockdown and InCombatLockdown() then
+		return
 	end
 
-	self.hooks["ChatEdit_ActivateChat"](editBox)
+	local hooked = Misspelled:IsHooked(editBox, "OnTextChanged")
+	if hooked == false then
+		Misspelled:WireUpEditBox(editBox)
+	end
 end
 
 --Before a chat message is sent, remove any highlighting that Misspelled might have added.

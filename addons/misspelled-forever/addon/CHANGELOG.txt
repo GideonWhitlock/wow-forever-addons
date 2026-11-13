@@ -1,3 +1,9 @@
+Misspelled: Forever 1.1.7
+
+- Fixed chat becoming unavailable in combat or after battleground entry.
+- Stopped the secure chat-activation post-hook from calling Blizzard's protected function a second time.
+- Defers any late chat edit-box hook installation while combat lockdown is active.
+
 Misspelled: Forever 1.1.6
 
 - Restored per-word light-blue misspelling highlighting through a visual overlay.
