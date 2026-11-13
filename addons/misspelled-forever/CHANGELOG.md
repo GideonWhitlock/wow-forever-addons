@@ -2,6 +2,13 @@
 
 This file records public release versions and verified changes only.
 
+## 1.1.7 — 2026-11-13
+
+- Removed a duplicate call to Blizzard’s protected chat activation function that could interfere with chat in combat.
+- Deferred attaching hooks to new chat edit boxes during combat.
+- Verified typing and right-click spelling corrections in open-world combat. Battleground chat remains unverified.
+- [CurseForge release](https://www.curseforge.com/wow/addons/misspelled-forever/files/9601132).
+
 ## 1.1.6 — 2026-11-11
 
 - Restored per-word light-blue misspelling highlighting through a non-mutating visual overlay.
