@@ -2,6 +2,78 @@ local _, Q = ...
 
 local elapsed = 0
 
+local function getResultID(row)
+    if not row then return nil end
+    local data = row.elementData or row.data
+    if type(data) ~= "table" and type(row.GetElementData) == "function" then
+        local ok, value = pcall(row.GetElementData, row)
+        if ok then data = value end
+    end
+    local resultID = row.resultID or row.searchResultID or (type(data) == "table" and data.resultID)
+    return type(resultID) == "number" and resultID or nil
+end
+
+local function configureInviteButton(row)
+    local resultID = getResultID(row)
+    if not resultID then
+        if row.LFGMessengerForeverInvite then row.LFGMessengerForeverInvite:Hide() end
+        return
+    end
+
+    local player = Q.GetResultPlayer(resultID)
+    local inviteText, inviteAction
+    if player and type(LFGBrowseUtil_GetInviteActionForResult) == "function" then
+        local ok, text, action = pcall(LFGBrowseUtil_GetInviteActionForResult, resultID)
+        if ok then inviteText, inviteAction = text, action end
+    end
+
+    local button = row.LFGMessengerForeverInvite
+    if not player or type(inviteAction) ~= "function" then
+        if button then button:Hide() end
+        return
+    end
+
+    if not button then
+        button = CreateFrame("Button", nil, row, "UIPanelButtonTemplate")
+        row.LFGMessengerForeverInvite = button
+        button:SetSize(66, 20)
+        button:SetPoint("RIGHT", row, "RIGHT", -8, 0)
+        button:SetFrameLevel(row:GetFrameLevel() + 5)
+        button:SetScript("OnClick", function(self)
+            local id = self.resultID
+            if not id then return end
+            local _, action = LFGBrowseUtil_GetInviteActionForResult(id)
+            if type(action) == "function" then Q.InviteResult(id, action) end
+        end)
+        button:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_TOP")
+            GameTooltip:SetText(self.inviteText or "Invite", 1, 0.82, 0)
+            GameTooltip:AddLine("Invite this player without selecting the listing first.", 1, 1, 1, true)
+            GameTooltip:Show()
+        end)
+        button:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    end
+
+    button.resultID = resultID
+    button.inviteText = inviteText or (GROUP_INVITE or "Group Invite")
+    button:SetText(INVITE or "Invite")
+    button:Show()
+end
+
+function Q.UpdateResultInviteButtons()
+    local frame = _G.LFGBrowseFrame
+    if not frame then return end
+    local scrollBox = frame.ScrollBox or frame.ScrollFrame
+    if scrollBox and type(scrollBox.ForEachFrame) == "function" then
+        scrollBox:ForEachFrame(configureInviteButton)
+        return
+    end
+    local buttons = (scrollBox and scrollBox.buttons) or frame.buttons
+    if type(buttons) == "table" then
+        for _, row in ipairs(buttons) do configureInviteButton(row) end
+    end
+end
+
 function Q.UpdateLFGButton()
     local button = Q.lfgButton
     if not button then return end
@@ -55,13 +127,13 @@ function Q.AttachToGroupFinder()
         "WowStyle1DropdownTemplate")
     Q.roleFilter = roleFilter
     -- Span the same width as Category plus Activity so this reads as a
-    -- deliberate results-filter row rather than a misplaced third dropdown.
+    -- deliberate results-order row rather than a misplaced third dropdown.
     roleFilter:SetSize(349, 24)
     roleFilter:SetPoint("TOPLEFT", LFGBrowseFrame, "TOPLEFT", 70, -76)
-    local labels = { ALL = "All roles", TANK = "Tank", HEALER = "Healer", DAMAGER = "DPS" }
+    local orderLabels = { ALL = "All roles", TANK = "Tanks first", HEALER = "Healers first", DAMAGER = "DPS first" }
     local function setupRoleFilter()
         local selected = (Q.db and Q.db.roleFilter) or "ALL"
-        roleFilter:SetDefaultText("Role filter: " .. (labels[selected] or labels.ALL))
+        roleFilter:SetDefaultText("Role order: " .. (orderLabels[selected] or orderLabels.ALL))
         roleFilter:SetupMenu(function(_, root)
             local function isSelected(value) return Q.db.roleFilter == value end
             local function setSelected(value)
@@ -69,10 +141,10 @@ function Q.AttachToGroupFinder()
                 setupRoleFilter()
                 LFGBrowseFrame:UpdateResultList()
             end
-            root:CreateRadio(labels.ALL, isSelected, setSelected, "ALL")
-            root:CreateRadio(labels.TANK, isSelected, setSelected, "TANK")
-            root:CreateRadio(labels.HEALER, isSelected, setSelected, "HEALER")
-            root:CreateRadio(labels.DAMAGER, isSelected, setSelected, "DAMAGER")
+            root:CreateRadio(orderLabels.ALL, isSelected, setSelected, "ALL")
+            root:CreateRadio(orderLabels.TANK, isSelected, setSelected, "TANK")
+            root:CreateRadio(orderLabels.HEALER, isSelected, setSelected, "HEALER")
+            root:CreateRadio(orderLabels.DAMAGER, isSelected, setSelected, "DAMAGER")
         end)
     end
     setupRoleFilter()
@@ -102,11 +174,20 @@ function Q.AttachToGroupFinder()
     end
     if type(hooksecurefunc) == "function" and type(LFGBrowseFrame.UpdateResultList) == "function" then
         hooksecurefunc(LFGBrowseFrame, "UpdateResultList", function(frame)
-            local filtered = Q.FilterResultsByRole(frame.results)
-            if filtered ~= frame.results then
-                frame.results = filtered
-                frame.totalResults = #filtered
+            local ordered = Q.PrioritizeResultsByRole(frame.results)
+            if ordered ~= frame.results then
+                frame.results = ordered
+                frame.totalResults = #ordered
                 frame:UpdateResults()
+            end
+        end)
+    end
+    if type(hooksecurefunc) == "function" and type(LFGBrowseFrame.UpdateResults) == "function" then
+        hooksecurefunc(LFGBrowseFrame, "UpdateResults", function()
+            if C_Timer and type(C_Timer.After) == "function" then
+                C_Timer.After(0, Q.UpdateResultInviteButtons)
+            else
+                Q.UpdateResultInviteButtons()
             end
         end)
     end
@@ -150,6 +231,7 @@ function Q.AttachToGroupFinder()
             end)
         end)
     end
+    Q.UpdateResultInviteButtons()
     Q.UpdateLFGButton()
 end
 

@@ -2,7 +2,7 @@ local addonName, Q = ...
 
 Q.ADDON_NAME = addonName
 Q.TITLE = "Looking for Group: Forever"
-Q.VERSION = "1.0.7"
+Q.VERSION = "1.0.8"
 Q.BLIZZARD_ADDON = "Blizzard_GroupFinder_VanillaStyle"
 Q.ICON = "Interface\\Icons\\INV_Letter_15"
 Q.DEFAULTS = {
@@ -342,15 +342,21 @@ function Q.ResultMatchesRole(resultID, role)
     return false
 end
 
-function Q.FilterResultsByRole(results, role)
+function Q.PrioritizeResultsByRole(results, role)
     role = role or (Q.db and Q.db.roleFilter) or "ALL"
     if type(results) ~= "table" or role == "ALL" then return results or {} end
-    local filtered = {}
+    local preferred, remaining = {}, {}
     for _, resultID in ipairs(results) do
-        if Q.ResultMatchesRole(resultID, role) then filtered[#filtered + 1] = resultID end
+        local destination = Q.ResultMatchesRole(resultID, role) and preferred or remaining
+        destination[#destination + 1] = resultID
     end
-    return filtered
+    for _, resultID in ipairs(remaining) do preferred[#preferred + 1] = resultID end
+    return preferred
 end
+
+-- Kept for integrations which used the earlier helper name. The control now
+-- sorts matching roles first instead of removing the other results.
+Q.FilterResultsByRole = Q.PrioritizeResultsByRole
 
 function Q.ChatLocked()
     if C_ChatInfo and type(C_ChatInfo.InChatMessagingLockdown) == "function" then

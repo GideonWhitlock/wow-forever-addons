@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.8 — 2026-11-14
+
+- Added an **Invite** button directly to each eligible individual-player result,
+  so the player no longer has to select the listing first.
+- Changed the role control from a filter to a priority order. Tanks, healers or
+  DPS can be placed first while every other result remains visible underneath.
+
 ## 1.0.7 — 2026-11-11
 
 - The default Quick Whisper now includes the player's current level below the

@@ -2,7 +2,7 @@
 ## Title: Looking for Group: Forever
 ## Notes: Adds a one-click class-and-role whisper to the WoW: Forever Group Finder.
 ## Author: Gideon Whitlock
-## Version: 1.0.7
+## Version: 1.0.8
 ## SavedVariables: LFGMessengerForeverDB, LFGQuickWhisperForeverDB
 ## IconTexture: Interface\Icons\INV_Letter_15
 ## X-Category: Group Finder

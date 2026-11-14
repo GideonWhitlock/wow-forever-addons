@@ -12,6 +12,8 @@ level it stays shorter, for example: `Warrior DPS here`.
 ## Features
 
 - One-click whisper for the currently selected Group Finder listing.
+- One-click **Invite** button on each eligible individual-player result; no
+  selection is needed first.
 - Uses the role or roles selected in the Group Finder: Tank, Healer and/or DPS.
 - Includes the player's localized class name.
 - Automatically includes the player's current level in the default message
@@ -23,8 +25,8 @@ level it stays shorter, for example: `Warrior DPS here`.
   leader an approval prompt, while party leaders invite the player directly.
 - Direct invites and invite suggestions automatically tell the player which
   activity and selected role the invitation is for.
-- A role filter above the results can show only listings containing a Tank,
-  Healer or DPS. Multi-role players match each role they selected.
+- A role-order control can put Tanks, Healers or DPS first while keeping every
+  other result visible. Multi-role players match each role they selected.
 - If chat is restricted, prepares the message in the whisper box instead of losing it.
 - Draggable minimap button: left-click opens or closes Looking For Group;
   right-click opens settings.
