@@ -2,6 +2,12 @@
 
 This file records public release versions and verified changes only.
 
+## 1.1.9 — 2026-11-15
+
+- Added an accessible misspelling-highlight colour setting.
+- Accepts a six-digit hex colour in the add-on settings, with an immediate preview and reset button.
+- Updated the safe visual overlay immediately when the saved colour changes.
+
 ## 1.1.8 — 2026-11-13
 
 - Clears stale spelling highlights when you backspace, replace text, or edit a draft.

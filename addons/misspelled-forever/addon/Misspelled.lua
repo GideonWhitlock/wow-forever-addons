@@ -124,12 +124,55 @@ local string_upper = string.upper
 local tostring = tostring
 local pairs = pairs
 local ipairs = ipairs
+local math_floor = math.floor
+
+local DEFAULT_HIGHLIGHT_R = 0.49
+local DEFAULT_HIGHLIGHT_G = 0.78
+local DEFAULT_HIGHLIGHT_B = 0.98
 
 --local SPELLED_WRONG_HIGHLIGHT =   "|cffff91c8" --The color misspelled words will get changed into.
 --local SPELLED_WRONG_HIGHLIGHT =   "|cffdea1d3" --The color misspelled words will get changed into.
 --local SPELLED_WRONG_HIGHLIGHT =   "|cfffefe80" --The color misspelled words will get changed into.
 local SPELLED_WRONG_HIGHLIGHT_HEX_COLOR_CODE =   "ff7dc6fb" --The color misspelled words will get changed into. (Medium-Cyan-ish)
 local SPELLED_WRONG_HIGHLIGHT =   "|c"..SPELLED_WRONG_HIGHLIGHT_HEX_COLOR_CODE --The color misspelled words will get changed into. (Medium-Cyan-ish)
+
+local function ClampColor(value, fallback)
+	value = tonumber(value)
+	if not value then
+		return fallback
+	end
+	if value < 0 then
+		return 0
+	elseif value > 1 then
+		return 1
+	end
+	return value
+end
+
+local function GetHighlightColor()
+	local settings = MisspelledForeverDB or {}
+	return ClampColor(settings.HighlightColorR, DEFAULT_HIGHLIGHT_R),
+		ClampColor(settings.HighlightColorG, DEFAULT_HIGHLIGHT_G),
+		ClampColor(settings.HighlightColorB, DEFAULT_HIGHLIGHT_B)
+end
+
+local function GetHighlightHex()
+	local r, g, b = GetHighlightColor()
+	return string_format("#%02X%02X%02X", math_floor(r * 255 + 0.5), math_floor(g * 255 + 0.5), math_floor(b * 255 + 0.5))
+end
+
+local function ParseHighlightHex(value)
+	value = string_upper(string_gsub(tostring(value or ""), "[%s#]", ""))
+	if string_len(value) == 8 then
+		value = string_sub(value, 3, 8)
+	end
+	if not string_match(value, "^%x%x%x%x%x%x$") then
+		return nil
+	end
+	return tonumber(string_sub(value, 1, 2), 16) / 255,
+		tonumber(string_sub(value, 3, 4), 16) / 255,
+		tonumber(string_sub(value, 5, 6), 16) / 255
+end
 
 local WordCache = {}           --Stores a cache of every word checked, along with the suggestions for words misspelled
 local WordCacheCount = 0       --Counter used to track when we should clean the WordCache table to save memory
@@ -188,6 +231,10 @@ function Misspelled:OnInitialize()
 	if MisspelledForeverDB.MinimapAngle == nil then
 		MisspelledForeverDB.MinimapAngle = 220
 	end
+
+	MisspelledForeverDB.HighlightColorR = ClampColor(MisspelledForeverDB.HighlightColorR, DEFAULT_HIGHLIGHT_R)
+	MisspelledForeverDB.HighlightColorG = ClampColor(MisspelledForeverDB.HighlightColorG, DEFAULT_HIGHLIGHT_G)
+	MisspelledForeverDB.HighlightColorB = ClampColor(MisspelledForeverDB.HighlightColorB, DEFAULT_HIGHLIGHT_B)
 
 	local dict = "Auto"
 	if  MisspelledForeverDB.AutoSelectDictionary == true then
@@ -395,11 +442,28 @@ function Misspelled:UpdateVisualHighlights(editbox)
 				highlight:ClearAllPoints()
 				highlight:SetPoint("LEFT", editbox, "LEFT", x, 0)
 				highlight:SetText(word)
-				highlight:SetTextColor(0.49, 0.78, 0.98, 1)
+				local r, g, b = GetHighlightColor()
+				highlight:SetTextColor(r, g, b, 1)
 				highlight:Show()
 			end
 		end
 	end
+end
+
+function Misspelled:RefreshVisualHighlights()
+	for editboxName in pairs(WordLocations) do
+		local editbox = _G[editboxName]
+		if editbox and editbox.GetText then
+			self:UpdateVisualHighlights(editbox)
+		end
+	end
+end
+
+function Misspelled:SetHighlightColor(r, g, b)
+	MisspelledForeverDB.HighlightColorR = ClampColor(r, DEFAULT_HIGHLIGHT_R)
+	MisspelledForeverDB.HighlightColorG = ClampColor(g, DEFAULT_HIGHLIGHT_G)
+	MisspelledForeverDB.HighlightColorB = ClampColor(b, DEFAULT_HIGHLIGHT_B)
+	self:RefreshVisualHighlights()
 end
 
 function Misspelled:GUILD_ROSTER_UPDATE()
@@ -1537,6 +1601,60 @@ function Misspelled:CreateInterfaceOptions()
 	local cfgFrameHeader = cfgFrame:CreateFontString("OVERLAY", nil, "GameFontNormalLarge")
 	cfgFrameHeader:SetPoint("TOPLEFT", 15, -15)
 	cfgFrameHeader:SetText(DISPLAY_NAME .. " " .. self.Version)
+
+	local cfgHighlightLabel = cfgFrame:CreateFontString("OVERLAY", nil, "GameFontNormal")
+	cfgHighlightLabel:SetPoint("TOPLEFT", 280, -40)
+	cfgHighlightLabel:SetText("Misspelling highlight colour")
+
+	local cfgHighlightSwatch = cfgFrame:CreateTexture(nil, "ARTWORK")
+	cfgHighlightSwatch:SetPoint("TOPLEFT", 280, -65)
+	cfgHighlightSwatch:SetSize(22, 22)
+
+	local cfgHighlightHex = CreateFrame("EditBox", nil, cfgFrame, "InputBoxTemplate")
+	cfgHighlightHex:SetPoint("LEFT", cfgHighlightSwatch, "RIGHT", 10, 0)
+	cfgHighlightHex:SetSize(90, 24)
+	cfgHighlightHex:SetAutoFocus(false)
+	cfgHighlightHex:SetMaxLetters(9)
+
+	local function RefreshHighlightControls()
+		local r, g, b = GetHighlightColor()
+		cfgHighlightSwatch:SetColorTexture(r, g, b, 1)
+		cfgHighlightHex:SetText(GetHighlightHex())
+	end
+
+	local function ApplyHighlightHex()
+		local r, g, b = ParseHighlightHex(cfgHighlightHex:GetText())
+		if r then
+			Misspelled:SetHighlightColor(r, g, b)
+		else
+			UIErrorsFrame:AddMessage("Enter a six-digit colour, for example #7DC6FB.", 1, 0.2, 0.2)
+		end
+		RefreshHighlightControls()
+		cfgHighlightHex:ClearFocus()
+	end
+
+	cfgHighlightHex:SetScript("OnEnterPressed", ApplyHighlightHex)
+	cfgHighlightHex:SetScript("OnEscapePressed", function(self)
+		RefreshHighlightControls()
+		self:ClearFocus()
+	end)
+
+	local cfgApplyHighlight = CreateFrame("Button", nil, cfgFrame, "UIPanelButtonTemplate")
+	cfgApplyHighlight:SetPoint("LEFT", cfgHighlightHex, "RIGHT", 8, 0)
+	cfgApplyHighlight:SetSize(58, 22)
+	cfgApplyHighlight:SetText("Apply")
+	cfgApplyHighlight:SetScript("OnClick", ApplyHighlightHex)
+
+	local cfgResetHighlight = CreateFrame("Button", nil, cfgFrame, "UIPanelButtonTemplate")
+	cfgResetHighlight:SetPoint("TOPLEFT", 280, -96)
+	cfgResetHighlight:SetSize(160, 22)
+	cfgResetHighlight:SetText("Reset highlight colour")
+	cfgResetHighlight:SetScript("OnClick", function()
+		Misspelled:SetHighlightColor(DEFAULT_HIGHLIGHT_R, DEFAULT_HIGHLIGHT_G, DEFAULT_HIGHLIGHT_B)
+		RefreshHighlightControls()
+	end)
+
+	RefreshHighlightControls()
 
 	local cfgFrameReloadTip = cfgFrame:CreateFontString("OVERLAY", nil, "GameFontNormal")
 	cfgFrameReloadTip:SetPoint("TOPLEFT", 20, -310)

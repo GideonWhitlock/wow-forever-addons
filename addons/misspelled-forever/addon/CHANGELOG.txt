@@ -1,3 +1,9 @@
+Misspelled: Forever 1.1.9
+
+- Added a misspelling-highlight colour setting for accessibility.
+- Enter a six-digit hex colour in settings, press Apply, and see the visible overlay update immediately.
+- Added a colour preview and a one-click reset to the default light blue.
+
 Misspelled: Forever 1.1.8
 
 - Refreshes spelling highlights when you backspace, replace text or edit a draft.

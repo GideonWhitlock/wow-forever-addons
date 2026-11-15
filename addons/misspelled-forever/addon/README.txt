@@ -1,6 +1,6 @@
 MISSPELLED: FOREVER
 
-Version 1.1.8
+Version 1.1.9
 
 Misspelled: Forever checks the words you type into World of Warcraft chat.
 When completed words are not in the selected dictionary, those words are painted
@@ -15,6 +15,7 @@ FEATURES
 - Keeps protected chat activation untouched during combat and battleground transitions.
 - Right-click correction suggestions.
 - Personal dictionary with add and remove controls.
+- Accessible misspelling-highlight colour setting with hex input, preview and reset.
 - Automatic dictionary choice from the game locale.
 - English (UK), English (US), French, German, Italian, Russian and Spanish.
 - Friend and guild-member names are accepted automatically when available.

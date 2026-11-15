@@ -1,6 +1,6 @@
 MISSPELLED: FOREVER - LIVE TEST CHECKLIST
 
-Version 1.1.8 keeps the Enter pre-hook removed and no longer calls Blizzard's
+Version 1.1.9 keeps the Enter pre-hook removed and no longer calls Blizzard's
 protected chat-activation function from its secure post-hook. Enter `/target` followed by
 the exact name of a nearby enemy and confirm the target changes without a blocked-action
 dialog. This was owner-tested successfully on 11 November 2026.
@@ -31,6 +31,9 @@ focus fails to return, compare the same steps with Misspelled disabled.
 9. Paste a message containing an item link and ordinary words. Correct a misspelling
    without damaging the item link, then send it.
 10. Test party, guild and whisper chat edit boxes and confirm checking works in each.
-11. If WIM is installed, repeat correction and sending from a WIM message box.
+11. Open settings, change the highlight colour to #FFCC00 and press Apply. Confirm
+    the preview and any visible misspelling change immediately. Enter invalid text
+    and confirm it is rejected, then use Reset highlight colour.
+12. If WIM is installed, repeat correction and sending from a WIM message box.
 
 Live game interaction is intentionally still required for the checks above.
