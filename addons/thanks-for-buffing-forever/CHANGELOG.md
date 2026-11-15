@@ -2,6 +2,13 @@
 
 All notable changes to Thanks for Buffing: Forever are recorded here.
 
+## 1.0.19 — 2026-11-15
+
+- Adds an accessible phrase editor under Options → AddOns → Thanks for Buffing: Forever.
+- Lets players add, edit, remove and reorder phrases as one phrase per line, without remembering slash commands.
+- Adds Save phrases and Restore defaults buttons with clear validation feedback.
+- Adds `/tftbf options` as a shortcut to the new settings page.
+
 ## 1.0.18 — 2026-11-12
 
 - Adds a persistent, editable thank-you phrase list.

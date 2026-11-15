@@ -5,7 +5,7 @@ Thanks for Buffing: Forever notices when another player gives you a helpful buff
 ## Features
 
 - 15 short, natural thank-you messages selected at random
-- A persistent editable phrase list: view, add, remove or restore phrases in game
+- A persistent Options → AddOns phrase editor: add, edit, remove, reorder or restore phrases without remembering slash commands
 - A genuinely random 3–10 second delay
 - Whispers only — never party, raid, say, or public chat
 - Coalesces several buffs from the same player into one thank-you
@@ -30,6 +30,7 @@ Thanks for Buffing: Forever notices when another player gives you a helpful buff
 - `/tftbf phrases add <text>` — add a new phrase
 - `/tftbf phrases remove <number>` — remove a phrase by its displayed number
 - `/tftbf phrases reset` — restore the 15 default phrases
+- `/tftbf options` — open the Options → AddOns phrase editor
 
 ## Installation
 

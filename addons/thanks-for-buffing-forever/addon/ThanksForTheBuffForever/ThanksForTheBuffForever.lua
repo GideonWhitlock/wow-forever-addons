@@ -58,6 +58,8 @@ local worldEntryBaselineToken
 local playerGUID
 local debugEnabled = false
 local TrySendThanks
+local optionsPanel
+local optionsCategoryID
 
 local function Print(message)
     DEFAULT_CHAT_FRAME:AddMessage("|cff7dd3fcThanks for Buffing: Forever|r " .. message)
@@ -150,6 +152,163 @@ local function ResetThankYouMessages()
     ThanksForTheBuffForeverDB.messages = CopyDefaultMessages()
     wipe(lastMessageIndexByCaster)
     Print("restored the 15 default thank-you phrases.")
+end
+
+local function SaveThankYouMessagesFromText(text)
+    text = string.gsub(text or "", "\r\n", "\n")
+    text = string.gsub(text, "\r", "\n")
+
+    local messages = {}
+    local seen = {}
+    for line in string.gmatch(text .. "\n", "(.-)\n") do
+        local message = Trim(line)
+        if message ~= "" then
+            if #message > MAX_THANK_YOU_MESSAGE_LENGTH then
+                return false, "Each phrase must be " .. MAX_THANK_YOU_MESSAGE_LENGTH .. " characters or fewer."
+            end
+
+            local lowered = string.lower(message)
+            if seen[lowered] then
+                return false, "Remove the duplicate phrase: " .. message
+            end
+
+            seen[lowered] = true
+            table.insert(messages, message)
+        end
+    end
+
+    if #messages == 0 then
+        return false, "Keep at least one thank-you phrase."
+    end
+
+    ThanksForTheBuffForeverDB.messages = messages
+    wipe(lastMessageIndexByCaster)
+    return true, "Saved " .. #messages .. " thank-you phrase" .. (#messages == 1 and "." or "s.")
+end
+
+local function MessagesToText()
+    return table.concat(GetThankYouMessages(), "\n")
+end
+
+local function RegisterOptionsPanel()
+    if optionsPanel then
+        return
+    end
+    if not ((Settings and Settings.RegisterCanvasLayoutCategory and Settings.RegisterAddOnCategory)
+        or InterfaceOptions_AddCategory)
+    then
+        return
+    end
+
+    local panel = CreateFrame("Frame", "ThanksForTheBuffForeverOptionsPanel")
+    panel.name = "Thanks for Buffing: Forever"
+    optionsPanel = panel
+
+    local title = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
+    title:SetPoint("TOPLEFT", 16, -16)
+    title:SetText("Thanks for Buffing: Forever")
+
+    local description = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+    description:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -10)
+    description:SetPoint("RIGHT", panel, "RIGHT", -24, 0)
+    description:SetJustifyH("LEFT")
+    description:SetText("Choose the thank-you phrases the add-on can whisper. Put one phrase on each line, then press Save phrases.")
+
+    local enabled = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
+    enabled:SetPoint("TOPLEFT", description, "BOTTOMLEFT", -4, -12)
+    enabled.Text:SetText("Enable automatic thank-you whispers")
+    enabled:SetScript("OnClick", function(self)
+        ThanksForTheBuffForeverDB.enabled = self:GetChecked() and true or false
+        if not ThanksForTheBuffForeverDB.enabled then
+            wipe(pendingByCaster)
+            wipe(pendingAnonymousAuraBySpellID)
+        end
+    end)
+
+    local editorLabel = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    editorLabel:SetPoint("TOPLEFT", enabled, "BOTTOMLEFT", 4, -14)
+    editorLabel:SetText("Thank-you phrases")
+
+    local editorBackground = panel:CreateTexture(nil, "BACKGROUND")
+    editorBackground:SetColorTexture(0.04, 0.04, 0.04, 0.85)
+    editorBackground:SetPoint("TOPLEFT", editorLabel, "BOTTOMLEFT", 0, -6)
+    editorBackground:SetSize(570, 270)
+
+    local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
+    scrollFrame:SetPoint("TOPLEFT", editorBackground, "TOPLEFT", 8, -8)
+    scrollFrame:SetPoint("BOTTOMRIGHT", editorBackground, "BOTTOMRIGHT", -28, 8)
+
+    local editor = CreateFrame("EditBox", nil, scrollFrame)
+    editor:SetMultiLine(true)
+    editor:SetAutoFocus(false)
+    editor:SetFontObject("ChatFontNormal")
+    editor:SetWidth(525)
+    editor:SetTextInsets(4, 4, 4, 4)
+    editor:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
+    editor:SetScript("OnTextChanged", function(self)
+        self:SetHeight(math.max(252, self:GetStringHeight() + 16))
+    end)
+    scrollFrame:SetScrollChild(editor)
+
+    local status = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+    status:SetPoint("TOPLEFT", editorBackground, "BOTTOMLEFT", 0, -10)
+    status:SetPoint("RIGHT", panel, "RIGHT", -24, 0)
+    status:SetJustifyH("LEFT")
+
+    local saveButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    saveButton:SetSize(140, 24)
+    saveButton:SetPoint("TOPLEFT", status, "BOTTOMLEFT", 0, -10)
+    saveButton:SetText("Save phrases")
+    saveButton:SetScript("OnClick", function()
+        local ok, message = SaveThankYouMessagesFromText(editor:GetText())
+        if ok then
+            status:SetTextColor(0.3, 1, 0.3)
+            editor:SetText(MessagesToText())
+        else
+            status:SetTextColor(1, 0.3, 0.3)
+        end
+        status:SetText(message)
+    end)
+
+    local resetButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    resetButton:SetSize(140, 24)
+    resetButton:SetPoint("LEFT", saveButton, "RIGHT", 10, 0)
+    resetButton:SetText("Restore defaults")
+    resetButton:SetScript("OnClick", function()
+        ResetThankYouMessages()
+        editor:SetText(MessagesToText())
+        status:SetTextColor(0.3, 1, 0.3)
+        status:SetText("Restored the 15 default phrases.")
+    end)
+
+    panel:SetScript("OnShow", function()
+        enabled:SetChecked(IsEnabled())
+        editor:SetText(MessagesToText())
+        editor:SetCursorPosition(0)
+        status:SetTextColor(0.8, 0.8, 0.8)
+        status:SetText("Blank lines are ignored. Duplicate phrases are not saved.")
+    end)
+
+    if Settings and Settings.RegisterCanvasLayoutCategory and Settings.RegisterAddOnCategory then
+        local category = Settings.RegisterCanvasLayoutCategory(panel, panel.name)
+        Settings.RegisterAddOnCategory(category)
+        optionsCategoryID = category:GetID()
+    else
+        InterfaceOptions_AddCategory(panel)
+        optionsCategoryID = panel.name
+    end
+end
+
+local function OpenOptionsPanel()
+    RegisterOptionsPanel()
+    if Settings and Settings.OpenToCategory and optionsCategoryID then
+        Settings.OpenToCategory(optionsCategoryID)
+    elseif InterfaceOptionsFrame_OpenToCategory and optionsPanel then
+        InterfaceOptionsFrame_OpenToCategory(optionsPanel)
+        InterfaceOptionsFrame_OpenToCategory(optionsPanel)
+    else
+        Print("Open Options > AddOns > Thanks for Buffing: Forever to edit phrases.")
+    end
 end
 
 local function Debug(message)
@@ -1151,6 +1310,7 @@ frame:SetScript("OnEvent", function(_, event, ...)
         -- flag so upgrades from a test build cannot spam ordinary gameplay.
         ThanksForTheBuffForeverDB.debug = nil
         debugEnabled = false
+        RegisterOptionsPanel()
         return
     end
 
@@ -1252,10 +1412,12 @@ SlashCmdList.THANKSFORTHEBUFFFOREVER = function(input)
         else
             Print("Phrase commands: /tftbf phrases, add <text>, remove <number>, reset")
         end
+    elseif command == "options" or command == "settings" then
+        OpenOptionsPanel()
     elseif command == "debug" then
         debugEnabled = not debugEnabled
         Print(debugEnabled and "debug messages are now on for this session." or "debug messages are now off.")
     else
-        Print("Commands: /tftbf on, off, status, debug, phrases")
+        Print("Commands: /tftbf on, off, status, debug, phrases, options")
     end
 end

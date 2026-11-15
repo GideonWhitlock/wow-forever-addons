@@ -7,11 +7,11 @@ When another player gives you a helpful buff, **Thanks For The Buff: Forever** w
 ## What it does
 
 - Chooses from 15 natural replies such as “thanks!”, “cheers!”, and “much appreciated!”
-- Lets you view and edit the saved phrase list with `/tftbf phrases`
+- Adds a phrase editor under **Options → AddOns → Thanks for Buffing: Forever**, with one phrase per line plus Save and Restore defaults buttons
 - Waits a random 3–10 seconds so replies do not feel instant or robotic
 - Uses whisper only — never party, raid, say, or public chat
 - Groups several buffs from the same player into one reply
-- Uses a 60-second per-player cooldown to prevent spam
+- Uses a 10-minute per-player cooldown to prevent spam
 - Works immediately with no setup
 
 ## Commands
@@ -23,6 +23,7 @@ When another player gives you a helpful buff, **Thanks For The Buff: Forever** w
 - `/tftbf phrases add <text>` — add a phrase
 - `/tftbf phrases remove <number>` — remove a phrase
 - `/tftbf phrases reset` — restore the defaults
+- `/tftbf options` — open the phrase editor
 
 ## Compatibility
 
