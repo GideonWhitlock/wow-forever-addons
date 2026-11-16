@@ -1,5 +1,11 @@
 # Graphics Unlocked: Forever changelog
 
+## 1.0.4
+
+- Verifies the render scale immediately after applying it and reports the value WoW actually accepted.
+- No longer reports success or saves a requested supersampling value when the current Forever client silently clamps it.
+- Explains that the current client-side render-scale lock cannot be overridden by an add-on.
+
 ## 1.0.3
 
 - Raises the 3D render-scale control from 100% to a hard maximum of 200%.

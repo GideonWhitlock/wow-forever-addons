@@ -1,6 +1,6 @@
 MISSPELLED: FOREVER - LIVE TEST CHECKLIST
 
-Version 1.1.10 keeps the Enter pre-hook removed and no longer calls Blizzard's
+Version 1.1.11 keeps the Enter pre-hook removed and no longer calls Blizzard's
 protected chat-activation function from its secure post-hook. Enter `/target` followed by
 the exact name of a nearby enemy and confirm the target changes without a blocked-action
 dialog. This was owner-tested successfully on 11 November 2026.

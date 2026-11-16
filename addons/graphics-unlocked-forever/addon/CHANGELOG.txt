@@ -1,5 +1,10 @@
 Graphics Unlocked: Forever changelog
 
+1.0.4
+- Verifies the render scale after applying it and reports the value WoW actually accepted.
+- Does not report success or save a requested value when the current client silently clamps it.
+- Explains that a client-side render-scale lock cannot be overridden by an add-on.
+
 1.0.3
 - Raised the 3D render-scale control from 100% to a hard maximum of 200%.
 - Added a confirmation warning before the slider crosses above 100%.

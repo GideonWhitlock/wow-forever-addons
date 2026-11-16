@@ -351,6 +351,13 @@ function Misspelled:WireUpEditBox(editbox)
 	Misspelled:SecureHookScript(editbox, "OnMouseUp", Misspelled.EditBox_OnMouseUp)
 end
 
+-- AceHook's script callback receives the edit box first. Keep this adapter
+-- separate from the colon-style implementation below so its self argument is
+-- the add-on, not the edit box.
+function Misspelled.EditBox_OnMouseUp(editbox, button)
+	Misspelled:OnMouseUp(editbox, button)
+end
+
 local function IsSlashCommand(text)
 	return type(text) == "string" and string_sub(text, 1, 1) == "/"
 end

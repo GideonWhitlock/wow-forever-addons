@@ -1,7 +1,7 @@
 local _, EGF = ...
 
 EGF.TITLE = "Graphics Unlocked: Forever"
-EGF.VERSION = "1.0.3"
+EGF.VERSION = "1.0.4"
 EGF.INTERFACE = 16001
 EGF.settings = {}
 EGF.settingsByID = {}
@@ -197,6 +197,20 @@ function EGF.SetValue(definition, value, remember)
 
     local ok, reason = apiSetCVar(definition.cvar, raw)
     if not ok then return false, "The game rejected this change" .. (reason and ": " .. tostring(reason) or ".") end
+
+    -- Some Forever client builds silently clamp RenderScale even though SetCVar
+    -- reports success. Read it back before promising that the requested value
+    -- was applied or remembering a value the client did not accept.
+    if definition.id == "render-scale" then
+        local accepted = tonumber(EGF.GetValue(definition))
+        if not accepted or math.abs(accepted - value) > 0.5 then
+            local actual = accepted and string.format("%.0f%%", accepted) or "an unknown value"
+            return false, string.format(
+                "WoW rejected %.0f%% and kept %s. This WoW Forever client currently limits render scale; no change was saved by the add-on.",
+                value, actual)
+        end
+    end
+
     if EGF.db and remember ~= false then EGF.db.desiredValues[definition.id] = raw end
     if definition.onApply then pcall(definition.onApply, value) end
     return true, definition.reload and "Changed. Reload the UI to finish applying it." or "Changed."

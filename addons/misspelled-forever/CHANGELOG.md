@@ -2,6 +2,11 @@
 
 This file records public release versions and verified changes only.
 
+## 1.1.11 — 2026-11-16
+
+- Restored the missing chat edit-box mouse adapter so right-click correction menus open again.
+- Preserved the 1.1.10 final-word and trailing-space correction behaviour.
+
 ## 1.1.10 — 2026-11-16
 
 - Fixed right-click corrections for the final word in a draft before punctuation is typed.

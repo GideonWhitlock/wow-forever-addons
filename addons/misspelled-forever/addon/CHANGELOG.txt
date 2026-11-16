@@ -1,3 +1,8 @@
+Misspelled: Forever 1.1.11
+
+- Restored the missing chat edit-box mouse adapter so right-click correction menus open again.
+- Preserved the 1.1.10 final-word and trailing-space correction behaviour.
+
 Misspelled: Forever 1.1.10
 
 - Fixed right-click corrections not opening for the final word in a chat draft.
