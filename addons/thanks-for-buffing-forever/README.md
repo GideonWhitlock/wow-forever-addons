@@ -8,6 +8,7 @@ It waits a random 3–10 seconds, chooses from a player-editable list of 15 defa
 
 - Sends thank-you messages by whisper only
 - Adds a normal Options → AddOns phrase editor for adding, editing, removing, reordering and resetting saved phrases
+- Adds a draggable minimap shortcut for opening settings or enabling and disabling automatic thanks
 - Uses 15 short, natural replies
 - Waits a random 3–10 seconds before replying
 - Combines several buffs from one player into one response
@@ -27,6 +28,7 @@ It waits a random 3–10 seconds, chooses from a player-editable list of 15 defa
 - `/tftbf phrases remove <number>` — remove a phrase by its displayed number
 - `/tftbf phrases reset` — restore the 15 defaults
 - `/tftbf options` — open the Options → AddOns phrase editor
+- `/tftbf minimap show|hide|reset` — control or restore the minimap shortcut
 
 ## Installation
 
@@ -36,7 +38,7 @@ It waits a random 3–10 seconds, chooses from a player-editable list of 15 defa
 
 ## Supported clients
 
-The prepared version 1.0.19 includes TOCs for:
+The prepared version 1.0.20 includes TOCs for:
 
 | Client | Interface |
 | --- | ---: |
@@ -46,9 +48,9 @@ The prepared version 1.0.19 includes TOCs for:
 | Burning Crusade Classic | 20506 |
 | Classic Era | 11509 |
 
-Only the Forever path is currently claimed for release targeting. Version 1.0.19 retains the exact caster/spell safeguards from 1.0.17 and adds an Options → AddOns editor for the persistent player-editable phrase list. Live testing previously confirmed that Forever blocks combat-log registration, so that API remains disabled on this branch. The other manifests remain source-visible but are not live-verified release targets.
+Only the Forever path is currently claimed for release targeting. Version 1.0.20 retains the exact caster/spell safeguards from 1.0.17 and the Options → AddOns editor from 1.0.19, while adding a Forever-safe text-height fallback and a draggable minimap shortcut. Left-click opens the phrase editor, right-click enables or disables automatic thanks, and dragging moves the shortcut around the minimap. Live testing previously confirmed that Forever blocks combat-log registration, so that API remains disabled on this branch. The other manifests remain source-visible but are not live-verified release targets.
 
-The 1.0.19 source passes the automated behaviour suites, including phrase editing, the observed multi-word recipient failures, protected aura fields, the Dax grouped-buff replay and the unsafe unrelated-recipient fallback.
+The 1.0.20 source passes the automated behaviour suites, including the Forever editor fallback, phrase editing, the observed multi-word recipient failures, protected aura fields, the Dax grouped-buff replay and the unsafe unrelated-recipient fallback.
 
 ## How detection works
 
@@ -72,7 +74,7 @@ The addon stores its enabled/disabled setting and local phrase list in `ThanksFo
 
 ## Repository layout
 
-- `addon/ThanksForTheBuffForever/` — the prepared version 1.0.19 source and TOCs
+- `addon/ThanksForTheBuffForever/` — the prepared version 1.0.20 source and TOCs
 - `tests/` — standalone Lua behaviour tests for Forever and Classic detection paths
 - `.github/ISSUE_TEMPLATE/` — the project-specific public bug-report form
 

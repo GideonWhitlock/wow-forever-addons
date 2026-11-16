@@ -60,6 +60,8 @@ local debugEnabled = false
 local TrySendThanks
 local optionsPanel
 local optionsCategoryID
+local minimapButton
+local DEFAULT_MINIMAP_ANGLE = 215
 
 local function Print(message)
     DEFAULT_CHAT_FRAME:AddMessage("|cff7dd3fcThanks for Buffing: Forever|r " .. message)
@@ -246,7 +248,19 @@ local function RegisterOptionsPanel()
     editor:SetTextInsets(4, 4, 4, 4)
     editor:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
     editor:SetScript("OnTextChanged", function(self)
-        self:SetHeight(math.max(252, self:GetStringHeight() + 16))
+        -- Forever's EditBox does not expose GetStringHeight. Keep the editor
+        -- usable there while retaining precise sizing on clients that do.
+        local stringHeight
+        if type(self.GetStringHeight) == "function" then
+            stringHeight = self:GetStringHeight()
+        end
+        if type(stringHeight) ~= "number" then
+            local text = self:GetText() or ""
+            local _, lineBreaks = text:gsub("\n", "\n")
+            local _, fontSize = self:GetFont()
+            stringHeight = (lineBreaks + 1) * (tonumber(fontSize) or 14)
+        end
+        self:SetHeight(math.max(252, stringHeight + 16))
     end)
     scrollFrame:SetScrollChild(editor)
 
@@ -309,6 +323,95 @@ local function OpenOptionsPanel()
     else
         Print("Open Options > AddOns > Thanks for Buffing: Forever to edit phrases.")
     end
+end
+
+local function UpdateMinimapButton()
+    if not minimapButton or not Minimap or not ThanksForTheBuffForeverDB then
+        return
+    end
+
+    local angle = math.rad(ThanksForTheBuffForeverDB.minimapAngle or DEFAULT_MINIMAP_ANGLE)
+    local scale = Minimap:GetEffectiveScale() / minimapButton:GetEffectiveScale()
+    local width, height = Minimap:GetWidth() or 140, Minimap:GetHeight() or 140
+    minimapButton:ClearAllPoints()
+    minimapButton:SetPoint("CENTER", Minimap, "CENTER",
+        math.cos(angle) * (width * scale / 2 + 4),
+        math.sin(angle) * (height * scale / 2 + 4))
+    minimapButton:SetShown(ThanksForTheBuffForeverDB.minimapHidden ~= true)
+end
+
+local function BuildMinimapButton()
+    if minimapButton or not Minimap then
+        return
+    end
+
+    local button = CreateFrame("Button", "ThanksForTheBuffForeverMinimapButton", Minimap:GetParent() or UIParent)
+    minimapButton = button
+    button:SetSize(32, 32)
+    button:SetFrameStrata("MEDIUM")
+    button:SetFrameLevel((Minimap:GetFrameLevel() or 0) + 8)
+    button:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+    button:RegisterForDrag("LeftButton")
+
+    local icon = button:CreateTexture(nil, "ARTWORK")
+    icon:SetSize(20, 20)
+    icon:SetPoint("TOPLEFT", 7, -5)
+    icon:SetTexture("Interface\\Icons\\Spell_Holy_WordFortitude")
+    icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+
+    local border = button:CreateTexture(nil, "OVERLAY")
+    border:SetSize(54, 54)
+    border:SetPoint("TOPLEFT")
+    border:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
+    button:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
+
+    local function StopDrag()
+        button:SetScript("OnUpdate", nil)
+        button.ignoreClickUntil = GetTime() + 0.2
+    end
+
+    button:SetScript("OnClick", function(_, mouseButton)
+        if GetTime() < (button.ignoreClickUntil or 0) then
+            return
+        end
+        if mouseButton == "RightButton" then
+            ThanksForTheBuffForeverDB.enabled = not IsEnabled()
+            if not ThanksForTheBuffForeverDB.enabled then
+                wipe(pendingByCaster)
+                wipe(pendingAnonymousAuraBySpellID)
+            end
+            Print(IsEnabled() and "is now enabled." or "is now disabled.")
+        else
+            OpenOptionsPanel()
+        end
+    end)
+    button:SetScript("OnDragStart", function()
+        GameTooltip:Hide()
+        button:SetScript("OnUpdate", function()
+            local cursorX, cursorY = GetCursorPosition()
+            local centerX, centerY = Minimap:GetCenter()
+            if not centerX or not centerY then
+                return
+            end
+            local scale = Minimap:GetEffectiveScale()
+            ThanksForTheBuffForeverDB.minimapAngle = math.deg(math.atan2(
+                cursorY / scale - centerY,
+                cursorX / scale - centerX)) % 360
+            UpdateMinimapButton()
+        end)
+    end)
+    button:SetScript("OnDragStop", StopDrag)
+    button:SetScript("OnHide", StopDrag)
+    button:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+        GameTooltip:SetText("Thanks for Buffing: Forever", 0.49, 0.83, 0.99)
+        GameTooltip:AddLine("Left-click: open phrase settings", 1, 1, 1)
+        GameTooltip:AddLine("Right-click: enable or disable", 1, 1, 1)
+        GameTooltip:AddLine("Drag: move around the minimap", 0.75, 0.75, 0.75)
+        GameTooltip:Show()
+    end)
+    button:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    UpdateMinimapButton()
 end
 
 local function Debug(message)
@@ -1304,6 +1407,12 @@ frame:SetScript("OnEvent", function(_, event, ...)
         if ThanksForTheBuffForeverDB.enabled == nil then
             ThanksForTheBuffForeverDB.enabled = true
         end
+        if type(ThanksForTheBuffForeverDB.minimapAngle) ~= "number" then
+            ThanksForTheBuffForeverDB.minimapAngle = DEFAULT_MINIMAP_ANGLE
+        end
+        if type(ThanksForTheBuffForeverDB.minimapHidden) ~= "boolean" then
+            ThanksForTheBuffForeverDB.minimapHidden = false
+        end
         GetThankYouMessages()
 
         -- Diagnostics are deliberately session-only. Clear the legacy saved
@@ -1318,6 +1427,7 @@ frame:SetScript("OnEvent", function(_, event, ...)
         playerGUID = UnitGUID("player")
         ResetTransientDetectionState()
         ConfigureDetection()
+        BuildMinimapButton()
         return
     end
 
@@ -1414,6 +1524,24 @@ SlashCmdList.THANKSFORTHEBUFFFOREVER = function(input)
         end
     elseif command == "options" or command == "settings" then
         OpenOptionsPanel()
+    elseif command == "minimap" then
+        local action = string.lower(Trim(remainder))
+        if action == "show" then
+            ThanksForTheBuffForeverDB.minimapHidden = false
+            UpdateMinimapButton()
+            Print("minimap button shown.")
+        elseif action == "hide" then
+            ThanksForTheBuffForeverDB.minimapHidden = true
+            UpdateMinimapButton()
+            Print("minimap button hidden. Use /tftbf minimap show to restore it.")
+        elseif action == "reset" then
+            ThanksForTheBuffForeverDB.minimapAngle = DEFAULT_MINIMAP_ANGLE
+            ThanksForTheBuffForeverDB.minimapHidden = false
+            UpdateMinimapButton()
+            Print("minimap button position reset.")
+        else
+            Print("Minimap commands: /tftbf minimap show, hide, reset")
+        end
     elseif command == "debug" then
         debugEnabled = not debugEnabled
         Print(debugEnabled and "debug messages are now on for this session." or "debug messages are now off.")

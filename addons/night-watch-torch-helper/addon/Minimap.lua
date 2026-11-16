@@ -19,6 +19,9 @@ function N.UpdateOptions()
     if not N.options then return end
     N.options.enabled:SetChecked(N.db.enabled)
     N.options.dim:SetChecked(N.dimArea or false)
+    N.options.darkZones:SetChecked(N.db.remindInDarkZones)
+    N.options.night:SetChecked(N.db.remindAtNight)
+    N.options.weather:SetChecked(N.db.remindInWeather)
     N.options.size:SetText("Torch button size: " .. N.db.size)
     N.options.layout:SetText(N.preview and "Lock torch button" or "Move torch button")
 end
@@ -35,7 +38,7 @@ function N.ToggleOptions()
     if not N.options then
         local panel = CreateFrame("Frame", "NightWatchTorchOptions", UIParent, "BackdropTemplate")
         N.options = panel
-        panel:SetSize(330, 300)
+        panel:SetSize(360, 410)
         panel:SetPoint("CENTER", UIParent, "CENTER", 180, 0)
         panel:SetFrameStrata("DIALOG")
         panel:SetClampedToScreen(true)
@@ -82,11 +85,21 @@ function N.ToggleOptions()
         panel.dim = checkbox("This area is dim or foggy", -108,
             function() return N.dimArea or false end,
             function(value) N.dimArea = value end)
+        panel.darkZones = checkbox("Offer in always-dark zones", -140,
+            function() return N.db.remindInDarkZones end,
+            function(value) N.db.remindInDarkZones = value end)
+        panel.night = checkbox("Offer at night", -172,
+            function() return N.db.remindAtNight end,
+            function(value) N.db.remindAtNight = value end)
+        panel.weather = checkbox("Offer during bad weather", -204,
+            function() return N.db.remindInWeather end,
+            function(value) N.db.remindInWeather = value end)
         local dimHint = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-        dimHint:SetPoint("TOPLEFT", 30, -140)
-        dimHint:SetText("Dim-area setting clears when you change area.")
+        dimHint:SetPoint("TOPLEFT", 30, -238)
+        dimHint:SetWidth(300)
+        dimHint:SetText("Manual dim/fog still works independently. Safety checks for combat, movement, travel and the carried torch always remain active.")
         panel.size = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        panel.size:SetPoint("TOP", 0, -173)
+        panel.size:SetPoint("TOP", 0, -286)
         local function button(label, width, x, y, action)
             local b = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
             b:SetSize(width, 24)
@@ -100,13 +113,13 @@ function N.ToggleOptions()
             end)
             return b
         end
-        button("Smaller", 105, -58, -198, function()
+        button("Smaller", 105, -58, -311, function()
             N.db.size = math.max(32, N.db.size - 4); N.ApplyPosition()
         end)
-        button("Larger", 105, 58, -198, function()
+        button("Larger", 105, 58, -311, function()
             N.db.size = math.min(100, N.db.size + 4); N.ApplyPosition()
         end)
-        panel.layout = button("Move torch button", 220, 0, -237, N.ToggleLayout)
+        panel.layout = button("Move torch button", 220, 0, -350, N.ToggleLayout)
         panel:Hide()
         UISpecialFrames[#UISpecialFrames + 1] = "NightWatchTorchOptions"
     end

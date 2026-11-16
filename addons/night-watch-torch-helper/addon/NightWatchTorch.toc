@@ -2,7 +2,7 @@
 ## Title: Night Watch Torch
 ## Notes: Offers your carried torch in dark zones, at night or in bad weather when safely stationary.
 ## Author: Gideon Whitlock
-## Version: 1.0.3
+## Version: 1.0.4
 ## SavedVariablesPerCharacter: NightWatchTorchDB
 ## IconTexture: Interface\Icons\INV_Torch_Lit
 

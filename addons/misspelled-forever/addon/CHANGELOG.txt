@@ -1,3 +1,11 @@
+Misspelled: Forever 1.1.10
+
+- Fixed right-click corrections not opening for the final word in a chat draft.
+- Right-click now checks the word under the cursor even when no trailing space or punctuation has been typed.
+- Right-click now steps back over trailing spaces so the preceding misspelling remains correctable after Space is pressed.
+- Choose a highlight from WoW's familiar colour palette and see the visible overlay update immediately.
+- An optional six-digit hex field remains available for advanced use.
+
 Misspelled: Forever 1.1.9
 
 - Added a misspelling-highlight colour setting for accessibility.

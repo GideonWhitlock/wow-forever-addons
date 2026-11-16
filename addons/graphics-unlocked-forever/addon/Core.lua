@@ -1,7 +1,7 @@
 local _, EGF = ...
 
 EGF.TITLE = "Graphics Unlocked: Forever"
-EGF.VERSION = "1.0.2"
+EGF.VERSION = "1.0.3"
 EGF.INTERFACE = 16001
 EGF.settings = {}
 EGF.settingsByID = {}

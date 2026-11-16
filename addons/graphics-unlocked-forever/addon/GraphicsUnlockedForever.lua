@@ -28,7 +28,7 @@ local function command(message)
             value = tonumber(value)
             if not value then help() return end
         end
-        local _, result = EGF.SetValue(definition, value)
+        local _, result = EGF.RequestValue(definition, value)
         EGF.Print(result)
         EGF.RefreshOptions()
     elseif action == "preset" then

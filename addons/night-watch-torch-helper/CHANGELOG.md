@@ -2,6 +2,17 @@
 
 All released versions of Night Watch Torch Helper: Forever are listed here. The in-game add-on name is **Night Watch Torch**.
 
+## [1.0.4] — 2026-11-16
+
+### Added
+
+- Added saved condition toggles for always-dark zones, night-time and bad weather.
+- Kept the manual dim/fog option independent so unreported caves or visual darkness can still be handled explicitly.
+
+### Preserved
+
+- Kept the required click or keypress and all combat, movement, travel, bag, cooldown and active-buff safeguards.
+
 ## [1.0.3] — 2026-11-10
 
 ### Added

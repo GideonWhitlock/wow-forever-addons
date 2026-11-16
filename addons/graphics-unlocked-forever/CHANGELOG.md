@@ -1,5 +1,11 @@
 # Graphics Unlocked: Forever changelog
 
+## 1.0.3
+
+- Raises the 3D render-scale control from 100% to a hard maximum of 200%.
+- Requires a clear performance warning to be accepted before the slider crosses above 100%.
+- Keeps the existing live warning visible whenever supersampling is active.
+
 ## 1.0.2
 
 - Added a one-time login warning when WoW is already rendering above 100% scale.

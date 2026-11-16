@@ -26,11 +26,12 @@ Additional advanced controls
 - Optional reapply on login/zone change; disabled until the player turns it on
 - Native AddOn Compartment and WoW Options entry points in addition to the standard minimap button
 - Per-setting P/L/M/H/UFO quick buttons alongside every applicable individual slider or toggle
-- A clear login and in-panel warning if WoW is already rendering above 100% scale
+- A 50-200% render-scale slider with confirmation before crossing above 100%
+- A clear login and in-panel warning whenever WoW is rendering above 100% scale
 
 Several controls can be overwritten when the matching normal WoW graphics option changes. HDR requires suitable hardware and operating-system configuration. Advanced ambient-occlusion controls can make the image look worse as well as better.
 
-Render scale above 100% supersamples the 3D world and can dramatically increase GPU load, power use, heat and fan noise. The add-on warns when it detects this but never changes an existing render scale automatically.
+Render scale above 100% supersamples the 3D world and can dramatically increase GPU load, power use, heat and fan noise. The add-on requires confirmation before crossing 100%, continues warning while supersampling is active, and caps the slider at 200%.
 
 Commands
 

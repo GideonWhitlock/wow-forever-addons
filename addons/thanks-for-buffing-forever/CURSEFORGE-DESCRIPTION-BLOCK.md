@@ -8,6 +8,7 @@ When another player gives you a helpful buff, **Thanks For The Buff: Forever** w
 
 - Chooses from 15 natural replies such as “thanks!”, “cheers!”, and “much appreciated!”
 - Adds a phrase editor under **Options → AddOns → Thanks for Buffing: Forever**, with one phrase per line plus Save and Restore defaults buttons
+- Adds a draggable minimap shortcut: left-click opens the phrase editor and right-click enables or disables automatic thanks
 - Waits a random 3–10 seconds so replies do not feel instant or robotic
 - Uses whisper only — never party, raid, say, or public chat
 - Groups several buffs from the same player into one reply
@@ -24,6 +25,7 @@ When another player gives you a helpful buff, **Thanks For The Buff: Forever** w
 - `/tftbf phrases remove <number>` — remove a phrase
 - `/tftbf phrases reset` — restore the defaults
 - `/tftbf options` — open the phrase editor
+- `/tftbf minimap show|hide|reset` — control or restore the minimap shortcut
 
 ## Compatibility
 

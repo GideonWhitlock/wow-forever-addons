@@ -39,6 +39,54 @@ local PROFILE_COLORS = {
     high = {0.2, 0.86, 1}, ufo = {0.76, 0.42, 1},
 }
 
+local HIGH_RENDER_SCALE_POPUP = "GRAPHICS_UNLOCKED_FOREVER_HIGH_RENDER_SCALE"
+
+local function requestValue(definition, value)
+    value = tonumber(value)
+    if definition.id ~= "render-scale" or not value or value <= 100 or EGF.highRenderScaleAcknowledged then
+        if definition.id == "render-scale" and value and value <= 100 then
+            EGF.highRenderScaleAcknowledged = false
+        end
+        return EGF.SetValue(definition, value)
+    end
+
+    EGF.pendingHighRenderScale = { definition = definition, value = value }
+    if not StaticPopupDialogs or not StaticPopup_Show then
+        EGF.pendingHighRenderScale = nil
+        return false, "A warning must be confirmed before render scale can exceed 100%."
+    end
+
+    if not StaticPopupDialogs[HIGH_RENDER_SCALE_POPUP] then
+        StaticPopupDialogs[HIGH_RENDER_SCALE_POPUP] = {
+            text = "Render scale above 100%% supersamples the 3D world and can dramatically increase GPU load, power use, heat and fan noise. Apply %d%% render scale?",
+            button1 = YES,
+            button2 = NO,
+            timeout = 0,
+            whileDead = true,
+            hideOnEscape = true,
+            preferredIndex = 3,
+            OnAccept = function()
+                local pending = EGF.pendingHighRenderScale
+                EGF.pendingHighRenderScale = nil
+                if pending then
+                    EGF.highRenderScaleAcknowledged = true
+                    local ok, message = EGF.SetValue(pending.definition, pending.value)
+                    if EGF.options and EGF.options.message then EGF.options.message:SetText(message) end
+                    EGF.RefreshOptions()
+                end
+            end,
+            OnCancel = function()
+                EGF.pendingHighRenderScale = nil
+                EGF.RefreshOptions()
+            end,
+        }
+    end
+    StaticPopup_Show(HIGH_RENDER_SCALE_POPUP, math.floor(value + 0.5))
+    return false, "Confirm the performance warning before applying a render scale above 100%."
+end
+
+EGF.RequestValue = requestValue
+
 local function colourPresetButton(control, id)
     local colour = PROFILE_COLORS[id]
     local font = control.GetFontString and control:GetFontString()
@@ -153,14 +201,25 @@ function EGF.RefreshOptions()
                 end)
                 local function stopSliderDrag()
                     panel.sliderDragging = false
+                    if slider.pendingValue ~= nil then
+                        local pendingValue = slider.pendingValue
+                        slider.pendingValue = nil
+                        local ok, message = requestValue(definition, pendingValue)
+                        panel.message:SetText(message)
+                        if not ok and not EGF.pendingHighRenderScale then EGF.RefreshOptions() end
+                    end
                 end
                 slider:SetScript("OnMouseUp", stopSliderDrag)
                 slider:SetScript("OnHide", stopSliderDrag)
                 slider:SetScript("OnValueChanged", function(_, newValue)
                     valueText:SetText(string.format("%." .. count .. "f", newValue))
-                    local ok, message = EGF.SetValue(definition, newValue)
+                    if definition.id == "render-scale" and panel.sliderDragging then
+                        slider.pendingValue = newValue
+                        return
+                    end
+                    local ok, message = requestValue(definition, newValue)
                     panel.message:SetText(message)
-                    if not ok then EGF.RefreshOptions() end
+                    if not ok and not EGF.pendingHighRenderScale then EGF.RefreshOptions() end
                 end)
             end
 

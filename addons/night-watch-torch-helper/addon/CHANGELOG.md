@@ -1,3 +1,9 @@
+# 1.0.4 — 16 November 2026
+
+- Added saved reminder toggles for always-dark zones, night-time and bad weather.
+- Manual dim/fog remains available independently.
+- Item use still requires a click or keypress; safety checks cannot be disabled.
+
 # 1.0.3 — 10 November 2026
 
 - Added built-in daytime torch prompting in Duskwood and Deadwind Pass, where

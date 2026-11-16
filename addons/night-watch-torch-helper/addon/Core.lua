@@ -12,7 +12,17 @@ N.ALWAYS_DARK_ZONES = {
     ["Duskwood"] = true,
 }
 N.STILL_DELAY = 0.75
-N.DEFAULTS = { enabled = true, x = 0, y = -150, size = 52, minimapAngle = 160, minimapHidden = false }
+N.DEFAULTS = {
+    enabled = true,
+    x = 0,
+    y = -150,
+    size = 52,
+    minimapAngle = 160,
+    minimapHidden = false,
+    remindInDarkZones = true,
+    remindAtNight = true,
+    remindInWeather = true,
+}
 
 local function readable(value)
     return not (issecretvalue and issecretvalue(value))
@@ -62,7 +72,7 @@ end
 
 function N.EnvironmentReason()
     if N.dimArea then return "Dim area (manual)" end
-    if C_Map and C_Map.GetBestMapForUnit then
+    if N.db.remindInDarkZones and C_Map and C_Map.GetBestMapForUnit then
         local mapID = C_Map.GetBestMapForUnit("player")
         if readable(mapID) and N.ALWAYS_DARK_MAPS[mapID] then
             return N.ALWAYS_DARK_MAPS[mapID] .. " (always dark)"
@@ -72,14 +82,14 @@ function N.EnvironmentReason()
     if (not readable(zone) or type(zone) ~= "string" or zone == "") and GetZoneText then
         zone = GetZoneText()
     end
-    if readable(zone) and N.ALWAYS_DARK_ZONES[zone] then
+    if N.db.remindInDarkZones and readable(zone) and N.ALWAYS_DARK_ZONES[zone] then
         return zone .. " (always dark)"
     end
-    if C_DateAndTime and C_DateAndTime.IsDayTime then
+    if N.db.remindAtNight and C_DateAndTime and C_DateAndTime.IsDayTime then
         local day = C_DateAndTime.IsDayTime()
         if readable(day) and day == false then return "Night-time" end
     end
-    if C_Weather and C_Weather.GetCurrentWeather then
+    if N.db.remindInWeather and C_Weather and C_Weather.GetCurrentWeather then
         local info = C_Weather.GetCurrentWeather()
         if info and readable(info.type) and readable(info.intensity)
             and type(info.type) == "number" and type(info.intensity) == "number"

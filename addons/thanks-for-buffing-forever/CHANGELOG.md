@@ -2,6 +2,13 @@
 
 All notable changes to Thanks for Buffing: Forever are recorded here.
 
+## 1.0.20 — 2026-11-16
+
+- Fixes the Options phrase editor on WoW: Forever clients where EditBox does not provide `GetStringHeight`.
+- Adds a safe line-count fallback so editing phrases no longer raises a Lua error.
+- Adds a draggable minimap button: left-click opens phrase settings and right-click enables or disables automatic thanks.
+- Adds `/tftbf minimap show`, `hide` and `reset` commands.
+
 ## 1.0.19 — 2026-11-15
 
 - Adds an accessible phrase editor under Options → AddOns → Thanks for Buffing: Forever.

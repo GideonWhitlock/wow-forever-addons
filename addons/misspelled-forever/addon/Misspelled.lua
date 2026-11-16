@@ -1137,10 +1137,23 @@ end
 function Misspelled:OnMouseUp(editbox, button)
 	if button == "RightButton" then
 		local badWordFound = false
+		-- Normal typing deliberately leaves the unfinished trailing word unchecked
+		-- until a delimiter is entered. A right-click is an explicit request to
+		-- inspect that word, so rebuild the word map without skipping it first.
+		-- This keeps the non-mutating overlay behaviour while allowing corrections
+		-- immediately, even when the draft does not end in a space or punctuation.
+		Misspelled:SpellCheckChat(editbox, false)
 		CloseDropDownMenus()
 
 		--check if we are positioned on a misspelled word
 		local pos = editbox:GetCursorPosition()
+		local text = editbox:GetText() or ""
+		-- A right-click does not always move Forever's chat cursor. If the draft
+		-- ends in spaces, the cursor therefore sits just beyond the word the player
+		-- is trying to correct. Walk back across those delimiters to that word.
+		while pos > 0 and string_match(string_sub(text, pos, pos), "%s") do
+			pos = pos - 1
+		end
 		if WordLocations[editbox:GetName()] ~= nil then
 			for i, w in ipairs(WordLocations[editbox:GetName()]) do
 				if	pos >= w.StartPos and pos <= w.EndPos then
@@ -1606,21 +1619,84 @@ function Misspelled:CreateInterfaceOptions()
 	cfgHighlightLabel:SetPoint("TOPLEFT", 280, -40)
 	cfgHighlightLabel:SetText("Misspelling highlight colour")
 
-	local cfgHighlightSwatch = cfgFrame:CreateTexture(nil, "ARTWORK")
+	local cfgHighlightSwatch = CreateFrame("Button", nil, cfgFrame)
 	cfgHighlightSwatch:SetPoint("TOPLEFT", 280, -65)
 	cfgHighlightSwatch:SetSize(22, 22)
+	cfgHighlightSwatch.colour = cfgHighlightSwatch:CreateTexture(nil, "ARTWORK")
+	cfgHighlightSwatch.colour:SetPoint("TOPLEFT", 2, -2)
+	cfgHighlightSwatch.colour:SetPoint("BOTTOMRIGHT", -2, 2)
+	cfgHighlightSwatch.border = cfgHighlightSwatch:CreateTexture(nil, "OVERLAY")
+	cfgHighlightSwatch.border:SetAllPoints()
+	cfgHighlightSwatch.border:SetColorTexture(0.8, 0.8, 0.8, 1)
+	cfgHighlightSwatch.colour:SetDrawLayer("OVERLAY", 1)
+
+	local cfgChooseHighlight = CreateFrame("Button", nil, cfgFrame, "UIPanelButtonTemplate")
+	cfgChooseHighlight:SetPoint("LEFT", cfgHighlightSwatch, "RIGHT", 10, 0)
+	cfgChooseHighlight:SetSize(120, 22)
+	cfgChooseHighlight:SetText("Choose colour...")
 
 	local cfgHighlightHex = CreateFrame("EditBox", nil, cfgFrame, "InputBoxTemplate")
-	cfgHighlightHex:SetPoint("LEFT", cfgHighlightSwatch, "RIGHT", 10, 0)
+	cfgHighlightHex:SetPoint("TOPLEFT", 295, -98)
 	cfgHighlightHex:SetSize(90, 24)
 	cfgHighlightHex:SetAutoFocus(false)
 	cfgHighlightHex:SetMaxLetters(9)
 
+	local cfgHighlightHexLabel = cfgFrame:CreateFontString("OVERLAY", nil, "GameFontNormalSmall")
+	cfgHighlightHexLabel:SetPoint("RIGHT", cfgHighlightHex, "LEFT", -6, 0)
+	cfgHighlightHexLabel:SetText("Hex (optional)")
+
 	local function RefreshHighlightControls()
 		local r, g, b = GetHighlightColor()
-		cfgHighlightSwatch:SetColorTexture(r, g, b, 1)
+		cfgHighlightSwatch.colour:SetColorTexture(r, g, b, 1)
 		cfgHighlightHex:SetText(GetHighlightHex())
 	end
+
+	local function OpenHighlightColourPicker()
+		local oldR, oldG, oldB = GetHighlightColor()
+		local function ApplyPickerColour()
+			local r, g, b = ColorPickerFrame:GetColorRGB()
+			Misspelled:SetHighlightColor(r, g, b)
+			RefreshHighlightControls()
+		end
+		local function CancelPickerColour()
+			Misspelled:SetHighlightColor(oldR, oldG, oldB)
+			RefreshHighlightControls()
+		end
+
+		ColorPickerFrame:Hide()
+		ColorPickerFrame:SetFrameStrata("FULLSCREEN_DIALOG")
+		ColorPickerFrame:SetFrameLevel(cfgFrame:GetFrameLevel() + 10)
+		ColorPickerFrame:SetClampedToScreen(true)
+		if ColorPickerFrame.SetupColorPickerAndShow then
+			ColorPickerFrame:SetupColorPickerAndShow({
+				r = oldR,
+				g = oldG,
+				b = oldB,
+				hasOpacity = false,
+				swatchFunc = ApplyPickerColour,
+				cancelFunc = CancelPickerColour,
+			})
+		else
+			ColorPickerFrame.func = ApplyPickerColour
+			ColorPickerFrame.hasOpacity = false
+			ColorPickerFrame.opacityFunc = nil
+			ColorPickerFrame.cancelFunc = CancelPickerColour
+			ColorPickerFrame:SetColorRGB(oldR, oldG, oldB)
+			ColorPickerFrame:Show()
+		end
+	end
+
+	cfgHighlightSwatch:SetScript("OnClick", OpenHighlightColourPicker)
+	cfgChooseHighlight:SetScript("OnClick", OpenHighlightColourPicker)
+	cfgHighlightSwatch:SetScript("OnEnter", function(self)
+		GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+		GameTooltip:SetText("Choose highlight colour")
+		GameTooltip:AddLine("Opens WoW's colour palette.", 1, 1, 1)
+		GameTooltip:Show()
+	end)
+	cfgHighlightSwatch:SetScript("OnLeave", function()
+		GameTooltip:Hide()
+	end)
 
 	local function ApplyHighlightHex()
 		local r, g, b = ParseHighlightHex(cfgHighlightHex:GetText())
@@ -1646,7 +1722,7 @@ function Misspelled:CreateInterfaceOptions()
 	cfgApplyHighlight:SetScript("OnClick", ApplyHighlightHex)
 
 	local cfgResetHighlight = CreateFrame("Button", nil, cfgFrame, "UIPanelButtonTemplate")
-	cfgResetHighlight:SetPoint("TOPLEFT", 280, -96)
+	cfgResetHighlight:SetPoint("TOPLEFT", 280, -130)
 	cfgResetHighlight:SetSize(160, 22)
 	cfgResetHighlight:SetText("Reset highlight colour")
 	cfgResetHighlight:SetScript("OnClick", function()

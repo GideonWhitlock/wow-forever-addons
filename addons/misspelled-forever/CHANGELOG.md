@@ -2,6 +2,14 @@
 
 This file records public release versions and verified changes only.
 
+## 1.1.10 — 2026-11-16
+
+- Fixed right-click corrections for the final word in a draft before punctuation is typed.
+- Fixed the same correction menu after a trailing space by walking back to the preceding word.
+- Preserved the non-mutating overlay and slash-command safeguards.
+- Opens WoW's familiar colour palette from a clearly labelled button or the colour swatch.
+- Keeps an optional six-digit hex field, immediate preview and reset button for advanced use.
+
 ## 1.1.9 — 2026-11-15
 
 - Added an accessible misspelling-highlight colour setting.

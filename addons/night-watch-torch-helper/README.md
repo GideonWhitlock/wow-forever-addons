@@ -17,7 +17,7 @@ A real click or keypress is always required. WoW does not allow the add-on to us
 
 | Item | Value |
 | --- | --- |
-| Current release | 1.0.3 |
+| Current release | 1.0.4 |
 | Game flavour | WoW: Forever |
 | Game version | 1.60.1 |
 | Interface | 16001 |
@@ -49,6 +49,7 @@ For an update installed while WoW is running, type `/reload` after replacing the
 - Drag the minimap icon to reposition it.
 - Shift-drag the visible torch button to move it.
 - Optional keybinding: **Options > Keybindings > Night Watch Torch > Use torch when eligible**.
+- Settings checkboxes choose whether automatic reminders are offered in always-dark zones, at night and during bad weather. Manual dim/fog remains available separately.
 
 | Command | Purpose |
 | --- | --- |
@@ -62,7 +63,7 @@ For an update installed while WoW is running, type `/reload` after replacing the
 | `/nwt dim on` / `/nwt dim off` | Temporarily treat the current area as dim or restore automatic detection. |
 | `/nwt reset` | Restore the default position, size and enabled state. |
 
-Settings are saved per character. The temporary dim-area option clears on a zone or subzone change, loading screen or reload.
+Settings are saved per character. The temporary dim-area option clears on a zone or subzone change, loading screen or reload. Combat, movement, travel, carried-item, cooldown and active-buff safeguards cannot be disabled.
 
 ## Known limitations
 

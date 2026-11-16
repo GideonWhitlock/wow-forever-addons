@@ -33,7 +33,7 @@ function Widget:CreateTexture() return NewWidget("texture") end
 function Widget:SetPoint() end
 function Widget:SetSize() end
 function Widget:SetWidth() end
-function Widget:SetHeight() end
+function Widget:SetHeight(value) self.height = value end
 function Widget:SetTextInsets() end
 function Widget:SetAutoFocus() end
 function Widget:SetFontObject() end
@@ -45,7 +45,7 @@ function Widget:ClearFocus() end
 function Widget:SetTextColor() end
 function Widget:SetChecked(value) self.checked = value end
 function Widget:GetChecked() return self.checked end
-function Widget:GetStringHeight() return 20 end
+function Widget:GetFont() return "Fonts\\FRIZQT__.TTF", 14 end
 function Widget:SetMultiLine(value)
     self.multiLine = value
     if value then phraseEditor = self end
@@ -92,6 +92,7 @@ optionsPanel.scripts.OnShow()
 assert(string.find(phraseEditor:GetText(), "thanks!", 1, true), "opening options should load saved phrases")
 
 phraseEditor:SetText("First custom phrase\nSecond custom phrase\n")
+assert(phraseEditor.height == 252, "Forever editor sizing should not require GetStringHeight")
 buttons["Save phrases"].scripts.OnClick()
 assert(#ThanksForTheBuffForeverDB.messages == 2, "Save phrases should replace the saved list")
 assert(ThanksForTheBuffForeverDB.messages[1] == "First custom phrase", "saved phrase order should be preserved")
