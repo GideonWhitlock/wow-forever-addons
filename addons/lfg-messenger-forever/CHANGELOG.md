@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.9 — 2026-11-17
+
+- Added **Whisper the player after an invite** to the add-on settings.
+- Turning it off suppresses automatic invite follow-up whispers without disabling
+  the separate Quick Whisper button.
+- The existing minimap setting and `/lfgmsg minimap show` command remain available.
+
 ## 1.0.8 — 2026-11-14
 
 - Added an **Invite** button directly to each eligible individual-player result,

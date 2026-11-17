@@ -2,6 +2,12 @@
 
 All notable changes to Thanks for Buffing: Forever are recorded here.
 
+## 1.0.21 — 2026-11-17
+
+- Gives every character its own saved thank-you phrase list.
+- Preserves an existing customized list for the first character loaded after updating.
+- New characters begin with the 15 defaults and can edit them independently.
+
 ## 1.0.20 — 2026-11-16
 
 - Fixes the Options phrase editor on WoW: Forever clients where EditBox does not provide `GetStringHeight`.

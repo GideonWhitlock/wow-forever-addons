@@ -168,7 +168,9 @@ function Q.AttachToGroupFinder()
             Q.footerInviteHooked = true
             footerInvite:HookScript("OnClick", function()
                 local resultID = Q.GetSelectedResultID()
-                if resultID then Q.WhisperForResult(resultID) end
+                if resultID and Q.db.inviteWhispers ~= false then
+                    Q.WhisperForResult(resultID)
+                end
             end)
         end
     end

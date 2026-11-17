@@ -38,7 +38,7 @@ It waits a random 3–10 seconds, chooses from a player-editable list of 15 defa
 
 ## Supported clients
 
-The prepared version 1.0.20 includes TOCs for:
+The prepared version 1.0.21 includes TOCs for:
 
 | Client | Interface |
 | --- | ---: |
@@ -48,9 +48,9 @@ The prepared version 1.0.20 includes TOCs for:
 | Burning Crusade Classic | 20506 |
 | Classic Era | 11509 |
 
-Only the Forever path is currently claimed for release targeting. Version 1.0.20 retains the exact caster/spell safeguards from 1.0.17 and the Options → AddOns editor from 1.0.19, while adding a Forever-safe text-height fallback and a draggable minimap shortcut. Left-click opens the phrase editor, right-click enables or disables automatic thanks, and dragging moves the shortcut around the minimap. Live testing previously confirmed that Forever blocks combat-log registration, so that API remains disabled on this branch. The other manifests remain source-visible but are not live-verified release targets.
+Only the Forever path is currently claimed for release targeting. Version 1.0.21 gives every character its own phrase list while preserving the existing list for the first character loaded after updating. It retains the caster/spell safeguards, Options → AddOns editor, Forever-safe text-height fallback and draggable minimap shortcut. Left-click opens the phrase editor, right-click enables or disables automatic thanks, and dragging moves the shortcut around the minimap. Live testing previously confirmed that Forever blocks combat-log registration, so that API remains disabled on this branch. The other manifests remain source-visible but are not live-verified release targets.
 
-The 1.0.20 source passes the automated behaviour suites, including the Forever editor fallback, phrase editing, the observed multi-word recipient failures, protected aura fields, the Dax grouped-buff replay and the unsafe unrelated-recipient fallback.
+The 1.0.21 source includes per-character phrase coverage alongside the existing Forever editor, phrase editing, multi-word recipient, protected-aura, grouped-buff and unsafe-attribution checks.
 
 ## How detection works
 
@@ -70,11 +70,11 @@ Classic clients use the combat log, which provides broader caster attribution.
 
 ## Privacy
 
-The addon stores its enabled/disabled setting and local phrase list in `ThanksForTheBuffForeverDB`. Diagnostic mode is session-only, starts off on every login or `/reload`, and is never saved. It does not collect analytics or transmit data outside the one in-game whisper it sends.
+The addon stores its enabled/disabled setting and per-character local phrase lists in `ThanksForTheBuffForeverDB`. Diagnostic mode is session-only, starts off on every login or `/reload`, and is never saved. It does not collect analytics or transmit data outside the one in-game whisper it sends.
 
 ## Repository layout
 
-- `addon/ThanksForTheBuffForever/` — the prepared version 1.0.20 source and TOCs
+- `addon/ThanksForTheBuffForever/` — the prepared version 1.0.21 source and TOCs
 - `tests/` — standalone Lua behaviour tests for Forever and Classic detection paths
 - `.github/ISSUE_TEMPLATE/` — the project-specific public bug-report form
 

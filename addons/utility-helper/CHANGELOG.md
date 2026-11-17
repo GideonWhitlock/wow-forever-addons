@@ -1,5 +1,11 @@
 # Utility Helper: Forever changelog
 
+## 0.1.34
+
+- Added Druid shapeshift reminders while a readable Polymorph or root effect is active.
+- Shows learned Cat, Bear/Dire Bear or Travel Form buttons other than the currently
+  active form, so changing form can break the effect.
+
 ## 0.1.33
 
 - Added a separate low-health Recovery item button for Forever Student Fodder,

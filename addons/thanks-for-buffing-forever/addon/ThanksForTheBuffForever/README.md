@@ -44,7 +44,7 @@ Forever beta builds are identified by their 1.60.x interface number as well as b
 
 ## Privacy and chat
 
-The addon stores its enabled/disabled setting and local thank-you phrase list. Diagnostic mode is session-only, starts off on every load, and is never saved. The addon does not collect or transmit data beyond the single in-game whisper it sends to the player who buffed you.
+The addon stores its enabled/disabled setting and a local thank-you phrase list for each character. Diagnostic mode is session-only, starts off on every load, and is never saved. The addon does not collect or transmit data beyond the single in-game whisper it sends to the player who buffed you.
 
 ## License
 

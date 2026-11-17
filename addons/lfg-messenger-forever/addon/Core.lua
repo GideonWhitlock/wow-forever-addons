@@ -2,12 +2,13 @@ local addonName, Q = ...
 
 Q.ADDON_NAME = addonName
 Q.TITLE = "Looking for Group: Forever"
-Q.VERSION = "1.0.8"
+Q.VERSION = "1.0.9"
 Q.BLIZZARD_ADDON = "Blizzard_GroupFinder_VanillaStyle"
 Q.ICON = "Interface\\Icons\\INV_Letter_15"
 Q.DEFAULTS = {
     template = "{class} {role} here",
     roleFilter = "ALL",
+    inviteWhispers = true,
     minimap = { hidden = false, angle = 215 },
 }
 
@@ -58,6 +59,7 @@ function Q.InitializeDB()
     end
     Q.db.minimap.angle = tonumber(Q.db.minimap.angle) or Q.DEFAULTS.minimap.angle
     Q.db.minimap.hidden = Q.db.minimap.hidden and true or false
+    Q.db.inviteWhispers = Q.db.inviteWhispers ~= false
 end
 
 local function roleTextFromFlags(flags)
@@ -302,7 +304,9 @@ function Q.InviteResult(resultID, inviteAction)
     if not ok or result == false then Q.Print("The invite request could not be sent."); return false end
     local activity = Q.GetResultActivity(resultID, player.info)
     local role = Q.GetInviteRole()
-    Q.SendInviteWhisper(player.name, activity, role, not wasLeader)
+    if Q.db.inviteWhispers ~= false then
+        Q.SendInviteWhisper(player.name, activity, role, not wasLeader)
+    end
     Q.Print((wasLeader and "Invited " or "Sent an invite suggestion for ")
         .. player.name .. " for " .. activity .. (role and (" as " .. role) or "") .. ".")
     return true

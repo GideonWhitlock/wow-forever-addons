@@ -25,6 +25,8 @@ level it stays shorter, for example: `Warrior DPS here`.
   leader an approval prompt, while party leaders invite the player directly.
 - Direct invites and invite suggestions automatically tell the player which
   activity and selected role the invitation is for.
+- The invite follow-up whisper can be disabled in settings without disabling
+  the separate Quick Whisper button.
 - A role-order control can put Tanks, Healers or DPS first while keeping every
   other result visible. Multi-role players match each role they selected.
 - If chat is restricted, prepares the message in the whisper box instead of losing it.

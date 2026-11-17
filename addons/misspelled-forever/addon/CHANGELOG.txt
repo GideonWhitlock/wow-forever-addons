@@ -1,3 +1,8 @@
+Misspelled: Forever 1.1.12
+
+- Hides only the visual overlay when a long draft scrolls horizontally, avoiding highlights on the wrong words while preserving corrections.
+- Wires chat edit boxes activated through the Forever client's current ChatFrameUtil path.
+
 Misspelled: Forever 1.1.11
 
 - Restored the missing chat edit-box mouse adapter so right-click correction menus open again.

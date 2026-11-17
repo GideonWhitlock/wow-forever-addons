@@ -1,6 +1,10 @@
 # Utility Helper: Forever
 
-Version **0.1.33** for **WoW: Forever 1.60.1**, interface **16001**.
+Version **0.1.34** for **WoW: Forever 1.60.1**, interface **16001**.
+
+**Druids now receive shapeshift reminders while Polymorphed or rooted.** When
+the harmful effect is readable, Utility Helper offers learned Cat, Bear/Dire
+Bear or Travel Form buttons other than the form already active.
 
 **Emergency recovery now recognises more than ordinary healing potions.** A
 separate low-health Recovery item button can select WoW: Forever's Student

@@ -1,5 +1,5 @@
 local _, U = ...
-U.VERSION = "0.1.33"
+U.VERSION = "0.1.34"
 U.TITLE = "Utility Helper: Forever"
 U.catalog = {}
 -- IDs identify spell families. The spellbook supplies the learned rank and localized name.
@@ -72,6 +72,20 @@ a("DRUID", 22842, "Frenzied Regeneration", "health", "player")
 a("DRUID", 1850, "Dash", "manual", "player")
 a("DRUID", 20484, "Rebirth", "resurrect", "deadfriendly")
 a("DRUID", 1126, "Mark of the Wild", "buff", "friendly", {missingAura = true, outOfCombat = true})
+local druidBreakableControl = {
+    -- Polymorph ranks and common variants.
+    118, 12824, 12825, 12826, 28271, 28272, 61305, 61721, 61780,
+    -- Entangling Roots, Frost Nova and common root ranks.
+    339, 1062, 5195, 5196, 9852, 9853, 122, 865, 6131, 10230,
+}
+a("DRUID", 768, "Cat Form (break control)", "shapeshiftbreak", "player",
+    {breakAuras = druidBreakableControl, formSpellIDs = {768}})
+a("DRUID", 5487, "Bear Form (break control)", "shapeshiftbreak", "player",
+    {breakAuras = druidBreakableControl, formSpellIDs = {5487, 9634}, replacedBy = 9634})
+a("DRUID", 9634, "Dire Bear Form (break control)", "shapeshiftbreak", "player",
+    {breakAuras = druidBreakableControl, formSpellIDs = {5487, 9634}})
+a("DRUID", 783, "Travel Form (break control)", "shapeshiftbreak", "player",
+    {breakAuras = druidBreakableControl, formSpellIDs = {783}})
 
 a("MAGE", 2139, "Counterspell", "interrupt", "target")
 a("MAGE", 475, "Remove Lesser Curse", "dispel", "friendly", {dispels = {Curse = true}, party = true})
@@ -300,5 +314,6 @@ U.ruleLabels = {
     creature = "Suitable creature type", control = "Crowd control", combat = "In combat",
     buff = "Missing buff", resurrect = "Dead ally", petdead = "Dead pet", petmissing = "Missing pet",
     falling = "Falling", swimming = "Swimming", tracking = "No resource tracker active",
-    missingitem = "Missing conjured item", manual = "Manual utility",
+    missingitem = "Missing conjured item", shapeshiftbreak = "Polymorphed or rooted",
+    manual = "Manual utility",
 }

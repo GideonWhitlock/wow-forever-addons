@@ -11,6 +11,9 @@ DEFAULT_CHAT_FRAME = {
 }
 SlashCmdList = {}
 C_ChatInfo = {}
+local characterName = "Gideon"
+function UnitFullName() return characterName, "ForeverRealm" end
+function GetRealmName() return "ForeverRealm" end
 
 function CreateFrame()
     return {
@@ -28,23 +31,33 @@ end
 local chunk = assert(loadfile("work/ThanksForTheBuffForever/ThanksForTheBuffForever.lua"))
 chunk("ThanksForTheBuffForever")
 eventHandler(nil, "ADDON_LOADED", "ThanksForTheBuffForever")
+local function messages()
+    return ThanksForTheBuffForeverDB.characterMessages[characterName .. "-ForeverRealm"]
+end
 
-assert(#ThanksForTheBuffForeverDB.messages == 15, "new installs should receive the 15 default phrases")
+assert(#messages() == 15, "new characters should receive the 15 default phrases")
 
 SlashCmdList.THANKSFORTHEBUFFFOREVER("phrases add Brilliant, thank you!")
-assert(#ThanksForTheBuffForeverDB.messages == 16, "a custom phrase should be saved")
-assert(ThanksForTheBuffForeverDB.messages[16] == "Brilliant, thank you!", "the custom phrase text should be preserved")
+assert(#messages() == 16, "a custom phrase should be saved")
+assert(messages()[16] == "Brilliant, thank you!", "the custom phrase text should be preserved")
+
+characterName = "Nightelfalt"
+SlashCmdList.THANKSFORTHEBUFFFOREVER("phrases")
+assert(#messages() == 15, "a second character should receive its own default phrase list")
+assert(messages()[16] == nil, "a second character should not inherit the first character's custom phrase")
+characterName = "Gideon"
+assert(messages()[16] == "Brilliant, thank you!", "returning to the first character should restore its custom list")
 
 SlashCmdList.THANKSFORTHEBUFFFOREVER("phrases add brilliant, thank you!")
-assert(#ThanksForTheBuffForeverDB.messages == 16, "case-only duplicate phrases should be rejected")
+assert(#messages() == 16, "case-only duplicate phrases should be rejected")
 
 SlashCmdList.THANKSFORTHEBUFFFOREVER("phrases remove 1")
-assert(#ThanksForTheBuffForeverDB.messages == 15, "removing a numbered phrase should update the saved list")
-assert(ThanksForTheBuffForeverDB.messages[1] == "ty!", "the remaining phrases should close the removed gap")
+assert(#messages() == 15, "removing a numbered phrase should update the saved list")
+assert(messages()[1] == "ty!", "the remaining phrases should close the removed gap")
 
 SlashCmdList.THANKSFORTHEBUFFFOREVER("phrases reset")
-assert(#ThanksForTheBuffForeverDB.messages == 15, "reset should restore the full default list")
-assert(ThanksForTheBuffForeverDB.messages[1] == "thanks!", "reset should restore the original ordering")
+assert(#messages() == 15, "reset should restore the full default list")
+assert(messages()[1] == "thanks!", "reset should restore the original ordering")
 
 SlashCmdList.THANKSFORTHEBUFFFOREVER("phrases")
 local sawHeader = false

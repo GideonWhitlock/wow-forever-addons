@@ -10,6 +10,8 @@ local openedCategory
 DEFAULT_CHAT_FRAME = { AddMessage = function() end }
 SlashCmdList = {}
 C_ChatInfo = {}
+function UnitFullName() return "Gideon", "ForeverRealm" end
+function GetRealmName() return "ForeverRealm" end
 
 local Widget = {}
 Widget.__index = Widget
@@ -82,6 +84,9 @@ end
 local chunk = assert(loadfile("work/ThanksForTheBuffForever/ThanksForTheBuffForever.lua"))
 chunk("ThanksForTheBuffForever")
 eventHandler(nil, "ADDON_LOADED", "ThanksForTheBuffForever")
+local function messages()
+    return ThanksForTheBuffForeverDB.characterMessages["Gideon-ForeverRealm"]
+end
 
 assert(optionsPanel, "Options > AddOns panel should be registered at addon load")
 assert(phraseEditor, "options panel should contain a multiline phrase editor")
@@ -94,15 +99,15 @@ assert(string.find(phraseEditor:GetText(), "thanks!", 1, true), "opening options
 phraseEditor:SetText("First custom phrase\nSecond custom phrase\n")
 assert(phraseEditor.height == 252, "Forever editor sizing should not require GetStringHeight")
 buttons["Save phrases"].scripts.OnClick()
-assert(#ThanksForTheBuffForeverDB.messages == 2, "Save phrases should replace the saved list")
-assert(ThanksForTheBuffForeverDB.messages[1] == "First custom phrase", "saved phrase order should be preserved")
+assert(#messages() == 2, "Save phrases should replace this character's saved list")
+assert(messages()[1] == "First custom phrase", "saved phrase order should be preserved")
 
 phraseEditor:SetText("Duplicate\nduplicate")
 buttons["Save phrases"].scripts.OnClick()
-assert(#ThanksForTheBuffForeverDB.messages == 2, "duplicate validation should leave the previous saved list intact")
+assert(#messages() == 2, "duplicate validation should leave the previous saved list intact")
 
 buttons["Restore defaults"].scripts.OnClick()
-assert(#ThanksForTheBuffForeverDB.messages == 15, "Restore defaults should restore all default phrases")
+assert(#messages() == 15, "Restore defaults should restore all defaults for this character")
 
 SlashCmdList.THANKSFORTHEBUFFFOREVER("options")
 assert(openedCategory == 919, "/tftbf options should open the registered settings category")

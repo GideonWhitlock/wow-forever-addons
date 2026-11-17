@@ -87,15 +87,40 @@ local function CopyDefaultMessages()
     return messages
 end
 
+local function CurrentCharacterKey()
+    local name, realm
+    if type(UnitFullName) == "function" then
+        name, realm = UnitFullName("player")
+    elseif type(UnitName) == "function" then
+        name = UnitName("player")
+    end
+    if type(name) ~= "string" or name == "" or IsSecret(name) then
+        name = "UnknownCharacter"
+    end
+    if type(realm) ~= "string" or realm == "" or IsSecret(realm) then
+        realm = type(GetRealmName) == "function" and GetRealmName() or "UnknownRealm"
+    end
+    if type(realm) ~= "string" or realm == "" or IsSecret(realm) then
+        realm = "UnknownRealm"
+    end
+    return name .. "-" .. realm
+end
+
+local function SetThankYouMessages(messages)
+    ThanksForTheBuffForeverDB.characterMessages = ThanksForTheBuffForeverDB.characterMessages or {}
+    ThanksForTheBuffForeverDB.characterMessages[CurrentCharacterKey()] = messages
+end
+
 local function GetThankYouMessages()
     if not ThanksForTheBuffForeverDB then
         return DEFAULT_THANK_YOU_MESSAGES
     end
 
-    local messages = ThanksForTheBuffForeverDB.messages
+    ThanksForTheBuffForeverDB.characterMessages = ThanksForTheBuffForeverDB.characterMessages or {}
+    local messages = ThanksForTheBuffForeverDB.characterMessages[CurrentCharacterKey()]
     if type(messages) ~= "table" or #messages == 0 then
         messages = CopyDefaultMessages()
-        ThanksForTheBuffForeverDB.messages = messages
+        SetThankYouMessages(messages)
     end
 
     return messages
@@ -151,7 +176,7 @@ local function RemoveThankYouMessage(value)
 end
 
 local function ResetThankYouMessages()
-    ThanksForTheBuffForeverDB.messages = CopyDefaultMessages()
+    SetThankYouMessages(CopyDefaultMessages())
     wipe(lastMessageIndexByCaster)
     Print("restored the 15 default thank-you phrases.")
 end
@@ -183,7 +208,7 @@ local function SaveThankYouMessagesFromText(text)
         return false, "Keep at least one thank-you phrase."
     end
 
-    ThanksForTheBuffForeverDB.messages = messages
+    SetThankYouMessages(messages)
     wipe(lastMessageIndexByCaster)
     return true, "Saved " .. #messages .. " thank-you phrase" .. (#messages == 1 and "." or "s.")
 end
@@ -214,7 +239,7 @@ local function RegisterOptionsPanel()
     description:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -10)
     description:SetPoint("RIGHT", panel, "RIGHT", -24, 0)
     description:SetJustifyH("LEFT")
-    description:SetText("Choose the thank-you phrases the add-on can whisper. Put one phrase on each line, then press Save phrases.")
+    description:SetText("Choose the thank-you phrases for this character. Put one phrase on each line, then press Save phrases.")
 
     local enabled = CreateFrame("CheckButton", nil, panel, "UICheckButtonTemplate")
     enabled:SetPoint("TOPLEFT", description, "BOTTOMLEFT", -4, -12)
@@ -1412,6 +1437,17 @@ frame:SetScript("OnEvent", function(_, event, ...)
         end
         if type(ThanksForTheBuffForeverDB.minimapHidden) ~= "boolean" then
             ThanksForTheBuffForeverDB.minimapHidden = false
+        end
+        if type(ThanksForTheBuffForeverDB.characterMessages) ~= "table" then
+            ThanksForTheBuffForeverDB.characterMessages = {}
+        end
+        if not ThanksForTheBuffForeverDB.characterPhraseMigrationDone then
+            local legacy = ThanksForTheBuffForeverDB.messages
+            if type(legacy) == "table" and #legacy > 0 then
+                ThanksForTheBuffForeverDB.characterMessages[CurrentCharacterKey()] = legacy
+            end
+            ThanksForTheBuffForeverDB.messages = nil
+            ThanksForTheBuffForeverDB.characterPhraseMigrationDone = true
         end
         GetThankYouMessages()
 

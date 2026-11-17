@@ -2,6 +2,13 @@
 
 This file records public release versions and verified changes only.
 
+## 1.1.12 — 2026-11-17
+
+- Prevents visual highlights from moving onto the wrong words when a draft is
+  wider than the chat box; spelling checks and right-click corrections remain active.
+- Hooks the Forever client's active chat-box path so edit boxes created after
+  login receive spelling and right-click support.
+
 ## 1.1.11 — 2026-11-16
 
 - Restored the missing chat edit-box mouse adapter so right-click correction menus open again.

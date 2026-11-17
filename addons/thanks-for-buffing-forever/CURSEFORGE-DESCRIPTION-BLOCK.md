@@ -7,6 +7,7 @@ When another player gives you a helpful buff, **Thanks For The Buff: Forever** w
 ## What it does
 
 - Chooses from 15 natural replies such as “thanks!”, “cheers!”, and “much appreciated!”
+- Saves a separate editable phrase list for each character
 - Adds a phrase editor under **Options → AddOns → Thanks for Buffing: Forever**, with one phrase per line plus Save and Restore defaults buttons
 - Adds a draggable minimap shortcut: left-click opens the phrase editor and right-click enables or disables automatic thanks
 - Waits a random 3–10 seconds so replies do not feel instant or robotic

@@ -1,4 +1,12 @@
-# Utility Helper: Forever 0.1.33 — verification record
+# Utility Helper: Forever 0.1.34 — verification record
+
+## 0.1.34 Druid control-break reminder
+
+- A focused Lua scenario verifies that a recognised Polymorph or root offers a
+  learned form different from the one already active.
+- The current form is suppressed, another form is offered, and every reminder
+  stays hidden when no recognised effect is present.
+- All modified Lua files pass syntax parsing.
 
 ## 0.1.33 expanded recovery consumables
 

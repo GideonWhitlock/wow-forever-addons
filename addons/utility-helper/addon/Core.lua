@@ -290,6 +290,18 @@ function U.HasAura(unit, ids, filter, ownOnly)
     end
     if readable then return false end
 end
+
+function U.ActiveShapeshiftSpellID()
+    local count = U.Public(GetNumShapeshiftForms)
+    if type(count) ~= "number" then return nil end
+    for index = 1, count do
+        local ok, _, active, _, spellID = U.Call(GetShapeshiftFormInfo, index)
+        if ok and not U.Secret(active) and active then
+            return U.Secret(spellID) and nil or spellID
+        end
+    end
+    return false
+end
 function U.NoteSuccessfulMaintenance(spellID)
     if U.Secret(spellID) or type(spellID) ~= "number" then return end
     for _, e in ipairs(U.entries or {}) do
@@ -507,6 +519,17 @@ function U.Condition(e, unit)
             if U.ItemCount(id) > 0 then return false, "Required conjured item is already in your bags" end
         end
         return true, "Conjured item missing from your bags"
+    end
+    if e.rule == "shapeshiftbreak" then
+        local controlled = U.HasAura("player", e.breakAuras or {}, "HARMFUL")
+        if controlled == nil then return nil, "Control-effect information restricted" end
+        if not controlled then return false, "Not polymorphed or rooted" end
+        local activeSpellID = U.ActiveShapeshiftSpellID()
+        if activeSpellID == nil then return nil, "Current shapeshift form unavailable" end
+        for _, spellID in ipairs(e.formSpellIDs or {e.id}) do
+            if activeSpellID == spellID then return false, "Already in this form; choose another form" end
+        end
+        return true, "Shapeshift to break Polymorph or a root"
     end
     if not U.Alive(unit) then return false, "No living recipient" end
     local hostile = e.rule == "interrupt" or e.rule == "purge" or e.rule == "creature" or e.rule == "control"

@@ -1,6 +1,6 @@
 MISSPELLED: FOREVER - LIVE TEST CHECKLIST
 
-Version 1.1.11 keeps the Enter pre-hook removed and no longer calls Blizzard's
+Version 1.1.12 keeps the Enter pre-hook removed and no longer calls Blizzard's
 protected chat-activation function from its secure post-hook. Enter `/target` followed by
 the exact name of a nearby enemy and confirm the target changes without a blocked-action
 dialog. This was owner-tested successfully on 11 November 2026.
@@ -8,6 +8,12 @@ dialog. This was owner-tested successfully on 11 November 2026.
 For the keyboard-focus report, open chat during combat, type a draft, and click into
 the world. Press the normal Open Chat key, type again, and press Escape. If keyboard
 focus fails to return, compare the same steps with Misspelled disabled.
+
+For the long-draft report, type beyond the visible width of the chat box. The
+visual overlay should hide instead of moving onto another word; right-click
+corrections should remain available. Shorten or clear the draft and confirm the
+overlay returns. Open a chat edit box created after login and confirm it also
+receives spelling and right-click support.
 
 1. Enable the add-on, log in, and confirm there are no Lua errors. Confirm the
    parchment-and-quill minimap button is visible and centred on the minimap border,

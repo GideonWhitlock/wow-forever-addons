@@ -15,6 +15,7 @@ function Q.UpdateOptions()
     if not panel or not Q.db then return end
     panel.template:SetText(Q.db.template)
     panel.minimap:SetChecked(not Q.db.minimap.hidden)
+    panel.inviteWhispers:SetChecked(Q.db.inviteWhispers ~= false)
     panel.preview:SetText("Preview: " .. Q.BuildMessage())
 end
 
@@ -22,7 +23,7 @@ function Q.CreateOptions()
     if Q.optionsPanel then return end
     local panel = CreateFrame("Frame", "LFGMessengerForeverOptions", UIParent, "BackdropTemplate")
     Q.optionsPanel = panel
-    panel:SetSize(440, 285)
+    panel:SetSize(440, 315)
     panel:SetPoint("CENTER")
     panel:SetFrameStrata("DIALOG")
     panel:SetClampedToScreen(true)
@@ -77,6 +78,11 @@ function Q.CreateOptions()
     minimap:SetScript("OnClick", function(self)
         Q.db.minimap.hidden = not self:GetChecked()
         Q.UpdateMinimap()
+    end)
+    local inviteWhispers = createCheckbox(panel, "Whisper the player after an invite", 26, -215)
+    panel.inviteWhispers = inviteWhispers
+    inviteWhispers:SetScript("OnClick", function(self)
+        Q.db.inviteWhispers = self:GetChecked() and true or false
     end)
     local reset = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
     reset:SetSize(130, 24)

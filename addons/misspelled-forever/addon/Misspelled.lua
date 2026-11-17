@@ -303,6 +303,9 @@ function Misspelled:OnInitialize()
 	elseif ChatFrameEditBox ~= nil then
 		Misspelled:WireUpEditBox(ChatFrameEditBox)
 	end
+	if ChatFrameUtil and type(ChatFrameUtil.ActivateChat) == "function" then
+		Misspelled:SecureHook(ChatFrameUtil, "ActivateChat", "ChatFrameUtil_ActivateChat")
+	end
 
 	-- EditBox_OnEnterPressed already removes Misspelled's display markup before a
 	-- player sends typed chat. Do not replace SendChatMessage here: on Forever the
@@ -429,7 +432,14 @@ function Misspelled:UpdateVisualHighlights(editbox)
 	measure:SetText(text)
 	local textWidth = measure:GetStringWidth()
 	local visibleWidth = math.max(0, editbox:GetWidth() - leftInset - rightInset)
-	local scrollOffset = math.max(0, textWidth - visibleWidth)
+	-- Forever does not expose the edit box's live horizontal scroll offset. Once
+	-- a draft is wider than the visible box, guessing that offset can paint a
+	-- highlight over the wrong word. Keep spelling and right-click corrections
+	-- active, but hide only the visual overlay until the draft fits again.
+	if textWidth > visibleWidth then
+		return
+	end
+	local scrollOffset = 0
 	local shown = 0
 
 	for _, location in ipairs(locations) do
@@ -528,6 +538,20 @@ function Misspelled:ChatEdit_ActivateChat(editBox)
 	local hooked = Misspelled:IsHooked(editBox, "OnTextChanged")
 	if hooked == false then
 		Misspelled:WireUpEditBox(editBox)
+	end
+end
+
+function Misspelled:ChatFrameUtil_ActivateChat(first, second)
+	if InCombatLockdown and InCombatLockdown() then
+		return
+	end
+
+	local editBox = first
+	if editBox == ChatFrameUtil then
+		editBox = second
+	end
+	if editBox and editBox.GetText and not self:IsHooked(editBox, "OnTextChanged") then
+		self:WireUpEditBox(editBox)
 	end
 end
 
