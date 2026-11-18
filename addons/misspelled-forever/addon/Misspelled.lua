@@ -50,7 +50,9 @@ The Chat Edit box's edit cursor position is relative to characters that don't di
 chat edit text, i.e. item link tags, color tags, and texture tags.
 When we add, or remove, a color tag, to highlight a misspelled word,  we should adjust the
 cursor position so it acts natural.
-Note: An OnCursorChanged event doesn't exist or doesn't fire for the ChatEditBox.
+Historical note: older clients did not reliably fire OnCursorChanged for chat.
+Forever does fire it, and the current non-mutating overlay uses it only to keep
+the insertion caret visible; it never inserts colour tags into the edit text.
 
 Solution:
 Methods that insert or delete text from the ChatEditBox need to properly adjust the cursor
@@ -351,6 +353,14 @@ function Misspelled:WireUpEditBox(editbox)
 	-- command text unchanged, a pre-hook can taint protected commands such as
 	-- /target on Forever. Default chat spell checking is non-mutating below.
 	Misspelled:SecureHookScript(editbox, "OnTextChanged", Misspelled.EditBox_OnTextChanged)
+	-- Leatrix Plus can enable normal left/right cursor movement in chat. Refresh
+	-- the visual overlay when the insertion point moves so it never covers the
+	-- caret and makes those arrow-key movements appear to stop working.
+	Misspelled:SecureHookScript(editbox, "OnCursorChanged", Misspelled.EditBox_OnCursorChanged)
+	-- Forever does not always emit OnCursorChanged for Leatrix's arrow-key mode.
+	-- Watch only navigation keys as a fallback, then refresh on the next frame
+	-- after Blizzard has applied the new cursor position.
+	Misspelled:SecureHookScript(editbox, "OnKeyDown", Misspelled.EditBox_OnKeyDown)
 	Misspelled:SecureHookScript(editbox, "OnMouseUp", Misspelled.EditBox_OnMouseUp)
 end
 
@@ -371,6 +381,26 @@ local function HideVisualHighlights(editbox)
 			highlight:Hide()
 		end
 	end
+	if editbox.MisspelledVisibleCaret then
+		editbox.MisspelledVisibleCaret:Hide()
+	end
+end
+
+local function GetVisibleCaret(editbox, fontSize)
+	local caret = editbox.MisspelledVisibleCaret
+	if not caret then
+		-- Use a solid overlay bar instead of a font glyph. Some chat replacements
+		-- suppress caret-like glyphs while ordinary overlay textures remain visible.
+		caret = editbox:CreateTexture(nil, "OVERLAY", nil, 7)
+		caret:SetColorTexture(1, 1, 1, 1)
+		editbox.MisspelledVisibleCaret = caret
+	end
+
+	if caret.SetDrawLayer then
+		caret:SetDrawLayer("OVERLAY", 7)
+	end
+	caret:SetSize(2, (fontSize or 14) + 2)
+	return caret
 end
 
 local function GetMatchingFontString(editbox, index)
@@ -412,15 +442,6 @@ function Misspelled:UpdateVisualHighlights(editbox)
 	HideVisualHighlights(editbox)
 
 	local text = editbox:GetText() or ""
-	if text == "" or IsSlashCommand(text) then
-		return
-	end
-
-	local locations = WordLocations[editbox:GetName()]
-	if not locations then
-		return
-	end
-
 	if not editbox.MisspelledMeasure then
 		local measure = editbox:CreateFontString(nil, "OVERLAY")
 		measure:Hide()
@@ -448,10 +469,42 @@ function Misspelled:UpdateVisualHighlights(editbox)
 	end
 	local scrollOffset = 0
 	local shown = 0
+	local cursorPosition = editbox:GetCursorPosition()
+	-- Leatrix's arrow-key chat mode can move the insertion point without drawing
+	-- Blizzard's native caret. Keep our visual caret present at every position,
+	-- not only while it happens to be inside a highlighted misspelling.
+	if cursorPosition ~= nil then
+		measure:SetText(string_sub(text, 1, cursorPosition))
+		local caretX = leftInset + measure:GetStringWidth() - scrollOffset
+		if caretX >= leftInset and caretX <= editbox:GetWidth() - rightInset then
+			local caret = GetVisibleCaret(editbox, size)
+			caret:ClearAllPoints()
+			caret:SetPoint("LEFT", editbox, "LEFT", caretX, 0)
+			caret:Show()
+		end
+	end
+
+	if text == "" or IsSlashCommand(text) then
+		return
+	end
+
+	local locations = WordLocations[editbox:GetName()]
+	if not locations then
+		return
+	end
 
 	for _, location in ipairs(locations) do
 		local cached = WordCache[location.Word]
-		if cached and cached.Correct == false then
+		-- GetCursorPosition is zero-based while the recorded word positions are
+		-- one-based. Do not paint the active word over the insertion caret. This
+		-- preserves a visible caret with Leatrix Plus arrow-key chat navigation;
+		-- the highlight returns as soon as the caret moves outside the word.
+		local cursorTouchesWord = cursorPosition ~= nil
+			and cursorPosition >= location.StartPos - 1
+			and cursorPosition <= location.EndPos
+		if cached and cached.Correct == false and cursorTouchesWord then
+			-- Leave the active word unpainted so the persistent caret is unobstructed.
+		elseif cached and cached.Correct == false and not cursorTouchesWord then
 			local prefix = string_sub(text, 1, location.StartPos - 1)
 			local word = string_sub(text, location.StartPos, location.EndPos)
 			measure:SetText(prefix)
@@ -602,6 +655,22 @@ function Misspelled.EditBox_OnTextChanged(editbox)
 
 	-- Wait for a delimiter before marking the word being typed at the end.
 	Misspelled:SpellCheckChat(editbox, editbox:GetCursorPosition() == #text)
+end
+
+function Misspelled.EditBox_OnCursorChanged(editbox)
+	Misspelled:UpdateVisualHighlights(editbox)
+end
+
+function Misspelled.EditBox_OnKeyDown(editbox, key)
+	if key ~= "LEFT" and key ~= "RIGHT" and key ~= "HOME" and key ~= "END" then
+		return
+	end
+
+	C_Timer.After(0, function()
+		if editbox and editbox.IsShown and editbox:IsShown() then
+			Misspelled:UpdateVisualHighlights(editbox)
+		end
+	end)
 end
 
 function Misspelled.EditBox_OnEscapePressed(editbox)

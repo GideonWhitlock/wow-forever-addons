@@ -1,3 +1,13 @@
+Misspelled: Forever 1.1.14
+
+- Keeps a visible chat insertion caret at every position when Leatrix Plus
+  enables left/right arrow-key movement.
+- Temporarily hides only the overlay for the word containing the caret; spelling
+  checks and right-click corrections remain active.
+- Draws a persistent visual-only fallback caret when Forever moves the
+  insertion point without rendering the native caret.
+- Does not change Leatrix Plus's arrow-key preference or keyboard mode.
+
 Misspelled: Forever 1.1.13
 
 - Keeps the chosen misspelling colour above chat replacement text so fragments

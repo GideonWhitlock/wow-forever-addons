@@ -1,6 +1,6 @@
 MISSPELLED: FOREVER - LIVE TEST CHECKLIST
 
-Version 1.1.13 keeps the Enter pre-hook removed and no longer calls Blizzard's
+Version 1.1.14 keeps the Enter pre-hook removed and no longer calls Blizzard's
 protected chat-activation function from its secure post-hook. Enter `/target` followed by
 the exact name of a nearby enemy and confirm the target changes without a blocked-action
 dialog. This was owner-tested successfully on 11 November 2026.
@@ -14,6 +14,13 @@ visual overlay should hide instead of moving onto another word; right-click
 corrections should remain available. Shorten or clear the draft and confirm the
 overlay returns. Open a chat edit box created after login and confirm it also
 receives spelling and right-click support.
+
+With Leatrix Plus's "Use arrow keys in chat" enabled, type a completed
+misspelling, move the insertion caret into and through that word with Left and
+Right, and confirm the caret remains visible and moves normally at every
+position, including spaces and the end of the message. The overlay for only that
+active word should hide while the caret is inside it and return after the caret
+leaves. Confirm Misspelled never changes the edit box's AltArrowKeyMode setting.
 
 1. Enable the add-on, log in, and confirm there are no Lua errors. Confirm the
    parchment-and-quill minimap button is visible and centred on the minimap border,

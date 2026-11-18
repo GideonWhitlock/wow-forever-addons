@@ -2,6 +2,13 @@
 
 This file records public release versions and verified changes only.
 
+## 1.1.14 — 2026-11-18
+
+- Keeps a visible chat insertion caret at every position when Leatrix Plus enables left/right arrow-key movement.
+- Temporarily hides only the misspelling overlay for the word containing the caret; spelling checks and right-click corrections remain active.
+- Draws a persistent visual-only fallback caret when the Forever chat edit box moves its insertion point without rendering the native caret.
+- Does not change Leatrix Plus's arrow-key preference or the chat edit box's keyboard mode.
+
 ## 1.1.13 — 2026-11-18
 
 - Places visual misspelling highlights on the highest overlay sublevel so chat
