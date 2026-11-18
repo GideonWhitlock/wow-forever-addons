@@ -1,5 +1,12 @@
 # Utility Helper: Forever changelog
 
+## 0.1.35
+
+- Changed Druid control-break reminders to inspect the active loss-of-control
+  effect category instead of maintaining a list of individual spell IDs.
+- Roots, movement slows and Polymorph effects now qualify regardless of which
+  spell or creature applied them; non-breakable control effects remain excluded.
+
 ## 0.1.34
 
 - Added Druid shapeshift reminders while a readable Polymorph or root effect is active.

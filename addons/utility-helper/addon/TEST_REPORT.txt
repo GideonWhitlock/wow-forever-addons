@@ -1,4 +1,12 @@
-# Utility Helper: Forever 0.1.34 — verification record
+# Utility Helper: Forever 0.1.35 — verification record
+
+## 0.1.35 effect-category control detection
+
+- The Druid reminder reads the client's active loss-of-control category rather
+  than matching a maintained list of spell IDs.
+- Focused coverage verifies arbitrary ROOT, POLYMORPH and SNARE sources trigger
+  another learned form, while STUN and no active control effect do not.
+- LOSS_OF_CONTROL events request an immediate refresh.
 
 ## 0.1.34 Druid control-break reminder
 

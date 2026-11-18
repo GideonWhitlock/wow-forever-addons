@@ -302,6 +302,39 @@ function U.ActiveShapeshiftSpellID()
     end
     return false
 end
+local shapeshiftBreakableControlTypes = {
+    -- These are loss-of-control mechanics, not spell identities. Shapeshifting
+    -- removes roots, movement slows and Polymorph regardless of which spell or
+    -- creature applied the effect. Other control categories are deliberately
+    -- excluded because changing form does not remove them.
+    ROOT = true,
+    SNARE = true,
+    POLYMORPH = true,
+}
+function U.HasShapeshiftBreakableControl()
+    local api = C_LossOfControl
+    local getCount = api and (api.GetNumEvents or api.GetActiveLossOfControlDataCount)
+    local getEvent = api and (api.GetEventInfo or api.GetActiveLossOfControlData)
+    if type(getCount) ~= "function" or type(getEvent) ~= "function" then return nil end
+
+    local count = U.Public(getCount)
+    if type(count) ~= "number" then return nil end
+    local readable = true
+    for index = 1, count do
+        local ok, data = U.Call(getEvent, index)
+        if not ok or type(data) ~= "table" or U.Secret(data) then
+            readable = false
+        else
+            local controlType = data.locType
+            if U.Secret(controlType) or type(controlType) ~= "string" then
+                readable = false
+            elseif shapeshiftBreakableControlTypes[controlType] then
+                return true, controlType
+            end
+        end
+    end
+    if readable then return false end
+end
 function U.NoteSuccessfulMaintenance(spellID)
     if U.Secret(spellID) or type(spellID) ~= "number" then return end
     for _, e in ipairs(U.entries or {}) do
@@ -521,15 +554,15 @@ function U.Condition(e, unit)
         return true, "Conjured item missing from your bags"
     end
     if e.rule == "shapeshiftbreak" then
-        local controlled = U.HasAura("player", e.breakAuras or {}, "HARMFUL")
+        local controlled = U.HasShapeshiftBreakableControl()
         if controlled == nil then return nil, "Control-effect information restricted" end
-        if not controlled then return false, "Not polymorphed or rooted" end
+        if not controlled then return false, "No shapeshift-breakable control effect" end
         local activeSpellID = U.ActiveShapeshiftSpellID()
         if activeSpellID == nil then return nil, "Current shapeshift form unavailable" end
         for _, spellID in ipairs(e.formSpellIDs or {e.id}) do
             if activeSpellID == spellID then return false, "Already in this form; choose another form" end
         end
-        return true, "Shapeshift to break Polymorph or a root"
+        return true, "Shapeshift to break the active control effect"
     end
     if not U.Alive(unit) then return false, "No living recipient" end
     local hostile = e.rule == "interrupt" or e.rule == "purge" or e.rule == "creature" or e.rule == "control"

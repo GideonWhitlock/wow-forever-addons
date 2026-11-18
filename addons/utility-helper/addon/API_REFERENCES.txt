@@ -1,5 +1,11 @@
 # Forever API references
 
+Version 0.1.35 uses `C_LossOfControl.GetNumEvents` and `GetEventInfo`
+(including their ActiveLossOfControl compatibility names) to read the mechanic
+currently affecting the player. Druid shapeshift reminders use the `locType`
+category (`ROOT`, `SNARE`, or `POLYMORPH`) rather than individual spell IDs.
+`LOSS_OF_CONTROL_UPDATE` and `LOSS_OF_CONTROL_ADDED` refresh the display.
+
 Version 0.1.15 reads `C_Minimap.GetNumTrackingTypes` and
 `C_Minimap.GetTrackingInfo` to identify whether one of Utility Helper's learned
 resource trackers is active. Matching uses the localized learned spell name.
