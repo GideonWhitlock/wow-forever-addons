@@ -1,6 +1,6 @@
 MISSPELLED: FOREVER - LIVE TEST CHECKLIST
 
-Version 1.1.12 keeps the Enter pre-hook removed and no longer calls Blizzard's
+Version 1.1.13 keeps the Enter pre-hook removed and no longer calls Blizzard's
 protected chat-activation function from its secure post-hook. Enter `/target` followed by
 the exact name of a nearby enemy and confirm the target changes without a blocked-action
 dialog. This was owner-tested successfully on 11 November 2026.
@@ -42,5 +42,8 @@ receives spelling and right-click support.
     the preview and any visible misspelling change immediately. Enter invalid text
     and confirm it is rejected, then use Reset highlight colour.
 12. If WIM is installed, repeat correction and sending from a WIM message box.
+13. With Prat enabled and its chat background set to black, choose `#FF0000`,
+    type `test worins `, and confirm the misspelling is solid red without cyan
+    fragments from the underlying whisper or channel text.
 
 Live game interaction is intentionally still required for the checks above.

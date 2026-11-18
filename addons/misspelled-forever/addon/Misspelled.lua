@@ -377,10 +377,17 @@ local function GetMatchingFontString(editbox, index)
 	editbox.MisspelledHighlightPool = editbox.MisspelledHighlightPool or {}
 	local highlight = editbox.MisspelledHighlightPool[index]
 	if not highlight then
-		highlight = editbox:CreateFontString(nil, "OVERLAY")
+		-- Prat and other chat replacements can put their edit-box text on the
+		-- OVERLAY layer too. Use the highest overlay sublevel so the selected
+		-- highlight colour fully covers that channel-coloured text instead of
+		-- leaving coloured glyph edges visible underneath it.
+		highlight = editbox:CreateFontString(nil, "OVERLAY", nil, 7)
 		highlight:SetJustifyH("LEFT")
 		highlight:SetJustifyV("MIDDLE")
 		editbox.MisspelledHighlightPool[index] = highlight
+	end
+	if highlight.SetDrawLayer then
+		highlight:SetDrawLayer("OVERLAY", 7)
 	end
 
 	local font, size, flags = editbox:GetFont()

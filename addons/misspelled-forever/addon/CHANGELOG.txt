@@ -1,3 +1,9 @@
+Misspelled: Forever 1.1.13
+
+- Keeps the chosen misspelling colour above chat replacement text so fragments
+  of the old channel colour do not show through the highlighted word.
+- Preserves safe plain-text chat, long-draft handling and right-click corrections.
+
 Misspelled: Forever 1.1.12
 
 - Hides only the visual overlay when a long draft scrolls horizontally, avoiding highlights on the wrong words while preserving corrections.

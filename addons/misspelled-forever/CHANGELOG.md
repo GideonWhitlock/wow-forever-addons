@@ -2,6 +2,13 @@
 
 This file records public release versions and verified changes only.
 
+## 1.1.13 — 2026-11-18
+
+- Places visual misspelling highlights on the highest overlay sublevel so chat
+  replacements such as Prat cannot leave fragments of their channel colour
+  visible through a newly selected highlight colour.
+- Preserves the non-mutating chat text, long-draft safety and right-click corrections.
+
 ## 1.1.12 — 2026-11-17
 
 - Prevents visual highlights from moving onto the wrong words when a draft is
