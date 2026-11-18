@@ -460,29 +460,29 @@ function Misspelled:UpdateVisualHighlights(editbox)
 	measure:SetText(text)
 	local textWidth = measure:GetStringWidth()
 	local visibleWidth = math.max(0, editbox:GetWidth() - leftInset - rightInset)
-	-- Forever does not expose the edit box's live horizontal scroll offset. Once
-	-- a draft is wider than the visible box, guessing that offset can paint a
-	-- highlight over the wrong word. Keep spelling and right-click corrections
-	-- active, but hide only the visual overlay until the draft fits again.
-	if textWidth > visibleWidth then
-		return
-	end
-	local scrollOffset = 0
-	local shown = 0
+	local scrollOffset = math.max(0, textWidth - visibleWidth)
 	local cursorPosition = editbox:GetCursorPosition()
 	-- Leatrix's arrow-key chat mode can move the insertion point without drawing
-	-- Blizzard's native caret. Keep our visual caret present at every position,
-	-- not only while it happens to be inside a highlighted misspelling.
+	-- Blizzard's native caret. Draw the fallback before the long-draft overlay
+	-- guard below. Pasted text commonly exceeds the edit box width; its inferred
+	-- end-aligned scroll keeps the caret visible while moving back through it.
 	if cursorPosition ~= nil then
 		measure:SetText(string_sub(text, 1, cursorPosition))
 		local caretX = leftInset + measure:GetStringWidth() - scrollOffset
-		if caretX >= leftInset and caretX <= editbox:GetWidth() - rightInset then
-			local caret = GetVisibleCaret(editbox, size)
-			caret:ClearAllPoints()
-			caret:SetPoint("LEFT", editbox, "LEFT", caretX, 0)
-			caret:Show()
-		end
+		caretX = math.max(leftInset, math.min(editbox:GetWidth() - rightInset, caretX))
+		local caret = GetVisibleCaret(editbox, size)
+		caret:ClearAllPoints()
+		caret:SetPoint("LEFT", editbox, "LEFT", caretX, 0)
+		caret:Show()
 	end
+	-- Forever does not expose the edit box's live horizontal scroll offset. Once
+	-- a draft is wider than the visible box, guessing that offset can paint a
+	-- highlight over the wrong word. Keep spelling, right-click corrections and
+	-- the visible caret active, but hide word overlays until the draft fits again.
+	if textWidth > visibleWidth then
+		return
+	end
+	local shown = 0
 
 	if text == "" or IsSlashCommand(text) then
 		return
@@ -792,9 +792,14 @@ function Misspelled:CheckLine(text, editbox, skipTrailingWord)
 			break
 		end
 		word = string_sub(newText, matchPosStart, matchPosEnd)
+		-- Lua patterns operate on bytes. A pasted multi-byte punctuation mark
+		-- (for example a curly apostrophe) can therefore make the legacy Latin
+		-- character class return a slice beginning on a UTF-8 continuation byte.
+		-- Never pass such a broken slice into the dictionary's UTF-8 affix code.
+		local validUtf8Word = string.utf8len == nil or pcall(string.utf8len, word)
 
 		--ignore all uppercase words
-		if word ~= string_upper(word) then
+		if validUtf8Word and word ~= string_upper(word) then
 			--ignore words with numbers in them
 			if string_match(word, "[%d]") == nil then
 				x = x + 1

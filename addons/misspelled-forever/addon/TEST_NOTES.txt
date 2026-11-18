@@ -1,5 +1,13 @@
 MISSPELLED: FOREVER - LIVE TEST CHECKLIST
 
+Version 1.1.15 guards dictionary lookup against malformed UTF-8 word slices
+created by Lua's byte-based matching of pasted smart punctuation. Paste a line
+containing curly apostrophes, curly quotation marks or an em dash into chat and
+confirm that the draft remains unchanged, surrounding misspellings are still
+highlighted and no Invalid UTF-8 character error appears. Paste a line wider
+than the chat box, press Left and Right repeatedly, and confirm the visible
+caret remains present as the edit box scrolls through the draft.
+
 Version 1.1.14 keeps the Enter pre-hook removed and no longer calls Blizzard's
 protected chat-activation function from its secure post-hook. Enter `/target` followed by
 the exact name of a nearby enemy and confirm the target changes without a blocked-action

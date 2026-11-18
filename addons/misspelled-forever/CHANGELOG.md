@@ -2,6 +2,16 @@
 
 This file records public release versions and verified changes only.
 
+## 1.1.15 — 2026-11-18
+
+- Prevents pasted smart punctuation and other multi-byte characters from being
+  split into invalid UTF-8 word fragments by Lua's byte-based pattern matcher.
+- Invalid fragments are ignored instead of being sent into the dictionary's
+  affix engine, preventing the repeated `Invalid UTF-8 character` Lua error.
+- Normal surrounding words continue to be checked without changing pasted text.
+- Keeps the fallback insertion caret visible when pasted text is wider than the
+  chat box and the user moves through it with Left or Right.
+
 ## 1.1.14 — 2026-11-18
 
 - Keeps a visible chat insertion caret at every position when Leatrix Plus enables left/right arrow-key movement.

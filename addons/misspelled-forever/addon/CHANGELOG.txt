@@ -1,3 +1,12 @@
+Misspelled: Forever 1.1.15
+
+- Ignores malformed word slices created when Lua's byte-based word matcher
+  encounters pasted smart punctuation or other multi-byte characters.
+- Prevents repeated Invalid UTF-8 character errors while leaving pasted chat
+  text unchanged and continuing to check surrounding words.
+- Keeps the fallback caret visible while moving through pasted text wider than
+  the chat box.
+
 Misspelled: Forever 1.1.14
 
 - Keeps a visible chat insertion caret at every position when Leatrix Plus
