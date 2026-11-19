@@ -113,6 +113,7 @@ local AceGUI = LibStub("AceGUI-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale("Misspelled", true)
 
 local table_insert = table.insert
+local table_concat = table.concat
 local string_byte = string.byte
 local string_find = string.find
 local string_format = string.format
@@ -414,31 +415,28 @@ local function GetMatchingFontString(editbox, index)
 	editbox.MisspelledHighlightPool = editbox.MisspelledHighlightPool or {}
 	local highlight = editbox.MisspelledHighlightPool[index]
 	if not highlight then
-		-- Prat and other chat replacements can put their edit-box text on the
-		-- OVERLAY layer too. Use the highest overlay sublevel so the selected
-		-- highlight colour fully covers that channel-coloured text instead of
-		-- leaving coloured glyph edges visible underneath it.
-		highlight = editbox:CreateFontString(nil, "OVERLAY", nil, 7)
+		-- Draw one complete visual copy of the edit-box line. Using separate
+		-- overlays for each word accumulates tiny font-width differences and lets
+		-- the channel-coloured text beneath show around later words.
+		highlight = editbox:CreateFontString(nil, "OVERLAY", nil, 6)
 		highlight:SetJustifyH("LEFT")
 		highlight:SetJustifyV("MIDDLE")
 		editbox.MisspelledHighlightPool[index] = highlight
 	end
 	if highlight.SetDrawLayer then
-		highlight:SetDrawLayer("OVERLAY", 7)
+		highlight:SetDrawLayer("OVERLAY", 6)
 	end
 
 	local font, size, flags = editbox:GetFont()
 	if font and size then
 		highlight:SetFont(font, size, flags)
 	end
-	local shadowColorR, shadowColorG, shadowColorB, shadowColorA = editbox:GetShadowColor()
-	if shadowColorR then
-		highlight:SetShadowColor(shadowColorR, shadowColorG, shadowColorB, shadowColorA)
-	end
+	-- The edit box may use a channel-coloured shadow. Cover that underlying
+	-- shadow with a neutral black shadow at the same offset: copying it produces
+	-- a coloured halo, while recolouring it produces a doubled-looking word.
 	local shadowX, shadowY = editbox:GetShadowOffset()
-	if shadowX then
-		highlight:SetShadowOffset(shadowX, shadowY)
-	end
+	highlight:SetShadowColor(0, 0, 0, 1)
+	highlight:SetShadowOffset(shadowX or 0, shadowY or 0)
 	return highlight
 end
 
@@ -496,8 +494,6 @@ function Misspelled:UpdateVisualHighlights(editbox)
 	if textWidth > visibleWidth then
 		return
 	end
-	local shown = 0
-
 	if text == "" or IsSlashCommand(text) then
 		return
 	end
@@ -506,6 +502,11 @@ function Misspelled:UpdateVisualHighlights(editbox)
 	if not locations then
 		return
 	end
+
+	local pieces = {}
+	local nextTextPos = 1
+	local highlighted = false
+	local colourCode = "|cff" .. string_sub(GetHighlightHex(), 2)
 
 	for _, location in ipairs(locations) do
 		local cached = WordCache[location.Word]
@@ -516,28 +517,25 @@ function Misspelled:UpdateVisualHighlights(editbox)
 		local cursorTouchesWord = cursorPosition ~= nil
 			and cursorPosition >= location.StartPos - 1
 			and cursorPosition <= location.EndPos
-		if cached and cached.Correct == false and cursorTouchesWord then
-			-- Leave the active word unpainted so the persistent caret is unobstructed.
-		elseif cached and cached.Correct == false and not cursorTouchesWord then
-			local prefix = string_sub(text, 1, location.StartPos - 1)
-			local word = string_sub(text, location.StartPos, location.EndPos)
-			measure:SetText(prefix)
-			local prefixWidth = measure:GetStringWidth()
-			measure:SetText(word)
-			local wordWidth = measure:GetStringWidth()
-			local x = leftInset + prefixWidth - scrollOffset
-
-			if x + wordWidth > leftInset and x < editbox:GetWidth() - rightInset then
-				shown = shown + 1
-				local highlight = GetMatchingFontString(editbox, shown)
-				highlight:ClearAllPoints()
-				highlight:SetPoint("LEFT", editbox, "LEFT", x, 0)
-				highlight:SetText(word)
-				local r, g, b = GetHighlightColor()
-				highlight:SetTextColor(r, g, b, 1)
-				highlight:Show()
-			end
+		if cached and cached.Correct == false and not cursorTouchesWord then
+			table_insert(pieces, string_sub(text, nextTextPos, location.StartPos - 1))
+			table_insert(pieces, colourCode)
+			table_insert(pieces, string_sub(text, location.StartPos, location.EndPos))
+			table_insert(pieces, "|r")
+			nextTextPos = location.EndPos + 1
+			highlighted = true
 		end
+	end
+
+	if highlighted then
+		table_insert(pieces, string_sub(text, nextTextPos))
+		local highlight = GetMatchingFontString(editbox, 1)
+		local baseR, baseG, baseB, baseA = editbox:GetTextColor()
+		highlight:SetTextColor(baseR or 1, baseG or 1, baseB or 1, baseA or 1)
+		highlight:ClearAllPoints()
+		highlight:SetPoint("LEFT", editbox, "LEFT", leftInset - scrollOffset, 0)
+		highlight:SetText(table_concat(pieces))
+		highlight:Show()
 	end
 end
 

@@ -1,3 +1,13 @@
+Misspelled: Forever 1.1.18
+
+- Prevents Prat's channel-coloured font shadow from appearing as a cyan glow
+  around custom-coloured misspelling highlights.
+- Replaces the overlay's channel-coloured shadow with a neutral black mask so
+  custom-coloured misspellings remain crisp while preserving the font and
+  right-click corrections.
+- Draws one complete line overlay instead of separate word overlays, preventing
+  spacing drift and coloured edges on repeated misspellings.
+
 Misspelled: Forever 1.1.17
 
 - Restores right-click suggestions, Ignore All and Add to Dictionary when WoW

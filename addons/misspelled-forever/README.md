@@ -2,7 +2,7 @@
 
 Misspelled: Forever checks spelling while you type, flags likely mistakes and offers right-click corrections. It is based on Misspelled by Nathan Pieper and adapted for WoW: Forever.
 
-The current release is version **1.1.17** for WoW: Forever **1.60.1** (interface **16001**). Install the `MisspelledForever` folder in `_forever_/Interface/AddOns/` and enable it from the character-selection AddOns list.
+The current release is version **1.1.18** for WoW: Forever **1.60.1** (interface **16001**). Install the `MisspelledForever` folder in `_forever_/Interface/AddOns/` and enable it from the character-selection AddOns list.
 
 The add-on includes dictionaries and its required libraries. The misspelling highlight colour can be changed with WoW's colour palette in settings; an optional six-digit hex field is also available. Saved custom dictionary and setting data remain in `MisspelledForeverDB`.
 

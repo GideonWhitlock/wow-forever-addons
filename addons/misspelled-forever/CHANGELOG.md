@@ -2,6 +2,16 @@
 
 This file records public release versions and verified changes only.
 
+## 1.1.18 — 2026-11-19
+
+- Prevents Prat's channel-coloured font shadow from appearing as a cyan glow
+  around misspellings that use a custom highlight colour.
+- Replaces the overlay's channel-coloured shadow with a neutral black mask so
+  custom-coloured misspellings stay crisp while preserving the edit box font,
+  plain text and right-click corrections.
+- Draws one complete line overlay instead of separate word overlays, preventing
+  spacing drift and coloured edges on repeated misspellings.
+
 ## 1.1.17 — 2026-11-19
 
 - Restores right-click correction, ignore and Add to Dictionary actions when

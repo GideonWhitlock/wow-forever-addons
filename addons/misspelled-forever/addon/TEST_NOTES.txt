@@ -1,5 +1,12 @@
 MISSPELLED: FOREVER - LIVE TEST CHECKLIST
 
+Version 1.1.18 masks channel-coloured edit-box shadows with a neutral black
+overlay shadow. With Prat using a black background and a coloured edit box,
+choose a contrasting Misspelled colour and type several repeated misspellings.
+Every completed misspelling should use only the chosen colour, with no cyan
+halo from Prat's channel shadow. Repeated identical misspellings must remain
+evenly aligned from the first word to the last.
+
 Version 1.1.17 restores mouse-based right-click lookup. Type several words with
 a highlighted misspelling away from the text cursor, then right-click that word.
 Confirm suggestions, Ignore All and Add to Dictionary appear and work.
