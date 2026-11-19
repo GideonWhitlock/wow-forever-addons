@@ -2,6 +2,14 @@
 
 This file records public release versions and verified changes only.
 
+## 1.1.16 — 2026-11-19
+
+- Keeps the fallback chat caret independent from misspelling word overlays, so
+  it remains visible in empty, one-character and temporarily unchecked drafts.
+- Restores the caret whenever the chat edit box regains keyboard focus.
+- Adds a lightweight focused-box check that repairs the caret when WoW or a
+  chat add-on redraws the edit box without sending a cursor-change event.
+
 ## 1.1.15 — 2026-11-18
 
 - Prevents pasted smart punctuation and other multi-byte characters from being

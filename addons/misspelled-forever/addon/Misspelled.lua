@@ -362,6 +362,9 @@ function Misspelled:WireUpEditBox(editbox)
 	-- after Blizzard has applied the new cursor position.
 	Misspelled:SecureHookScript(editbox, "OnKeyDown", Misspelled.EditBox_OnKeyDown)
 	Misspelled:SecureHookScript(editbox, "OnMouseUp", Misspelled.EditBox_OnMouseUp)
+	Misspelled:SecureHookScript(editbox, "OnEditFocusGained", Misspelled.EditBox_OnEditFocusGained)
+	Misspelled:SecureHookScript(editbox, "OnEditFocusLost", Misspelled.EditBox_OnEditFocusLost)
+	Misspelled:SecureHookScript(editbox, "OnUpdate", Misspelled.EditBox_OnUpdate)
 end
 
 -- AceHook's script callback receives the edit box first. Keep this adapter
@@ -375,12 +378,16 @@ local function IsSlashCommand(text)
 	return type(text) == "string" and string_sub(text, 1, 1) == "/"
 end
 
-local function HideVisualHighlights(editbox)
+local function HideWordHighlights(editbox)
 	if editbox.MisspelledHighlightPool then
 		for _, highlight in ipairs(editbox.MisspelledHighlightPool) do
 			highlight:Hide()
 		end
 	end
+end
+
+local function HideVisualHighlights(editbox)
+	HideWordHighlights(editbox)
 	if editbox.MisspelledVisibleCaret then
 		editbox.MisspelledVisibleCaret:Hide()
 	end
@@ -439,7 +446,11 @@ end
 -- This keeps the familiar blue highlighting while avoiding colour codes and
 -- Enter-key hooks that can taint protected slash commands on Forever.
 function Misspelled:UpdateVisualHighlights(editbox)
-	HideVisualHighlights(editbox)
+	-- Word overlays and the fallback insertion caret have different lifetimes.
+	-- A short/empty draft has no spelling overlay, but the user still needs the
+	-- caret. Clearing them together caused normal chat edits to hide the caret
+	-- until a later spell-check refresh happened.
+	HideWordHighlights(editbox)
 
 	local text = editbox:GetText() or ""
 	if not editbox.MisspelledMeasure then
@@ -466,7 +477,8 @@ function Misspelled:UpdateVisualHighlights(editbox)
 	-- Blizzard's native caret. Draw the fallback before the long-draft overlay
 	-- guard below. Pasted text commonly exceeds the edit box width; its inferred
 	-- end-aligned scroll keeps the caret visible while moving back through it.
-	if cursorPosition ~= nil then
+	local hasFocus = not editbox.HasFocus or editbox:HasFocus()
+	if cursorPosition ~= nil and hasFocus and editbox:IsShown() then
 		measure:SetText(string_sub(text, 1, cursorPosition))
 		local caretX = leftInset + measure:GetStringWidth() - scrollOffset
 		caretX = math.max(leftInset, math.min(editbox:GetWidth() - rightInset, caretX))
@@ -474,6 +486,8 @@ function Misspelled:UpdateVisualHighlights(editbox)
 		caret:ClearAllPoints()
 		caret:SetPoint("LEFT", editbox, "LEFT", caretX, 0)
 		caret:Show()
+	elseif editbox.MisspelledVisibleCaret then
+		editbox.MisspelledVisibleCaret:Hide()
 	end
 	-- Forever does not expose the edit box's live horizontal scroll offset. Once
 	-- a draft is wider than the visible box, guessing that offset can paint a
@@ -636,7 +650,7 @@ function Misspelled.EditBox_OnTextChanged(editbox)
 	local text = editbox:GetText()
 	if text == "" or IsSlashCommand(text) then
 		WordLocations[editbox:GetName()] = {}
-		HideVisualHighlights(editbox)
+		Misspelled:UpdateVisualHighlights(editbox)
 		if text == "" and WordCacheCount > WordCacheCountMax then
 			WordCache = {}
 			WordCacheCount = 0
@@ -659,6 +673,45 @@ end
 
 function Misspelled.EditBox_OnCursorChanged(editbox)
 	Misspelled:UpdateVisualHighlights(editbox)
+end
+
+function Misspelled.EditBox_OnEditFocusGained(editbox)
+	-- Focus can return without changing either the text or cursor position.
+	-- Refresh explicitly so a caret hidden on the previous focus loss returns.
+	C_Timer.After(0, function()
+		if editbox and editbox.IsShown and editbox:IsShown() then
+			Misspelled:UpdateVisualHighlights(editbox)
+		end
+	end)
+end
+
+function Misspelled.EditBox_OnEditFocusLost(editbox)
+	HideVisualHighlights(editbox)
+end
+
+function Misspelled.EditBox_OnUpdate(editbox, elapsed)
+	-- Some Forever chat combinations move the insertion point without emitting
+	-- OnCursorChanged, and can also redraw the edit box after our key callback.
+	-- Check only the focused box at a low frequency so the fallback caret heals
+	-- itself without repeatedly rebuilding every inactive chat frame.
+	if editbox.HasFocus and not editbox:HasFocus() then
+		return
+	end
+
+	editbox.MisspelledCaretRefreshElapsed = (editbox.MisspelledCaretRefreshElapsed or 0) + (elapsed or 0)
+	if editbox.MisspelledCaretRefreshElapsed < 0.05 then
+		return
+	end
+	editbox.MisspelledCaretRefreshElapsed = 0
+
+	local caret = editbox.MisspelledVisibleCaret
+	local cursorPosition = editbox:GetCursorPosition()
+	local text = editbox:GetText() or ""
+	local state = tostring(cursorPosition) .. ":" .. tostring(#text) .. ":" .. tostring(editbox:GetWidth())
+	if not caret or not caret:IsShown() or state ~= editbox.MisspelledCaretState then
+		editbox.MisspelledCaretState = state
+		Misspelled:UpdateVisualHighlights(editbox)
+	end
 end
 
 function Misspelled.EditBox_OnKeyDown(editbox, key)
@@ -708,7 +761,7 @@ function Misspelled:SpellCheckChat(editbox, skipTrailingWord)
 
 	if #editboxText < 2 or IsSlashCommand(editboxText) then
 		WordLocations[editbox:GetName()] = {}
-		HideVisualHighlights(editbox)
+		Misspelled:UpdateVisualHighlights(editbox)
 		return
 	end
 

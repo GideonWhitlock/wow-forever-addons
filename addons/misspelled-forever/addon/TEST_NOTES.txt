@@ -1,5 +1,10 @@
 MISSPELLED: FOREVER - LIVE TEST CHECKLIST
 
+Version 1.1.16 keeps the fallback chat caret visible independently of spelling
+overlays. Open an empty chat box, type one character, move through a longer
+draft, click out of chat and reopen it, and paste text wider than the edit box.
+Confirm the caret remains visible or restores itself at every insertion point.
+
 Version 1.1.15 guards dictionary lookup against malformed UTF-8 word slices
 created by Lua's byte-based matching of pasted smart punctuation. Paste a line
 containing curly apostrophes, curly quotation marks or an em dash into chat and

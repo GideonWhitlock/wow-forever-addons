@@ -1,3 +1,10 @@
+Misspelled: Forever 1.1.16
+
+- Keeps the fallback chat caret visible independently of spelling overlays,
+  including empty and one-character drafts.
+- Restores the caret when chat regains focus and repairs it after silent edit-box
+  redraws that do not emit a cursor-change event.
+
 Misspelled: Forever 1.1.15
 
 - Ignores malformed word slices created when Lua's byte-based word matcher
