@@ -2,6 +2,13 @@
 
 All notable changes to Thanks for Buffing: Forever are recorded here.
 
+## 1.0.22 — 2026-11-19
+
+- Requires exact aura-caster evidence before sending a thank-you on WoW: Forever.
+- Removes recent same-spell cast correlation so an anonymous aura can never be assigned to a nearby player by inference.
+- Keeps a silent rolling local audit of the last 25 approved thank-you decisions, available through `/tftbf audit`.
+- Adds `/tftbf audit clear` to erase the stored diagnostic history.
+
 ## 1.0.21 — 2026-11-17
 
 - Gives every character its own saved thank-you phrase list.

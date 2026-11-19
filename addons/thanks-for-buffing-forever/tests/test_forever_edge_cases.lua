@@ -173,9 +173,8 @@ eventHandler(nil, "UNIT_AURA", "player", {
 assert(#scheduled == 7, "a unique anonymous aura should queue a correlation wait")
 now = now + 0.5
 scheduled[7].callback()
-assert(#scheduled == 8, "one recent visible caster should match after correlation")
-scheduled[8].callback()
-assert(#whispers == 4 and whispers[4].target == "Two Realm", "the unique correlated caster should receive the whisper")
+assert(#scheduled == 7, "one recent visible caster must not be inferred as the anonymous aura owner")
+assert(#whispers == 3, "strict mode must not whisper to the merely recent same-spell caster")
 
 eventHandler(nil, "UNIT_AURA", "player", {
     isFullUpdate = false,
@@ -185,17 +184,17 @@ eventHandler(nil, "UNIT_AURA", "player", {
         { isHelpful = true, sourceUnit = nil, spellId = SECRET },
     },
 })
-assert(#scheduled == 9, "a secret source with a public spell should queue a safe correlation attempt")
+assert(#scheduled == 8, "a secret source with a public spell should queue an exact-caster refresh")
 now = now + 0.5
-scheduled[9].callback()
-assert(#scheduled == 9, "a secret source without an identifiable caster should be ignored after correlation")
+scheduled[8].callback()
+assert(#scheduled == 8, "a secret source without an exact caster should be ignored after refresh")
 
 secretThirdName = true
 eventHandler(nil, "UNIT_AURA", "player", {
     isFullUpdate = false,
     addedAuras = { { isHelpful = true, sourceUnit = "nameplate3", spellId = 3003 } },
 })
-assert(#scheduled == 9, "secret caster names should be ignored")
+assert(#scheduled == 8, "secret caster names should be ignored")
 secretThirdName = false
 
 combat = true
@@ -203,12 +202,12 @@ eventHandler(nil, "UNIT_AURA", "player", {
     isFullUpdate = false,
     addedAuras = { { isHelpful = true, sourceUnit = "nameplate3", spellId = 3004 } },
 })
-assert(#scheduled == 10, "a readable exact caster should still be detected during combat")
-scheduled[10].callback()
-assert(#whispers == 4, "combat-time detection should defer its whisper")
+assert(#scheduled == 9, "a readable exact caster should still be detected during combat")
+scheduled[9].callback()
+assert(#whispers == 3, "combat-time detection should defer its whisper")
 combat = false
 eventHandler(nil, "PLAYER_REGEN_ENABLED")
-assert(#whispers == 5 and whispers[5].target == "Three Realm", "a combat-time buff should be thanked after combat")
+assert(#whispers == 4 and whispers[4].target == "Three Realm", "a combat-time buff should be thanked after combat")
 SlashCmdList.THANKSFORTHEBUFFFOREVER("off")
 
 assert(#printed > 0, "debug and command status should remain local chat output")

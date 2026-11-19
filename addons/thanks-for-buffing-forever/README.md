@@ -13,6 +13,8 @@ It waits a random 3–10 seconds, chooses from a player-editable list of 15 defa
 - Waits a random 3–10 seconds before replying
 - Combines several buffs from one player into one response
 - Limits each caster to one thank-you every 10 minutes and one thank-you per continuous aura application
+- Requires WoW to expose the exact player responsible for the aura; anonymous auras are ignored rather than inferred from nearby casts
+- Keeps a silent local rolling audit of the last 25 approved thank-you decisions for later diagnosis
 - Never thanks party or raid members, but still thanks an external player who buffs you while you are grouped
 - Avoids protected combat and chat operations on modern clients
 - Supports WoW Forever 1.60.1 and the other packaged WoW flavours
@@ -23,6 +25,8 @@ It waits a random 3–10 seconds, chooses from a player-editable list of 15 defa
 - `/tftbf on` — enable the addon
 - `/tftbf off` — disable the addon
 - `/tftbf debug` — toggle diagnostics for the current session; always off after login or `/reload`
+- `/tftbf audit` — show the locally stored details for the last 25 approved thank-you decisions
+- `/tftbf audit clear` — erase the local audit history
 - `/tftbf phrases` — show the numbered thank-you phrase list
 - `/tftbf phrases add <text>` — add a new phrase
 - `/tftbf phrases remove <number>` — remove a phrase by its displayed number
@@ -38,7 +42,7 @@ It waits a random 3–10 seconds, chooses from a player-editable list of 15 defa
 
 ## Supported clients
 
-The prepared version 1.0.21 includes TOCs for:
+The prepared version 1.0.22 includes TOCs for:
 
 | Client | Interface |
 | --- | ---: |
@@ -48,15 +52,15 @@ The prepared version 1.0.21 includes TOCs for:
 | Burning Crusade Classic | 20506 |
 | Classic Era | 11509 |
 
-Only the Forever path is currently claimed for release targeting. Version 1.0.21 gives every character its own phrase list while preserving the existing list for the first character loaded after updating. It retains the caster/spell safeguards, Options → AddOns editor, Forever-safe text-height fallback and draggable minimap shortcut. Left-click opens the phrase editor, right-click enables or disables automatic thanks, and dragging moves the shortcut around the minimap. Live testing previously confirmed that Forever blocks combat-log registration, so that API remains disabled on this branch. The other manifests remain source-visible but are not live-verified release targets.
+Only the Forever path is currently claimed for release targeting. Version 1.0.22 requires exact aura-caster evidence before approving a thank-you and adds a local rolling audit for diagnosis. It retains the per-character phrase lists, caster/spell safeguards, Options → AddOns editor, Forever-safe text-height fallback and draggable minimap shortcut. Left-click opens the phrase editor, right-click enables or disables automatic thanks, and dragging moves the shortcut around the minimap. Live testing previously confirmed that Forever blocks combat-log registration, so that API remains disabled on this branch. The other manifests remain source-visible but are not live-verified release targets.
 
-The 1.0.21 source includes per-character phrase coverage alongside the existing Forever editor, phrase editing, multi-word recipient, protected-aura, grouped-buff and unsafe-attribution checks.
+The 1.0.22 source includes strict exact-caster and audit coverage alongside the existing Forever editor, phrase editing, multi-word recipient, protected-aura, grouped-buff and unsafe-attribution checks.
 
 ## How detection works
 
-On WoW Forever and modern Retail, Blizzard restricts combat-log and chat data. The addon absorbs late-restored login and reload auras into a two-second settling baseline before arming detection. It then listens for newly added and updated helpful auras outside combat. Blizzard's `isFromPlayerOrPlayerPet` field describes any player or player pet, so the addon resolves the actual caster identity instead of treating that field as a self-cast marker. It uses the aura's source unit when supplied, even when unrelated ownership or spell fields are protected. If `sourceUnit` is omitted, it queries the caster GUID attached to that exact aura instance and resolves the player's whisper name from the GUID. Forever combines the first name and surname returned separately by its APIs. The exact caster and spell application is remembered even when it is suppressed for being grouped or inside the cooldown. A same-instance update is only accepted as a genuine reapplication when its readable expiration time moves forward. Recent nearby chat remains an exact GUID-matched name source, while anonymous aura correlation now requires the same spell; a merely recent targeted caster is never guessed. The protected combat log is not registered on Forever.
+On WoW Forever and modern Retail, Blizzard restricts combat-log and chat data. The addon absorbs late-restored login and reload auras into a two-second settling baseline before arming detection. It then listens for newly added and updated helpful auras outside combat. Blizzard's `isFromPlayerOrPlayerPet` field describes any player or player pet, so the addon resolves the actual caster identity instead of treating that field as a self-cast marker. It uses the aura's source unit when supplied, even when unrelated ownership or spell fields are protected. If `sourceUnit` is omitted, it queries the caster GUID attached to that exact aura instance and resolves the player's whisper name from the GUID. Forever combines the first name and surname returned separately by its APIs. The exact caster and spell application is remembered even when it is suppressed for being grouped or inside the cooldown. A same-instance update is only accepted as a genuine reapplication when its readable expiration time moves forward. Recent nearby chat may supply the readable name for an already exact GUID, but nearby casts are never used to infer ownership of an anonymous aura. The protected combat log is not registered on Forever.
 
-The addon deliberately skips a buff when Blizzard hides the information needed to identify its caster, when the player is in combat, when chat messaging is locked, or when more than one possible caster would make attribution unsafe. This avoids protected-action errors and accidental whispers to the wrong player.
+The addon deliberately skips a buff when Blizzard hides the information needed to identify its caster. Delivery is safely deferred when the player is in combat or chat messaging is locked. This avoids protected-action errors and accidental whispers to the wrong player.
 
 Classic clients use the combat log, which provides broader caster attribution.
 
@@ -74,7 +78,7 @@ The addon stores its enabled/disabled setting and per-character local phrase lis
 
 ## Repository layout
 
-- `addon/ThanksForTheBuffForever/` — the prepared version 1.0.21 source and TOCs
+- `addon/ThanksForTheBuffForever/` — the prepared version 1.0.22 source and TOCs
 - `tests/` — standalone Lua behaviour tests for Forever and Classic detection paths
 - `.github/ISSUE_TEMPLATE/` — the project-specific public bug-report form
 

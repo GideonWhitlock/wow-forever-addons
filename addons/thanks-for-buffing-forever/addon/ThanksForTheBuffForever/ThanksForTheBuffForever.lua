@@ -10,6 +10,7 @@ local RECENT_SPEAKER_SECONDS = 120
 local DEFERRED_DELIVERY_TIMEOUT_SECONDS = 15 * 60
 local CHAT_LOCKDOWN_RETRY_SECONDS = 1
 local AURA_FALLBACK_LIFETIME_SECONDS = 30 * 60
+local MAX_AUDIT_ENTRIES = 25
 
 local DEFAULT_THANK_YOU_MESSAGES = {
     "thanks!",
@@ -581,6 +582,92 @@ local function GetReadableAuraNumber(aura, field)
     return value
 end
 
+local function DescribeAuraForDebug(spellID, aura, attribution)
+    local auraName
+    local auraInstanceID
+    local sourceUnit
+    if aura and not IsSecret(aura) then
+        if type(aura.name) == "string" and aura.name ~= "" and not IsSecret(aura.name) then
+            auraName = aura.name
+        end
+        if not IsSecret(aura.auraInstanceID) then
+            auraInstanceID = aura.auraInstanceID
+        end
+        if type(aura.sourceUnit) == "string" and aura.sourceUnit ~= "" and not IsSecret(aura.sourceUnit) then
+            sourceUnit = aura.sourceUnit
+        end
+    end
+
+    if not auraName and type(spellID) == "number" then
+        if C_Spell and C_Spell.GetSpellName then
+            local candidate = C_Spell.GetSpellName(spellID)
+            if type(candidate) == "string" and candidate ~= "" and not IsSecret(candidate) then
+                auraName = candidate
+            end
+        elseif GetSpellInfo then
+            local candidate = GetSpellInfo(spellID)
+            if type(candidate) == "string" and candidate ~= "" and not IsSecret(candidate) then
+                auraName = candidate
+            end
+        end
+    end
+
+    local details = {
+        "aura=" .. (auraName or "unknown"),
+        "spell=" .. (type(spellID) == "number" and tostring(spellID) or "unknown"),
+        "instance=" .. ((type(auraInstanceID) == "number" or type(auraInstanceID) == "string")
+            and tostring(auraInstanceID) or "unknown"),
+        "sourceUnit=" .. (sourceUnit or "none"),
+        "attribution=" .. (attribution or "unspecified"),
+    }
+    return table.concat(details, ", ")
+end
+
+local function RecordThankAudit(targetName, description)
+    if not ThanksForTheBuffForeverDB then
+        return
+    end
+
+    if type(ThanksForTheBuffForeverDB.auditLog) ~= "table" then
+        ThanksForTheBuffForeverDB.auditLog = {}
+    end
+
+    local timestamp
+    if type(GetServerTime) == "function" then
+        timestamp = GetServerTime()
+    elseif type(time) == "function" then
+        timestamp = time()
+    else
+        timestamp = GetTime()
+    end
+
+    local auditLog = ThanksForTheBuffForeverDB.auditLog
+    auditLog[#auditLog + 1] = {
+        character = CurrentCharacterKey(),
+        target = targetName,
+        details = description,
+        timestamp = timestamp,
+    }
+    while #auditLog > MAX_AUDIT_ENTRIES do
+        table.remove(auditLog, 1)
+    end
+end
+
+local function PrintThankAudit()
+    local auditLog = ThanksForTheBuffForeverDB and ThanksForTheBuffForeverDB.auditLog
+    if type(auditLog) ~= "table" or #auditLog == 0 then
+        Print("has no recorded thank-you decisions yet.")
+        return
+    end
+
+    Print("last " .. #auditLog .. " recorded thank-you decisions:")
+    for index, entry in ipairs(auditLog) do
+        local target = type(entry) == "table" and entry.target or "unknown"
+        local details = type(entry) == "table" and entry.details or "details unavailable"
+        Print(index .. ". " .. tostring(target) .. " — " .. tostring(details))
+    end
+end
+
 local function ClaimAuraApplication(casterKey, spellID, aura)
     if not casterKey or IsSecret(casterKey) or IsSecret(spellID) or type(spellID) ~= "number" then
         return true
@@ -627,7 +714,7 @@ local function ClaimAuraApplication(casterKey, spellID, aura)
     return true
 end
 
-local function ScheduleThanks(casterKey, targetName, buffDetectedAt, spellID, aura)
+local function ScheduleThanks(casterKey, targetName, buffDetectedAt, spellID, aura, attribution)
     if not IsEnabled() or not casterKey or not targetName or targetName == "" then
         return false
     end
@@ -673,6 +760,10 @@ local function ScheduleThanks(casterKey, targetName, buffDetectedAt, spellID, au
         retryScheduled = false,
     }
     pendingByCaster[responseKey] = token
+
+    local auraDescription = DescribeAuraForDebug(spellID, aura, attribution)
+    RecordThankAudit(targetName, auraDescription)
+    Debug("Queued a thank-you for " .. targetName .. ": " .. auraDescription .. ".")
 
     local totalDelay = math.random(MIN_DELAY_SECONDS * 10, MAX_DELAY_SECONDS * 10) / 10
     local elapsed = buffDetectedAt and math.max(0, now - buffDetectedAt) or 0
@@ -1069,7 +1160,7 @@ local function GetRefreshedAuraCaster(auraInstanceID)
 
     local casterGUID, targetName, casterKnown = GetCasterFromAuraInstance(auraInstanceID)
     if casterKnown then
-        return casterGUID, targetName, true
+        return casterGUID, targetName, true, "aura caster GUID"
     end
 
     local refreshedAura = C_UnitAuras.GetAuraDataByAuraInstanceID("player", auraInstanceID)
@@ -1082,7 +1173,8 @@ local function GetRefreshedAuraCaster(auraInstanceID)
         return nil, nil, false
     end
 
-    return GetCasterFromUnit(refreshedSourceUnit)
+    local sourceGUID, sourceName, sourceKnown = GetCasterFromUnit(refreshedSourceUnit)
+    return sourceGUID, sourceName, sourceKnown, "refreshed aura source unit"
 end
 
 local function QueueAnonymousAuraMatch(spellID, auraInstanceID)
@@ -1108,16 +1200,14 @@ local function QueueAnonymousAuraMatch(spellID, auraInstanceID)
             return
         end
 
-        local casterGUID, targetName, casterKnown = GetRefreshedAuraCaster(auraInstanceID)
+        local casterGUID, targetName, casterKnown, attribution = GetRefreshedAuraCaster(auraInstanceID)
         if casterKnown and not casterGUID then
             Debug("Ignored buff spell " .. spellID .. " because its caster is you or a non-player unit.")
             return
         end
-        if not casterGUID then
-            casterGUID, targetName = FindRecentCaster(spellID)
-        end
         if not casterGUID or not targetName then
-            Debug("WoW did not expose one unambiguous caster for buff spell " .. spellID .. ".")
+            Debug("Ignored anonymous buff spell " .. spellID
+                .. " because strict mode requires an exact aura caster.")
             return
         end
 
@@ -1126,7 +1216,7 @@ local function QueueAnonymousAuraMatch(spellID, auraInstanceID)
         if ScheduleThanks(casterGUID, targetName, detectedAt, spellID, refreshedAura or {
             spellId = spellID,
             auraInstanceID = auraInstanceID,
-        }) then
+        }, attribution) then
             Debug("Matched buff spell " .. spellID .. " to " .. targetName .. ".")
         end
     end)
@@ -1175,8 +1265,10 @@ local function HandleAura(aura)
     end
 
     local casterGUID, targetName, casterKnown = GetCasterFromUnit(sourceUnit)
+    local attribution = "aura source unit"
     if not casterKnown then
         casterGUID, targetName, casterKnown = GetCasterFromAuraInstance(auraInstanceID)
+        attribution = "aura caster GUID"
     end
     if casterKnown and not casterGUID then
         Debug("Ignored buff spell " .. (spellID or "unknown") .. " because its caster is you or a non-player unit.")
@@ -1188,9 +1280,8 @@ local function HandleAura(aura)
     end
     if not casterGUID then
         -- isFromPlayerOrPlayerPet means any player, not specifically the local
-        -- player. Forever sometimes reports UNIT_AURA before the nearby
-        -- caster's UNIT_SPELLCAST_SUCCEEDED event, so wait briefly for an
-        -- otherwise unidentified player-owned aura.
+        -- player. Re-query the same aura instance briefly in case Forever has
+        -- not exposed its exact caster yet; never infer ownership from a cast.
         QueueAnonymousAuraMatch(spellID, auraInstanceID)
         return true
     end
@@ -1200,7 +1291,7 @@ local function HandleAura(aura)
         return false
     end
 
-    if ScheduleThanks(casterGUID, targetName, nil, spellID, aura) then
+    if ScheduleThanks(casterGUID, targetName, nil, spellID, aura, attribution) then
         Debug("Detected a buff from " .. targetName .. ".")
         return true
     end
@@ -1441,6 +1532,9 @@ frame:SetScript("OnEvent", function(_, event, ...)
         if type(ThanksForTheBuffForeverDB.characterMessages) ~= "table" then
             ThanksForTheBuffForeverDB.characterMessages = {}
         end
+        if type(ThanksForTheBuffForeverDB.auditLog) ~= "table" then
+            ThanksForTheBuffForeverDB.auditLog = {}
+        end
         if not ThanksForTheBuffForeverDB.characterPhraseMigrationDone then
             local legacy = ThanksForTheBuffForeverDB.messages
             if type(legacy) == "table" and #legacy > 0 then
@@ -1581,7 +1675,15 @@ SlashCmdList.THANKSFORTHEBUFFFOREVER = function(input)
     elseif command == "debug" then
         debugEnabled = not debugEnabled
         Print(debugEnabled and "debug messages are now on for this session." or "debug messages are now off.")
+    elseif command == "audit" then
+        local action = string.lower(Trim(remainder))
+        if action == "clear" then
+            ThanksForTheBuffForeverDB.auditLog = {}
+            Print("cleared the local thank-you audit log.")
+        else
+            PrintThankAudit()
+        end
     else
-        Print("Commands: /tftbf on, off, status, debug, phrases, options")
+        Print("Commands: /tftbf on, off, status, debug, audit, phrases, options")
     end
 end

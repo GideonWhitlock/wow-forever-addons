@@ -67,7 +67,7 @@ eventHandler(nil, "ADDON_LOADED", "ThanksForTheBuffForever")
 eventHandler(nil, "PLAYER_LOGIN")
 eventHandler(nil, "PLAYER_ENTERING_WORLD")
 assert(registered.UNIT_AURA == true, "Forever should register global UNIT_AURA and filter for player events")
-assert(registered.UNIT_SPELLCAST_SUCCEEDED, "Forever should correlate nearby casts when aura caster data is missing")
+assert(registered.UNIT_SPELLCAST_SUCCEEDED, "Forever may observe nearby casts without using them as aura ownership evidence")
 assert(registered.PLAYER_ENTERING_WORLD, "Forever should baseline helpful auras on world entry")
 assert(not registered.COMBAT_LOG_EVENT_UNFILTERED, "Forever must not register the protected combat log")
 
@@ -86,6 +86,10 @@ scheduled[1].callback()
 assert(#whispers == 1, "one whisper should be sent")
 assert(whispers[1].chatType == "WHISPER", "message must be a whisper")
 assert(whispers[1].target == "Buffy TestRealm", "Forever should combine the caster's first name and surname")
+assert(#ThanksForTheBuffForeverDB.auditLog == 1, "an approved thank-you should be retained in the local audit")
+assert(ThanksForTheBuffForeverDB.auditLog[1].target == "Buffy TestRealm", "the audit should retain the exact recipient")
+assert(string.find(ThanksForTheBuffForeverDB.auditLog[1].details, "attribution=aura source unit", 1, true),
+    "the audit should retain how the exact caster was identified")
 
 eventHandler(nil, "UNIT_AURA", "player", update)
 assert(#scheduled == 1, "ten-minute cooldown should suppress another immediate thank-you")
@@ -121,11 +125,8 @@ assert(#scheduled == 3, "an anonymous Arcane Intellect aura should queue a short
 eventHandler(nil, "UNIT_SPELLCAST_SUCCEEDED", "nameplate2", "Cast-Arcane", 1459)
 now = now + 0.5
 scheduled[3].callback()
-assert(#scheduled == 4, "an aura-before-cast event order should schedule the thank-you")
-assert(scheduled[4].delay >= 2.5 and scheduled[4].delay <= 9.5, "correlation time should be subtracted from the overall 3-10 second delay")
-scheduled[4].callback()
-assert(#whispers == 3, "the aura-before-cast Arcane Intellect path should whisper")
-assert(whispers[3].target == "Arcana TestRealm", "the Arcane Intellect caster should receive the whisper")
+assert(#scheduled == 3, "an anonymous aura must not infer ownership from a later same-spell cast")
+assert(#whispers == 2, "strict mode must not whisper for the anonymous Arcane Intellect aura")
 
 eventHandler(nil, "UNIT_SPELLCAST_SUCCEEDED", "nameplate1", "Cast-1", 20217)
 eventHandler(nil, "UNIT_AURA", "player", {
@@ -134,18 +135,16 @@ eventHandler(nil, "UNIT_AURA", "player", {
         { isHelpful = true, sourceUnit = nil, spellId = 20217 },
     },
 })
-assert(#scheduled == 5, "an anonymous Blessing should queue a short correlation wait")
+assert(#scheduled == 4, "an anonymous Blessing should queue one exact-caster refresh")
 now = now + 0.5
-scheduled[5].callback()
-assert(#scheduled == 6, "a cast-before-aura event order should also schedule the thank-you")
-scheduled[6].callback()
-assert(#whispers == 4, "the correlated Blessing should send a whisper")
-assert(whispers[4].target == "Kingsbuffer TestRealm", "the nearby Blessing caster should receive the whisper")
+scheduled[4].callback()
+assert(#scheduled == 4, "an earlier same-spell cast must not become aura ownership evidence")
+assert(#whispers == 2, "strict mode must not whisper for the anonymous Blessing aura")
 
 chatLocked = true
 eventHandler(nil, "UNIT_AURA", "player", update)
-assert(#scheduled == 7, "an otherwise eligible buff should still schedule before chat lockdown is checked")
-scheduled[7].callback()
-assert(#whispers == 4, "chat lockdown should drop the whisper without calling the protected API")
+assert(#scheduled == 5, "an otherwise eligible buff should still schedule before chat lockdown is checked")
+scheduled[5].callback()
+assert(#whispers == 2, "chat lockdown should drop the whisper without calling the protected API")
 
 print("Forever behavior tests passed")
