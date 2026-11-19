@@ -1,3 +1,10 @@
+Misspelled: Forever 1.1.17
+
+- Restores right-click suggestions, Ignore All and Add to Dictionary when WoW
+  does not move the text cursor to the clicked word.
+- Resolves the highlighted word beneath the mouse and keeps cursor lookup as a
+  fallback for compatible chat edit boxes.
+
 Misspelled: Forever 1.1.16
 
 - Keeps the fallback chat caret visible independently of spelling overlays,

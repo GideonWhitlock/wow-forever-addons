@@ -1,5 +1,9 @@
 MISSPELLED: FOREVER - LIVE TEST CHECKLIST
 
+Version 1.1.17 restores mouse-based right-click lookup. Type several words with
+a highlighted misspelling away from the text cursor, then right-click that word.
+Confirm suggestions, Ignore All and Add to Dictionary appear and work.
+
 Version 1.1.16 keeps the fallback chat caret visible independently of spelling
 overlays. Open an empty chat box, type one character, move through a longer
 draft, click out of chat and reopen it, and paste text wider than the edit box.

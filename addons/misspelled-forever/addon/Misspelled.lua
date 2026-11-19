@@ -1299,9 +1299,55 @@ end
 -- Routines for the right click misspelled suggestions popup.
 --
 -------------------------------------------------------------------------
+local function GetWordLocationUnderMouse(editbox, locations, text)
+	if not _G.GetCursorPosition or not editbox.GetLeft or not editbox.GetEffectiveScale then
+		return nil
+	end
+
+	local mouseX = _G.GetCursorPosition()
+	local left = editbox:GetLeft()
+	local scale = editbox:GetEffectiveScale()
+	if not mouseX or not left or not scale or scale <= 0 then
+		return nil
+	end
+
+	local measure = editbox.MisspelledMeasure
+	if not measure then
+		measure = editbox:CreateFontString(nil, "OVERLAY")
+		measure:Hide()
+		editbox.MisspelledMeasure = measure
+	end
+	local font, size, flags = editbox:GetFont()
+	if font and size then
+		measure:SetFont(font, size, flags)
+	end
+
+	local leftInset, rightInset = editbox:GetTextInsets()
+	leftInset = leftInset or 0
+	rightInset = rightInset or 0
+	measure:SetText(text)
+	local textWidth = measure:GetStringWidth()
+	local visibleWidth = math.max(0, editbox:GetWidth() - leftInset - rightInset)
+	local scrollOffset = math.max(0, textWidth - visibleWidth)
+	local textX = (mouseX / scale) - left - leftInset + scrollOffset
+	if textX < 0 then
+		return nil
+	end
+
+	for _, location in ipairs(locations) do
+		measure:SetText(string_sub(text, 1, location.StartPos - 1))
+		local wordStartX = measure:GetStringWidth()
+		measure:SetText(string_sub(text, location.StartPos, location.EndPos))
+		local wordEndX = wordStartX + measure:GetStringWidth()
+		if textX >= wordStartX and textX <= wordEndX then
+			return location
+		end
+	end
+	return nil
+end
+
 function Misspelled:OnMouseUp(editbox, button)
 	if button == "RightButton" then
-		local badWordFound = false
 		-- Normal typing deliberately leaves the unfinished trailing word unchecked
 		-- until a delimiter is entered. A right-click is an explicit request to
 		-- inspect that word, so rebuild the word map without skipping it first.
@@ -1310,7 +1356,9 @@ function Misspelled:OnMouseUp(editbox, button)
 		Misspelled:SpellCheckChat(editbox, false)
 		CloseDropDownMenus()
 
-		--check if we are positioned on a misspelled word
+		-- Prefer the actual mouse position. Forever does not consistently move an
+		-- edit box's text cursor when it is right-clicked, so cursor-only lookup can
+		-- inspect the end of the draft instead of the word the player clicked.
 		local pos = editbox:GetCursorPosition()
 		local text = editbox:GetText() or ""
 		-- A right-click does not always move Forever's chat cursor. If the draft
@@ -1319,13 +1367,25 @@ function Misspelled:OnMouseUp(editbox, button)
 		while pos > 0 and string_match(string_sub(text, pos, pos), "%s") do
 			pos = pos - 1
 		end
-		if WordLocations[editbox:GetName()] ~= nil then
-			for i, w in ipairs(WordLocations[editbox:GetName()]) do
-				if	pos >= w.StartPos and pos <= w.EndPos then
-					if WordCache[w.Word].Correct == false then
+		local locations = WordLocations[editbox:GetName()]
+		if locations ~= nil then
+			local clickedLocation = GetWordLocationUnderMouse(editbox, locations, text)
+			if not clickedLocation then
+				for _, location in ipairs(locations) do
+					if pos >= location.StartPos - 1 and pos <= location.EndPos then
+						clickedLocation = location
+						break
+					end
+				end
+			end
+
+			if clickedLocation then
+				local w = clickedLocation
+				local cached = WordCache[w.Word]
+				if cached and cached.Correct == false then
 						--If not cached, lookup Suggestions for the misspelled word
-						if WordCache[w.Word].Suggestions == nil then
-							WordCache[w.Word].Suggestions = WordDict:Suggest(w.Word)
+						if cached.Suggestions == nil then
+							cached.Suggestions = WordDict:Suggest(w.Word)
 						end
 
 						RightClickedWord = w.Word
@@ -1334,13 +1394,9 @@ function Misspelled:OnMouseUp(editbox, button)
 
 						RightClickedEditBox = editbox
 
-						badWordFound = true
-
 						ToggleDropDownMenu(1, nil, MisspelledSuggestions_DropDown, "cursor")
-					else
-						RightClickedWord = nil
-					end
-					break
+				else
+					RightClickedWord = nil
 				end
 			end
 		end

@@ -2,6 +2,13 @@
 
 This file records public release versions and verified changes only.
 
+## 1.1.17 — 2026-11-19
+
+- Restores right-click correction, ignore and Add to Dictionary actions when
+  WoW leaves the text cursor elsewhere in the draft.
+- Identifies the highlighted word beneath the mouse directly, while retaining
+  cursor-position lookup as a compatibility fallback.
+
 ## 1.1.16 — 2026-11-19
 
 - Keeps the fallback chat caret independent from misspelling word overlays, so
