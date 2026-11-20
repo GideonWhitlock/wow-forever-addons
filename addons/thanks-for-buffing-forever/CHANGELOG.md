@@ -2,6 +2,18 @@
 
 All notable changes to Thanks for Buffing: Forever are recorded here.
 
+## 1.0.23 — 2026-11-20
+
+- Keeps an ordinary minimap-button left-click reserved for opening the phrase editor.
+- Requires Alt-drag to move the minimap shortcut, preventing a slight pointer movement from swallowing the editor click.
+- Rebuilds the phrase editor with Blizzard's multiline input template so clicks place a visible caret exactly where text will be inserted.
+- Adds a bright blinking fallback caret driven by the editor's real cursor coordinates for Forever clients that fail to draw Blizzard's native insertion marker.
+- Maps left-clicks to the nearest rendered character boundary, restoring click-to-place editing even when Forever's native multiline mouse positioning fails.
+- Keeps the fallback caret one pixel wide and capped to a single line, and uses clock-driven blinking that cannot be reset by repeated cursor events.
+- Offsets the caret from Forever's next-glyph bearing into the letter gap, shortens it to the text body and prevents repeated cursor events from overriding its hidden blink phase.
+- Stops using Forever's incorrect cursor X/Y drawing coordinates; the caret position is now derived from the actual cursor byte offset, measured text width and calculated line number.
+- Makes the multiline phrase box explicitly accept mouse and keyboard focus so clicking a phrase always places the editing cursor.
+
 ## 1.0.22 — 2026-11-19
 
 - Requires exact aura-caster evidence before sending a thank-you on WoW: Forever.

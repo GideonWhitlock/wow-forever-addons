@@ -262,16 +262,161 @@ local function RegisterOptionsPanel()
     editorBackground:SetPoint("TOPLEFT", editorLabel, "BOTTOMLEFT", 0, -6)
     editorBackground:SetSize(570, 270)
 
-    local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "UIPanelScrollFrameTemplate")
+    -- Use Blizzard's complete multiline input control. On Forever, a plain
+    -- EditBox inside UIPanelScrollFrameTemplate accepts keys but can lose the
+    -- visible caret and mouse-to-text positioning. InputScrollFrameTemplate
+    -- wires those behaviours up in the same way as Blizzard's own editors.
+    local scrollFrame = CreateFrame("ScrollFrame", nil, panel, "InputScrollFrameTemplate")
     scrollFrame:SetPoint("TOPLEFT", editorBackground, "TOPLEFT", 8, -8)
     scrollFrame:SetPoint("BOTTOMRIGHT", editorBackground, "BOTTOMRIGHT", -28, 8)
+    scrollFrame.hideCharCount = true
+    if type(InputScrollFrame_OnLoad) == "function" then
+        InputScrollFrame_OnLoad(scrollFrame)
+    end
 
-    local editor = CreateFrame("EditBox", nil, scrollFrame)
+    local editor = scrollFrame.EditBox
+    if not editor then
+        -- Compatibility fallback for clients that do not expose the template
+        -- child by name.
+        editor = CreateFrame("EditBox", nil, scrollFrame)
+        scrollFrame:SetScrollChild(editor)
+    end
     editor:SetMultiLine(true)
     editor:SetAutoFocus(false)
+    editor:EnableMouse(true)
+    editor:EnableKeyboard(true)
     editor:SetFontObject("ChatFontNormal")
+    editor:SetTextColor(1, 1, 1, 1)
     editor:SetWidth(525)
     editor:SetTextInsets(4, 4, 4, 4)
+
+    -- Forever sometimes positions the EditBox cursor correctly but does not
+    -- draw Blizzard's native insertion marker. Draw a small caret from the
+    -- real OnCursorChanged coordinates so the player can always see exactly
+    -- where the next character will be inserted.
+    local visibleCaret = CreateFrame("Frame", nil, editor)
+    visibleCaret:SetSize(1, 11)
+    local visibleCaretTexture = visibleCaret:CreateTexture(nil, "OVERLAY")
+    visibleCaretTexture:SetAllPoints()
+    visibleCaretTexture:SetColorTexture(0.25, 1, 1, 1)
+    visibleCaretTexture:Hide()
+    visibleCaret.active = false
+    visibleCaret.lineHeight = 14
+    visibleCaret:SetScript("OnUpdate", function(self)
+        if not self.active then
+            visibleCaretTexture:Hide()
+            return
+        end
+        -- Use absolute time so repeated OnCursorChanged events cannot keep
+        -- restarting the blink before it becomes visible to the player.
+        local now = type(GetTime) == "function" and GetTime() or 0
+        if math.floor(now * 2) % 2 == 0 then
+            visibleCaretTexture:Show()
+        else
+            visibleCaretTexture:Hide()
+        end
+    end)
+
+    local PlaceCaretFromCursor
+    editor:HookScript("OnCursorChanged", function(self, _, _, _, cursorHeight)
+        visibleCaret.lineHeight = math.min(18, math.max(12, tonumber(cursorHeight) or 14))
+        visibleCaret.active = not self.HasFocus or self:HasFocus()
+        if PlaceCaretFromCursor then PlaceCaretFromCursor(self) end
+    end)
+    editor:HookScript("OnEditFocusGained", function(self)
+        visibleCaret.active = true
+        visibleCaretTexture:Show()
+        if PlaceCaretFromCursor then PlaceCaretFromCursor(self) end
+    end)
+    editor:HookScript("OnEditFocusLost", function()
+        visibleCaret.active = false
+        visibleCaretTexture:Hide()
+    end)
+
+    -- Forever's native multiline control does not translate a mouse click to
+    -- a text position. Calculate the nearest character boundary ourselves,
+    -- using the actual rendered width of each prefix for proportional fonts.
+    local textMeasure = editor:CreateFontString(nil, "ARTWORK", "ChatFontNormal")
+    local function TextWidth(text)
+        textMeasure:SetText(text or "")
+        local width = textMeasure:GetStringWidth()
+        return tonumber(width) or #(text or "") * 7
+    end
+    local function CharacterBoundaries(text)
+        local boundaries = { 0 }
+        local index = 1
+        while index <= #text do
+            local byte = string.byte(text, index) or 0
+            local length = byte >= 240 and 4 or byte >= 224 and 3 or byte >= 192 and 2 or 1
+            index = math.min(#text + 1, index + length)
+            boundaries[#boundaries + 1] = index - 1
+        end
+        return boundaries
+    end
+    PlaceCaretFromCursor = function(self)
+        local text = self:GetText() or ""
+        local cursorPosition = math.max(0, math.min(#text, self:GetCursorPosition() or 0))
+        local lineNumber = 1
+        local lineStart = 1
+        local searchAt = 1
+        while true do
+            local newlineAt = string.find(text, "\n", searchAt, true)
+            if not newlineAt or newlineAt > cursorPosition then break end
+            lineNumber = lineNumber + 1
+            lineStart = newlineAt + 1
+            searchAt = newlineAt + 1
+        end
+        local prefix = string.sub(text, lineStart, cursorPosition)
+        local x = 4 + TextWidth(prefix)
+        local y = -4 - ((lineNumber - 1) * (visibleCaret.lineHeight or 14))
+        visibleCaret:ClearAllPoints()
+        visibleCaret:SetPoint("TOPLEFT", self, "TOPLEFT", x, y)
+        visibleCaret:SetSize(1, 11)
+    end
+    local function CursorPositionForClick(self)
+        local cursorX, cursorY = GetCursorPosition()
+        local scale = self:GetEffectiveScale()
+        if not cursorX or not cursorY or not scale or scale == 0 then
+            return self:GetCursorPosition()
+        end
+        local localX = cursorX / scale - (self:GetLeft() or 0) - 4
+        local localY = (self:GetTop() or 0) - cursorY / scale - 4
+        if type(scrollFrame.GetVerticalScroll) == "function" then
+            localY = localY + (scrollFrame:GetVerticalScroll() or 0)
+        end
+
+        local lineHeight = visibleCaret.lineHeight or 14
+        local wantedLine = math.max(1, math.floor(math.max(0, localY) / lineHeight) + 1)
+        local text = self:GetText() or ""
+        local lines = {}
+        local startAt = 1
+        while true do
+            local newlineAt = string.find(text, "\n", startAt, true)
+            local finishAt = newlineAt and newlineAt - 1 or #text
+            lines[#lines + 1] = { text = string.sub(text, startAt, finishAt), base = startAt - 1 }
+            if not newlineAt then break end
+            startAt = newlineAt + 1
+        end
+        local line = lines[math.min(wantedLine, #lines)]
+        local targetX = math.max(0, localX)
+        local boundaries = CharacterBoundaries(line.text)
+        local bestBoundary = 0
+        local bestDistance
+        for _, boundary in ipairs(boundaries) do
+            local distance = math.abs(TextWidth(string.sub(line.text, 1, boundary)) - targetX)
+            if not bestDistance or distance < bestDistance then
+                bestDistance = distance
+                bestBoundary = boundary
+            end
+        end
+        return line.base + bestBoundary
+    end
+    editor:HookScript("OnMouseDown", function(self, button)
+        if button and button ~= "LeftButton" then return end
+        self:SetFocus()
+        self:SetCursorPosition(CursorPositionForClick(self))
+        PlaceCaretFromCursor(self)
+    end)
     editor:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
     editor:SetScript("OnTextChanged", function(self)
         -- Forever's EditBox does not expose GetStringHeight. Keep the editor
@@ -288,7 +433,9 @@ local function RegisterOptionsPanel()
         end
         self:SetHeight(math.max(252, stringHeight + 16))
     end)
-    scrollFrame:SetScrollChild(editor)
+    if scrollFrame:GetScrollChild() ~= editor then
+        scrollFrame:SetScrollChild(editor)
+    end
 
     local status = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
     status:SetPoint("TOPLEFT", editorBackground, "BOTTOMLEFT", 0, -10)
@@ -412,6 +559,12 @@ local function BuildMinimapButton()
         end
     end)
     button:SetScript("OnDragStart", function()
+        -- Keep a normal left-click reserved for opening the phrase editor.
+        -- Without an explicit modifier, a small pointer movement can begin a
+        -- drag, set ignoreClickUntil on release and swallow the click.
+        if not IsAltKeyDown() then
+            return
+        end
         GameTooltip:Hide()
         button:SetScript("OnUpdate", function()
             local cursorX, cursorY = GetCursorPosition()
@@ -433,7 +586,7 @@ local function BuildMinimapButton()
         GameTooltip:SetText("Thanks for Buffing: Forever", 0.49, 0.83, 0.99)
         GameTooltip:AddLine("Left-click: open phrase settings", 1, 1, 1)
         GameTooltip:AddLine("Right-click: enable or disable", 1, 1, 1)
-        GameTooltip:AddLine("Drag: move around the minimap", 0.75, 0.75, 0.75)
+        GameTooltip:AddLine("Alt-drag: move around the minimap", 0.75, 0.75, 0.75)
         GameTooltip:Show()
     end)
     button:SetScript("OnLeave", function() GameTooltip:Hide() end)

@@ -6,12 +6,14 @@ local optionsPanel
 local phraseEditor
 local buttons = {}
 local openedCategory
+local latestTexture
 
 DEFAULT_CHAT_FRAME = { AddMessage = function() end }
 SlashCmdList = {}
 C_ChatInfo = {}
 function UnitFullName() return "Gideon", "ForeverRealm" end
 function GetRealmName() return "ForeverRealm" end
+function GetCursorPosition() return 125, 795 end
 
 local Widget = {}
 Widget.__index = Widget
@@ -30,21 +32,47 @@ function Widget:SetScript(event, callback)
         eventHandler = callback
     end
 end
+function Widget:HookScript(event, callback)
+    local previous = self.scripts[event]
+    self.scripts[event] = function(...)
+        if previous then previous(...) end
+        callback(...)
+    end
+end
 function Widget:CreateFontString() return NewWidget("font") end
-function Widget:CreateTexture() return NewWidget("texture") end
+function Widget:CreateTexture()
+    latestTexture = NewWidget("texture")
+    return latestTexture
+end
 function Widget:SetPoint() end
+function Widget:ClearAllPoints() end
 function Widget:SetSize() end
+function Widget:SetAllPoints() end
+function Widget:SetAlpha(value) self.alpha = value end
 function Widget:SetWidth() end
 function Widget:SetHeight(value) self.height = value end
 function Widget:SetTextInsets() end
 function Widget:SetAutoFocus() end
+function Widget:EnableMouse(value) self.mouseEnabled = value end
+function Widget:EnableKeyboard(value) self.keyboardEnabled = value end
+function Widget:SetFocus() self.focused = true end
+function Widget:HasFocus() return self.focused == true end
+function Widget:GetEffectiveScale() return 1 end
+function Widget:GetLeft() return 100 end
+function Widget:GetTop() return 800 end
 function Widget:SetFontObject() end
+function Widget:SetTextColor(...) self.textColor = { ... } end
 function Widget:SetJustifyH() end
 function Widget:SetColorTexture() end
+function Widget:Show() self.shown = true end
+function Widget:Hide() self.shown = false end
+function Widget:IsShown() return self.shown == true end
 function Widget:SetScrollChild(child) self.scrollChild = child end
-function Widget:SetCursorPosition() end
+function Widget:GetScrollChild() return self.scrollChild end
+function Widget:GetVerticalScroll() return 0 end
+function Widget:SetCursorPosition(value) self.cursorPosition = value end
+function Widget:GetCursorPosition() return self.cursorPosition or 0 end
 function Widget:ClearFocus() end
-function Widget:SetTextColor() end
 function Widget:SetChecked(value) self.checked = value end
 function Widget:GetChecked() return self.checked end
 function Widget:GetFont() return "Fonts\\FRIZQT__.TTF", 14 end
@@ -58,14 +86,21 @@ function Widget:SetText(value)
     if self.scripts.OnTextChanged then self.scripts.OnTextChanged(self) end
 end
 function Widget:GetText() return self.text end
+function Widget:GetStringWidth() return #(self.text or "") * 7 end
 
 local firstFrame = true
-function CreateFrame(kind, name)
+function CreateFrame(kind, name, parent, template)
     local widget = NewWidget(firstFrame and "event" or (kind == "Button" and "button" or kind))
     firstFrame = false
+    if template == "InputScrollFrameTemplate" then
+        widget.EditBox = NewWidget("EditBox")
+        widget:SetScrollChild(widget.EditBox)
+    end
     if name == "ThanksForTheBuffForeverOptionsPanel" then optionsPanel = widget end
     return widget
 end
+
+function InputScrollFrame_OnLoad(frame) frame.inputScrollLoaded = true end
 
 Settings = {
     RegisterCanvasLayoutCategory = function(panel, name)
@@ -90,6 +125,17 @@ end
 
 assert(optionsPanel, "Options > AddOns panel should be registered at addon load")
 assert(phraseEditor, "options panel should contain a multiline phrase editor")
+assert(phraseEditor.mouseEnabled and phraseEditor.keyboardEnabled, "phrase editor should explicitly accept mouse and keyboard input")
+assert(phraseEditor.textColor and phraseEditor.textColor[4] == 1, "phrase editor text and native caret should be fully visible")
+phraseEditor:SetText("thanks!\nty!")
+phraseEditor.scripts.OnMouseDown(phraseEditor, "LeftButton")
+assert(phraseEditor:GetCursorPosition() == 3, "clicking within a line should place the caret at the nearest rendered character")
+phraseEditor.focused = true
+phraseEditor.scripts.OnEditFocusGained(phraseEditor)
+phraseEditor.scripts.OnCursorChanged(phraseEditor, 20, -14, 1, 14)
+assert(latestTexture and latestTexture:IsShown(), "phrase editor should draw a visible fallback caret at the cursor position")
+phraseEditor.scripts.OnEditFocusLost(phraseEditor)
+assert(not latestTexture:IsShown(), "fallback caret should hide when the editor loses focus")
 assert(buttons["Save phrases"], "options panel should contain a Save phrases button")
 assert(buttons["Restore defaults"], "options panel should contain a Restore defaults button")
 

@@ -52,9 +52,9 @@ The prepared version 1.0.22 includes TOCs for:
 | Burning Crusade Classic | 20506 |
 | Classic Era | 11509 |
 
-Only the Forever path is currently claimed for release targeting. Version 1.0.22 requires exact aura-caster evidence before approving a thank-you and adds a local rolling audit for diagnosis. It retains the per-character phrase lists, caster/spell safeguards, Options → AddOns editor, Forever-safe text-height fallback and draggable minimap shortcut. Left-click opens the phrase editor, right-click enables or disables automatic thanks, and dragging moves the shortcut around the minimap. Live testing previously confirmed that Forever blocks combat-log registration, so that API remains disabled on this branch. The other manifests remain source-visible but are not live-verified release targets.
+Only the Forever path is currently claimed for release targeting. Version 1.0.23 requires exact aura-caster evidence before approving a thank-you and adds a local rolling audit for diagnosis. It retains the per-character phrase lists, caster/spell safeguards, Options → AddOns editor, Forever-safe text-height fallback and draggable minimap shortcut. Left-click opens the phrase editor, right-click enables or disables automatic thanks, and Alt-drag moves the shortcut around the minimap without swallowing a normal click. Live testing previously confirmed that Forever blocks combat-log registration, so that API remains disabled on this branch. The other manifests remain source-visible but are not live-verified release targets.
 
-The 1.0.22 source includes strict exact-caster and audit coverage alongside the existing Forever editor, phrase editing, multi-word recipient, protected-aura, grouped-buff and unsafe-attribution checks.
+The 1.0.23 source includes strict exact-caster and audit coverage alongside the existing Forever editor, phrase editing, multi-word recipient, protected-aura, grouped-buff and unsafe-attribution checks.
 
 ## How detection works
 
