@@ -305,35 +305,61 @@ end
 local shapeshiftBreakableControlTypes = {
     -- These are loss-of-control mechanics, not spell identities. Shapeshifting
     -- removes roots, movement slows and Polymorph regardless of which spell or
-    -- creature applied the effect. Other control categories are deliberately
+    -- creature applied the effect. Other readable categories are deliberately
     -- excluded because changing form does not remove them.
     ROOT = true,
     SNARE = true,
     POLYMORPH = true,
 }
+local function localizedControlType(data)
+    local displayText = data.displayText
+    if U.Secret(displayText) or type(displayText) ~= "string" then return end
+    for controlType in pairs(shapeshiftBreakableControlTypes) do
+        local label = _G["LOSS_OF_CONTROL_DISPLAY_" .. controlType]
+        if type(label) == "string" and displayText == label then return controlType end
+    end
+end
 function U.HasShapeshiftBreakableControl()
     local api = C_LossOfControl
-    local getCount = api and (api.GetNumEvents or api.GetActiveLossOfControlDataCount)
-    local getEvent = api and (api.GetEventInfo or api.GetActiveLossOfControlData)
+    -- Forever documents the ActiveLossOfControl names. Prefer those over the
+    -- older aliases when both are present so the public count and indexed data
+    -- come from the same API generation.
+    local getCount = api and (api.GetActiveLossOfControlDataCount or api.GetNumEvents)
+    local getEvent = api and (api.GetActiveLossOfControlData or api.GetEventInfo)
     if type(getCount) ~= "function" or type(getEvent) ~= "function" then return nil end
 
     local count = U.Public(getCount)
     if type(count) ~= "number" then return nil end
-    local readable = true
+    if count == 0 then return false end
+    local restricted = false
     for index = 1, count do
         local ok, data = U.Call(getEvent, index)
-        if not ok or type(data) ~= "table" or U.Secret(data) then
-            readable = false
+        if not ok or U.Secret(data) or type(data) ~= "table" then
+            restricted = true
         else
             local controlType = data.locType
             if U.Secret(controlType) or type(controlType) ~= "string" then
-                readable = false
-            elseif shapeshiftBreakableControlTypes[controlType] then
-                return true, controlType
+                restricted = true
+            else
+                controlType = string.upper(controlType)
+                if shapeshiftBreakableControlTypes[controlType] then
+                    return true, controlType
+                end
+                -- Some compatibility clients expose the localized display
+                -- label more reliably than locType.
+                controlType = localizedControlType(data)
+                if controlType then return true, controlType end
             end
         end
     end
-    if readable then return false end
+    if restricted then
+        -- The detailed record is explicitly secret in restricted combat, but
+        -- the active-effect count is public. Let spell usability decide which
+        -- learned forms can actually be offered instead of silently hiding the
+        -- reminder. Unusable forms (for example during a stun) stay suppressed.
+        return true, "RESTRICTED"
+    end
+    return false
 end
 function U.NoteSuccessfulMaintenance(spellID)
     if U.Secret(spellID) or type(spellID) ~= "number" then return end
@@ -554,15 +580,18 @@ function U.Condition(e, unit)
         return true, "Conjured item missing from your bags"
     end
     if e.rule == "shapeshiftbreak" then
-        local controlled = U.HasShapeshiftBreakableControl()
-        if controlled == nil then return nil, "Control-effect information restricted" end
+        local controlled, controlType = U.HasShapeshiftBreakableControl()
+        if controlled == nil then return nil, "Control-effect information unavailable" end
         if not controlled then return false, "No shapeshift-breakable control effect" end
         local activeSpellID = U.ActiveShapeshiftSpellID()
         if activeSpellID == nil then return nil, "Current shapeshift form unavailable" end
         for _, spellID in ipairs(e.formSpellIDs or {e.id}) do
             if activeSpellID == spellID then return false, "Already in this form; choose another form" end
         end
-        return true, "Shapeshift to break the active control effect"
+        if controlType == "RESTRICTED" then
+            return true, "Active control effect detected; exact category restricted"
+        end
+        return true, "Shapeshift to break the active " .. string.lower(controlType) .. " effect"
     end
     if not U.Alive(unit) then return false, "No living recipient" end
     local hostile = e.rule == "interrupt" or e.rule == "purge" or e.rule == "creature" or e.rule == "control"

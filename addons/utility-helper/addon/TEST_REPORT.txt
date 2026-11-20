@@ -1,4 +1,13 @@
-# Utility Helper: Forever 0.1.35 — verification record
+# Utility Helper: Forever 0.1.36 — verification record
+
+## 0.1.36 restricted control-detail handling
+
+- The public active-effect count can now retain the Druid reminder when the
+  detailed loss-of-control record is restricted in combat.
+- The learned form's native usability remains the final gate, so a breakable net
+  can offer an alternate form while a stun cannot enable an unusable shift.
+- The documented ActiveLossOfControl API is preferred, with older aliases and
+  localized category labels retained as compatibility fallbacks.
 
 ## 0.1.35 effect-category control detection
 

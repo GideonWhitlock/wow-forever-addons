@@ -1,11 +1,20 @@
 # Utility Helper: Forever changelog
 
+## 0.1.36
+
+- Fixed Druid shapeshift reminders being silently suppressed when WoW: Forever
+  exposes an active control effect but restricts its detailed category in combat.
+- Prefer the documented active loss-of-control API and retain compatibility with
+  its older aliases and localized category labels.
+- When details are restricted, learned forms are offered only if the client says
+  the form is currently usable; unusable shifts during stuns remain suppressed.
+
 ## 0.1.35
 
-- Changed Druid control-break reminders to inspect the active loss-of-control
-  effect category instead of maintaining a list of individual spell IDs.
-- Roots, movement slows and Polymorph effects now qualify regardless of which
-  spell or creature applied them; non-breakable control effects remain excluded.
+- Changed Druid control-break reminders to inspect active root, movement-slow
+  and Polymorph categories instead of maintaining individual spell IDs.
+- The effect can come from any spell or creature; readable non-breakable control
+  categories remain excluded.
 
 ## 0.1.34
 

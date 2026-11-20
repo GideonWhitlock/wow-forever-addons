@@ -1,11 +1,14 @@
 # Utility Helper: Forever
 
-Test build **0.1.35** for **WoW: Forever 1.60.1**, interface **16001**.
+Version **0.1.36** for **WoW: Forever 1.60.1**, interface **16001**.
 
-**Druid shapeshift reminders now follow the control effect, not a spell list.**
-When the client reports a root, movement slow or Polymorph effect that changing
-form can remove, Utility Helper offers learned Cat, Bear/Dire Bear or Travel
-Form buttons other than the form already active.
+**Druid control-break reminders now survive restricted combat details.** When
+the client confirms an active control effect but withholds its exact category,
+Utility Helper asks the game which learned alternate forms are actually usable.
+This catches breakable nets while unusable shifts during stuns remain hidden.
+
+The reminder also recognises readable root, movement-slow and Polymorph
+categories without maintaining a list of individual spell IDs.
 
 **Emergency recovery now recognises more than ordinary healing potions.** A
 separate low-health Recovery item button can select WoW: Forever's Student

@@ -1,3 +1,6 @@
+local secret = {}
+issecretvalue = function(value) return value == secret end
+
 local U = {}
 assert(loadfile("addons/utility-helper/addon/Core.lua"))("UtilityHelper", U)
 
@@ -7,7 +10,13 @@ UnitOnTaxi = function() return false end
 IsMounted = function() return false end
 
 local controlType = "ROOT"
+local restricted = false
 C_LossOfControl = {
+    GetActiveLossOfControlDataCount = function() return controlType and 1 or 0 end,
+    GetActiveLossOfControlData = function()
+        if restricted then return secret end
+        return {locType = controlType, spellID = 999999}
+    end,
     GetNumEvents = function() return controlType and 1 or 0 end,
     GetEventInfo = function()
         return {locType = controlType, spellID = 999999}
@@ -40,6 +49,19 @@ assert(U.Condition(cat, "player") == true, "movement slows removable by shifting
 
 controlType = "STUN"
 assert(U.Condition(cat, "player") == false, "a stun should not be described as breakable by shifting")
+
+restricted = true
+assert(U.Condition(cat, "player") == true,
+    "a public active-control count should retain the reminder when details are restricted")
+restricted = false
+
+LOSS_OF_CONTROL_DISPLAY_ROOT = "Rooted"
+controlType = "UNKNOWN"
+C_LossOfControl.GetActiveLossOfControlData = function()
+    return {locType = controlType, displayText = "Rooted", spellID = 999999}
+end
+assert(U.Condition(cat, "player") == true,
+    "the localized display label should recover a breakable category from a compatibility client")
 
 controlType = nil
 assert(U.Condition(cat, "player") == false, "forms should stay hidden without a recognised control effect")
