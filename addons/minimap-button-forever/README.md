@@ -2,7 +2,7 @@
 
 **Repository identifier:** `minimap-button-forever`  
 **Issue label:** `addon:minimap-button-forever`  
-**Current release:** 1.0.23
+**Current release:** 1.0.24
 **Game flavour:** WoW: Forever 1.60.1, interface 16001
 
 Minimap Button: Forever gathers eligible add-on minimap buttons into one movable,
@@ -14,10 +14,11 @@ It is deliberately limited to buttons created by installed add-ons. Blizzard
 controls, protected buttons, quest markers, resource nodes and other map-location
 pins remain untouched.
 
-Version 1.0.23 stops controller movement cleanly when Alt or the left mouse
-button is released, even when opening the world map or entering combat interrupts
-the normal drag-stop callback. Frames that expose protected or secret geometry
-remain rejected before collection.
+Version 1.0.24 makes `/mbf reset` fully recover the gold controller if its parent
+bar was hidden or made transparent. It retains the 1.0.23 fix that stops controller
+movement cleanly when Alt or the left mouse button is released, even when opening
+the world map or entering combat interrupts the normal drag-stop callback. Frames
+that expose protected or secret geometry remain rejected before collection.
 
 ## Installation
 

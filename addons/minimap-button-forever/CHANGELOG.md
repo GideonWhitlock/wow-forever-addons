@@ -3,6 +3,11 @@
 This changelog records released add-on versions. Changes that were later replaced
 or reverted remain listed under the version in which they shipped.
 
+## 1.0.24 — 2026-11-20
+
+- Makes `/mbf reset` a complete controller recovery action.
+- Explicitly restores the gold controller's parent bar visibility, alpha and mouse input before applying the default position and layout.
+
 ## 1.0.23 — 2026-11-11
 
 - Stops cursor-follow movement as soon as Alt or the left mouse button is

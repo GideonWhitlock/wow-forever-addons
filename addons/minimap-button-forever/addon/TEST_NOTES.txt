@@ -1,5 +1,12 @@
 MINIMAP BUTTON FOREVER - LIVE TEST CHECKLIST
 
+VERSION 1.0.24 CONTROLLER-RECOVERY CHECK
+
+1. Collapse the collected icons so only the gold controller remains.
+2. Run `/mbf reset`.
+3. Confirm the gold controller is visible at the default free position and can
+   be clicked to show all collected icons.
+
 VERSION 1.0.23 INTERRUPTED-DRAG CHECK
 
 1. Hold Alt and drag the launcher away from the minimap.
