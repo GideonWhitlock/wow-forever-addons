@@ -4,7 +4,7 @@
 -- Level brackets are literal client description branches, not inferred formulas.
 -- See SOURCES.md / NOTICE.md for provenance and verification limits.
 local _, ns = ...
-ns.checkedBuild, ns.version = "70009", "1.0.2"
+ns.checkedBuild, ns.version = "70009", "1.0.3"
 
 ns.benefits = {
     ["mana"] = {
@@ -335,6 +335,7 @@ ns.objects = {
         name = "Tanning Rack",
         spell = 1307395,
         benefit = "tent",
+        nameFallback = true,
         utility = "Craft certain reagents.",
     },
     [529161] = {

@@ -2,6 +2,12 @@
 
 This file records released Campfire Tooltips: Forever versions and verified changes only. Versions 1.0.0 and 1.0.1 were originally released under the public name **Campfire Tooltips**; the public project was renamed afterward without changing those package contents.
 
+## 1.0.3 — Release
+
+- Added the owner-confirmed exact world title `Tanning Rack` so its rested-experience and crafting information appears when the client supplies no readable object ID.
+- Kept readable object IDs authoritative and retained exact-name-only fallback matching.
+- Verified the corrected Tanning Rack tooltip in game after reloading on 20 November 2026.
+
 ## 1.0.2 — Release
 
 - Added the owner-confirmed `Chair` title so the Camp Chair description appears when the client supplies no readable object ID.

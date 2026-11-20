@@ -9,7 +9,7 @@ Source, release notes and issue reporting for Gideon Whitlock's World of Warcraf
 
 | Add-on | Version | Documentation | Download | Full video | Short |
 |---|---:|---|---|---|---|
-| Campfire Tooltips: Forever | 1.0.2 | [README](addons/campfire-tooltips/README.md) · [Changelog](addons/campfire-tooltips/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/campfire-tooltips) | [YouTube](https://youtu.be/3GcNEPl17y0) | [Short](https://youtube.com/shorts/z05B6QziquA) |
+| Campfire Tooltips: Forever | 1.0.3 | [README](addons/campfire-tooltips/README.md) · [Changelog](addons/campfire-tooltips/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/campfire-tooltips) | [YouTube](https://youtu.be/3GcNEPl17y0) | [Short](https://youtube.com/shorts/z05B6QziquA) |
 | Feed Pet: Forever | 1.0.2 | [README](addons/feed-pet-forever/README.md) · [Changelog](addons/feed-pet-forever/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/feed-pet-forever) | [YouTube](https://youtu.be/lVknLDpYFNc) | [Short](https://youtube.com/shorts/_3BZxxMcTTI) |
 | Campfire Stories: Forever | 3.0.3 | [README](addons/campfire-stories/README_SECTION.md) · [Changelog](addons/campfire-stories/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/campfire-stories) | [YouTube](https://youtu.be/WRWzFLMsZ3o) | [Short](https://youtube.com/shorts/JDaBCacZ1eE) |
 | Utility Helper: Forever | 0.1.36 | [README](addons/utility-helper/README.md) · [Changelog](addons/utility-helper/CHANGELOG.md) | [CurseForge](https://www.curseforge.com/wow/addons/utility-helper) | [YouTube](https://youtu.be/Fpw8RDISIk4) | [Short](https://youtube.com/shorts/MyqN8RvalSc) |

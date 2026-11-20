@@ -2,7 +2,8 @@
 
 **Campfire Tooltips: Forever** adds short, separated explanations to the normal world tooltip when you hover over a recognised camping object in **World of Warcraft: Forever**. It preserves the original object name, game text and tooltip position. No click or target is needed to read the explanation.
 
-Current public release: **1.0.1**  
+Current public release: **1.0.3**
+
 Game flavour: **WoW: Forever**  
 Game version: **1.60.1**  
 Interface: **16001**

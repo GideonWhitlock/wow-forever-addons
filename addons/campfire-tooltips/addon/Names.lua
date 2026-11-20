@@ -25,6 +25,7 @@ local english = {
     ["Trapper's Workbench"] = 612082,
     ["Camp Tent"] = 528996,
     ["Sewing Machine"] = 612140,
+    ["Tanning Rack"] = 612122,
     ["Journeyman Campfire"] = 630660,
     ["Expert Campfire"] = 650137,
     ["Anarchist's Workbench"] = 612145,

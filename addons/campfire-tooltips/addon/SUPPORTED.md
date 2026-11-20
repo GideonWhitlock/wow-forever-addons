@@ -2,7 +2,7 @@
 
 Checked against client build 1.60.1.70009. This table describes verified data coverage, not 39 completed live tests. Recognition requires a readable supported ID or an explicitly allowed exact name; see TESTING.md.
 
-On the tested client, real object tooltips exposed names but no GUID/entry ID. Thus ID-only entries remain unavailable in those tooltips. The 28 exact-name fallbacks are English only; most profession names still need live confirmation. Owner screenshots on 4 October confirmed the camp chair's world title is `Chair` and the banner's is `Faction Banner`; 1.0.2 adds the observed Chair title and a player-faction-aware banner fallback.
+On the tested client, real object tooltips exposed names but no GUID/entry ID. Thus ID-only entries remain unavailable in those tooltips. The 29 exact-name fallbacks are English only; most profession names still need live confirmation. Owner screenshots confirmed the camp chair's world title is `Chair`, the banner's is `Faction Banner`, and the leatherworking upgrade's is `Tanning Rack`; these observed titles are allowed as exact fallbacks.
 
 | Object or service | Entry ID | Placement spell | Recognition | Benefit | Additional utility |
 |---|---:|---:|---|---|---|
@@ -35,7 +35,7 @@ On the tested client, real object tooltips exposed names but no GUID/entry ID. T
 | Spinning Wheel | 612123 | 1307393 | ID only | Increases Spirit for members of the banner's faction. | Craft certain reagents. |
 | Camp Tent | 528996 | 1307230 | ID or exact name | Adds rested experience. | — |
 | Sewing Machine | 612140 | 1307391 | ID or exact name | Adds rested experience. | Required by some crafting recipes. |
-| Tanning Rack | 612122 | 1307395 | ID only | Adds rested experience. | Craft certain reagents. |
+| Tanning Rack | 612122 | 1307395 | ID or exact name | Adds rested experience. | Craft certain reagents. |
 | Basic Campfire | 529161 | 1307227 | ID only | Cooking and a place to rest. | Supports up to 3 additional camp features. |
 | Journeyman Campfire | 630660 | 1307252 | ID or exact name | Cooking and a place to rest. | Supports up to 5 additional camp features. |
 | Expert Campfire | 650137 | 1307237 | ID or exact name | Cooking and a place to rest. | Supports up to 10 additional camp features. |

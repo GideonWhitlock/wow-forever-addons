@@ -2,6 +2,10 @@
 
 Live baseline: 27 September 2026, addon 1.0.0; WoW: Forever 1.60.1.70009, Interface 16001, enUS; level 15. Installed in the verified running `_classic_beta_` client. These results distinguish actual game observations from simulations.
 
+## 1.0.3 Tanning Rack correction — 20 November 2026
+
+An owner screenshot confirmed that the world object exposes the exact title `Tanning Rack` but received no added Campfire Tooltips description in 1.0.2. Version 1.0.3 adds that exact English object-title fallback for entry 612122 while retaining readable-ID priority and exact matching. After installing the test build and running `/reload`, the owner confirmed on 20 November 2026 that the Tanning Rack tooltip now works in game.
+
 ## 1.0.2 Chair and Faction Banner correction — 4 October 2026
 
 Owner screenshots confirmed that the two world-object tooltips expose only the titles `Chair` and `Faction Banner`, with no added Campfire Tooltips description. Earlier live diagnostics had already shown that the Chair tooltip supplied no readable GUID or entry ID. Version 1.0.2 adds the exact observed `Chair` alias for the Camp Chair and resolves the exact `Faction Banner` title to the Alliance or Horde placement using the player's readable faction.
