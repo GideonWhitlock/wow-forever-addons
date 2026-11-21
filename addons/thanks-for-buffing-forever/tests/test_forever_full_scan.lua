@@ -10,6 +10,7 @@ local eventHandler
 local now = 900
 local playerInCombat = false
 local auraScanCalls = 0
+local auraAccessProtected = false
 
 local units = {
     nameplate1 = { guid = "Player-Mage", name = "Magebuffer" },
@@ -42,6 +43,9 @@ C_UnitAuras = {
     GetAuraDataByIndex = function(unit, index, filter)
         auraScanCalls = auraScanCalls + 1
         assert(unit == "player" and filter == "HELPFUL", "the fallback should scan player helpful auras")
+        if auraAccessProtected then
+            error("test protected aura access")
+        end
         return helpfulAuras[index]
     end,
     GetAuraDataByAuraInstanceID = function(unit, auraInstanceID)
@@ -139,5 +143,26 @@ local scanCallsBeforeCombatEvent = auraScanCalls
 eventHandler(nil, "UNIT_AURA", "player", nil)
 assert(auraScanCalls == scanCallsBeforeCombatEvent,
     "the aura fallback must not scan while the player is already in combat")
+
+-- PLAYER_REGEN_ENABLED can fire before WoW makes aura data readable again.
+-- The protected read must be caught and retried instead of escaping as a Lua
+-- error or permanently abandoning aura detection.
+playerInCombat = false
+auraAccessProtected = true
+scheduled = {}
+eventHandler(nil, "PLAYER_REGEN_ENABLED")
+assert(#scheduled == 1 and scheduled[1].delay == 0.25,
+    "leaving combat should defer the first aura scan briefly")
+
+local firstRetry = table.remove(scheduled, 1)
+firstRetry.callback()
+assert(#scheduled == 1 and scheduled[1].delay == 0.25,
+    "a protected post-combat scan should schedule another retry")
+
+auraAccessProtected = false
+local secondRetry = table.remove(scheduled, 1)
+secondRetry.callback()
+assert(#scheduled == 0,
+    "post-combat retries should stop as soon as aura data is readable")
 
 print("Forever full-scan spell-family tests passed")

@@ -6,6 +6,8 @@ local CASTER_COOLDOWN_SECONDS = 10 * 60
 local CAST_MATCH_WINDOW_SECONDS = 2.5
 local CAST_CORRELATION_DELAY_SECONDS = 0.5
 local WORLD_ENTRY_BASELINE_DELAY_SECONDS = 2
+local POST_COMBAT_AURA_RETRY_SECONDS = 0.25
+local POST_COMBAT_AURA_RETRY_LIMIT = 20
 local RECENT_SPEAKER_SECONDS = 120
 local DEFERRED_DELIVERY_TIMEOUT_SECONDS = 15 * 60
 local CHAT_LOCKDOWN_RETRY_SECONDS = 1
@@ -56,6 +58,7 @@ local knownHelpfulAuras = {}
 local auraSnapshotInitialized = false
 local auraDetectionArmed = false
 local worldEntryBaselineToken
+local postCombatAuraRefreshToken
 local playerGUID
 local debugEnabled = false
 local TrySendThanks
@@ -1473,7 +1476,14 @@ end
 local function ForEachHelpfulAura(callback)
     if C_UnitAuras and C_UnitAuras.GetAuraDataByIndex then
         for index = 1, 255 do
-            local aura = C_UnitAuras.GetAuraDataByIndex("player", index, "HELPFUL")
+            -- WoW can keep aura data secret briefly after combat formally
+            -- ends. Catch that protected read without inspecting or
+            -- stringifying its error value, which may itself be secret.
+            local readable, aura = pcall(C_UnitAuras.GetAuraDataByIndex, "player", index, "HELPFUL")
+            if not readable then
+                return false
+            end
+
             if not aura then
                 return true
             end
@@ -1543,6 +1553,34 @@ local function RefreshHelpfulAuraSnapshot(processNewAuras)
     end
 
     return true, #newlyAdded, processedNewAuras
+end
+
+local function SchedulePostCombatAuraRefresh()
+    local token = {}
+    postCombatAuraRefreshToken = token
+    local attempts = 0
+
+    local function TryRefresh()
+        if postCombatAuraRefreshToken ~= token then
+            return
+        end
+
+        attempts = attempts + 1
+        if RefreshHelpfulAuraSnapshot(true) then
+            postCombatAuraRefreshToken = nil
+            return
+        end
+
+        if attempts >= POST_COMBAT_AURA_RETRY_LIMIT then
+            postCombatAuraRefreshToken = nil
+            Debug("Post-combat helpful-aura scan remained protected; waiting for the next aura update.")
+            return
+        end
+
+        C_Timer.After(POST_COMBAT_AURA_RETRY_SECONDS, TryRefresh)
+    end
+
+    C_Timer.After(POST_COMBAT_AURA_RETRY_SECONDS, TryRefresh)
 end
 
 local function HandleUnitAura(updateInfo)
@@ -1660,6 +1698,7 @@ end
 
 local function ResetTransientDetectionState()
     worldEntryBaselineToken = nil
+    postCombatAuraRefreshToken = nil
     auraDetectionArmed = false
     auraSnapshotInitialized = false
     knownHelpfulAuras = {}
@@ -1744,7 +1783,7 @@ frame:SetScript("OnEvent", function(_, event, ...)
     if event == "PLAYER_REGEN_ENABLED" then
         FlushDeferredThanks()
         if auraDetectionArmed then
-            RefreshHelpfulAuraSnapshot(true)
+            SchedulePostCombatAuraRefresh()
         end
         return
     end

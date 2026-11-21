@@ -2,6 +2,14 @@
 
 All notable changes to Thanks for Buffing: Forever are recorded here.
 
+## 1.0.25 — 2026-11-21
+
+- Safely catches protected helpful-aura reads without inspecting or stringifying WoW's secret error value.
+- Defers the first post-combat aura scan and retries briefly while Forever keeps aura data protected after combat formally ends.
+- Stops retrying as soon as aura data becomes readable and retains the next normal aura update as a safe fallback.
+- Adds regression coverage for the delayed post-combat protection window.
+- Passed live testing across repeated combat entry and exit without the previous `GetAuraDataByIndex()` taint error returning.
+
 ## 1.0.24 — 2026-11-21
 
 - Prevents full helpful-aura scans when Forever marks the player as fighting before formal combat lockdown begins.

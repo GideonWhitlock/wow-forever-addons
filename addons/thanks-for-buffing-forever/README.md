@@ -42,7 +42,7 @@ It waits a random 3–10 seconds, chooses from a player-editable list of 15 defa
 
 ## Supported clients
 
-Version 1.0.24 includes TOCs for:
+Version 1.0.25 includes TOCs for:
 
 | Client | Interface |
 | --- | ---: |
@@ -52,9 +52,9 @@ Version 1.0.24 includes TOCs for:
 | Burning Crusade Classic | 20506 |
 | Classic Era | 11509 |
 
-Only the Forever path is currently claimed for release targeting. Version 1.0.24 blocks protected full-aura scans as soon as the player enters combat, including the brief interval before formal combat lockdown begins. It retains the exact aura-caster evidence requirement, local rolling audit, per-character phrase lists, caster/spell safeguards, Options → AddOns editor, Forever-safe text-height fallback and draggable minimap shortcut. Left-click opens the phrase editor, right-click enables or disables automatic thanks, and Alt-drag moves the shortcut around the minimap without swallowing a normal click. Live testing previously confirmed that Forever blocks combat-log registration, so that API remains disabled on this branch. The other manifests remain source-visible but are not live-verified release targets.
+Only the Forever path is currently claimed for release targeting. Version 1.0.25 blocks protected full-aura scans during combat and safely retries the brief protected window that can remain after combat formally ends. It retains the exact aura-caster evidence requirement, local rolling audit, per-character phrase lists, caster/spell safeguards, Options → AddOns editor, Forever-safe text-height fallback and draggable minimap shortcut. Left-click opens the phrase editor, right-click enables or disables automatic thanks, and Alt-drag moves the shortcut around the minimap without swallowing a normal click. Live testing previously confirmed that Forever blocks combat-log registration, so that API remains disabled on this branch. The other manifests remain source-visible but are not live-verified release targets.
 
-The 1.0.24 source includes an early-combat aura-access regression alongside the strict exact-caster, audit, Forever editor, phrase editing, multi-word recipient, protected-aura, grouped-buff and unsafe-attribution checks.
+The 1.0.25 source includes early- and post-combat aura-access regressions alongside the strict exact-caster, audit, Forever editor, phrase editing, multi-word recipient, protected-aura, grouped-buff and unsafe-attribution checks.
 
 ## How detection works
 
@@ -78,7 +78,7 @@ The addon stores its enabled/disabled setting and per-character local phrase lis
 
 ## Repository layout
 
-- `addon/ThanksForTheBuffForever/` — the version 1.0.24 source and TOCs
+- `addon/ThanksForTheBuffForever/` — the version 1.0.25 source and TOCs
 - `tests/` — standalone Lua behaviour tests for Forever and Classic detection paths
 - `.github/ISSUE_TEMPLATE/` — the project-specific public bug-report form
 

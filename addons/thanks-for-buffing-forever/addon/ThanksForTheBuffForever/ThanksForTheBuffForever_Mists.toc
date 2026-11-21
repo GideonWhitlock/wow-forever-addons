@@ -1,7 +1,7 @@
 ## Interface: 50504
 ## Title: Thanks for Buffing: Forever
 ## Notes: Naturally thanks players who buff you with a private whisper.
-## Version: 1.0.24
+## Version: 1.0.25
 ## SavedVariables: ThanksForTheBuffForeverDB
 ## IconTexture: Interface\Icons\Spell_Holy_WordFortitude
 
