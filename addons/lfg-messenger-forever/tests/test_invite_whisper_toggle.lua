@@ -5,24 +5,28 @@ LFGMessengerForeverDB = {}
 Q.InitializeDB()
 Q.Print = function() end
 Q.GetResultPlayer = function()
-    return {name = "Helpfulplayer", info = {}}
+    return {name = "Helpfulplayer", role = "DPS", info = {}}
 end
 Q.GetResultActivity = function() return "Deadmines" end
-Q.GetInviteRole = function() return "DPS" end
 
 local invites, whispers = 0, 0
-local function invite()
+local invitedName, whisperedRole
+local function invite(name)
     invites = invites + 1
+    invitedName = name
     return true
 end
-Q.SendInviteWhisper = function()
+Q.SendInviteWhisper = function(_, _, role)
     whispers = whispers + 1
+    whisperedRole = role
     return true
 end
 
 assert(Q.db.inviteWhispers == true, "invite follow-up whispers should default on")
 assert(Q.InviteResult(1, invite), "an enabled invite should succeed")
 assert(invites == 1 and whispers == 1, "an enabled invite should send one follow-up whisper")
+assert(invitedName == "Helpfulplayer", "the exact clicked player's name should be invited")
+assert(whisperedRole == "DPS", "the whisper should use the clicked player's actual role")
 
 Q.db.inviteWhispers = false
 assert(Q.InviteResult(1, invite), "an invite should still succeed when follow-up whispers are off")

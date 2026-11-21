@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.10 — 2026-11-21
+
+- Quick Invite now resolves and invites the exact player represented by the
+  clicked result row instead of relying on Blizzard's current row selection.
+- Invite follow-up whispers now describe the invited player's advertised role;
+  the Tanks/Healers/DPS-first sorting choice no longer changes that wording.
+
 ## 1.0.9 — 2026-11-17
 
 - Added **Whisper the player after an invite** to the add-on settings.

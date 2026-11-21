@@ -1,3 +1,9 @@
+1.0.25 - 2026-11-21
+- Keeps the gold controller attached to its own visible parent and restores its
+  frame level, mouse input, style and opacity during every out-of-combat layout.
+- Extends /mbf reset recovery to repair a changed parent as well as hidden or
+  transparent controller frames.
+
 1.0.24 - 2026-11-20
 - Makes /mbf reset fully restore the gold controller's visibility, opacity and
   mouse input before applying the default position and layout.

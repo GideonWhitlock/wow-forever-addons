@@ -45,6 +45,22 @@ function F.ApplyLauncherStyle()
     F.ApplyLauncherOpacity()
 end
 
+function F.EnsureControllerVisible()
+    local container, launcher = F.container, F.launcher
+    if not container or not launcher or not F.db then return end
+    if container:GetParent() ~= UIParent then container:SetParent(UIParent) end
+    if launcher:GetParent() ~= container then launcher:SetParent(container) end
+    container:SetFrameStrata("MEDIUM")
+    container:SetFrameLevel(10)
+    container:SetAlpha(1)
+    container:Show()
+    launcher:SetFrameStrata("MEDIUM")
+    launcher:SetFrameLevel((F.buttonHolder and F.buttonHolder:GetFrameLevel() or 20) + 2)
+    launcher:EnableMouse(true)
+    launcher:Show()
+    F.ApplyLauncherStyle()
+end
+
 local function requestLayout()
     if F.layoutPending or F.layingOut or InCombatLockdown() then return end
     F.layoutPending = true
@@ -383,6 +399,7 @@ end
 
 function F.Layout()
     if InCombatLockdown() or not F.container then return end
+    F.EnsureControllerVisible()
     F.layingOut = true
     local size, spacing = F.db.size, F.db.spacing
     local positionX, positionY = F.GetPositionOffsets()

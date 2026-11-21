@@ -42,8 +42,10 @@ local function configureInviteButton(row)
         button:SetScript("OnClick", function(self)
             local id = self.resultID
             if not id then return end
-            local _, action = LFGBrowseUtil_GetInviteActionForResult(id)
-            if type(action) == "function" then Q.InviteResult(id, action) end
+            -- Blizzard's action follows the browse frame's current selection,
+            -- which can differ from this recycled row. Resolve and invite the
+            -- exact player represented by the clicked result ID instead.
+            Q.InviteResult(id)
         end)
         button:SetScript("OnEnter", function(self)
             GameTooltip:SetOwner(self, "ANCHOR_TOP")
@@ -213,7 +215,7 @@ function Q.AttachToGroupFinder()
                 messageButton:SetEnabled(info.leaderName ~= nil)
                 local inviteText, inviteFunc = LFGBrowseUtil_GetInviteActionForResult(resultID)
                 local inviteButton = root:CreateButton(inviteText, function()
-                    Q.InviteResult(resultID, inviteFunc)
+                    Q.InviteResult(resultID)
                 end)
                 inviteButton:SetEnabled(inviteFunc ~= nil)
                 root:CreateDivider()

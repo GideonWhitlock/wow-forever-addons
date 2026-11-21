@@ -2,7 +2,7 @@ local addonName, Q = ...
 
 Q.ADDON_NAME = addonName
 Q.TITLE = "Looking for Group: Forever"
-Q.VERSION = "1.0.9"
+Q.VERSION = "1.0.10"
 Q.BLIZZARD_ADDON = "Blizzard_GroupFinder_VanillaStyle"
 Q.ICON = "Interface\\Icons\\INV_Letter_15"
 Q.DEFAULTS = {
@@ -254,12 +254,13 @@ function Q.GetResultActivity(resultID, info)
     return "your selected activity"
 end
 
-function Q.GetInviteRole()
-    local role = Q.db and Q.db.roleFilter or "ALL"
+function Q.GetInviteRole(player)
+    local role = type(player) == "table" and player.role or player
+    if Q.IsSecret(role) or type(role) ~= "string" or role == "" then return nil end
     if role == "TANK" then return "Tank" end
     if role == "HEALER" then return "Healer" end
     if role == "DAMAGER" then return "DPS" end
-    return nil
+    return role
 end
 
 function Q.SendInviteWhisper(target, activity, role, suggested)
@@ -303,7 +304,7 @@ function Q.InviteResult(resultID, inviteAction)
     local ok, result = pcall(invite, player.name)
     if not ok or result == false then Q.Print("The invite request could not be sent."); return false end
     local activity = Q.GetResultActivity(resultID, player.info)
-    local role = Q.GetInviteRole()
+    local role = Q.GetInviteRole(player)
     if Q.db.inviteWhispers ~= false then
         Q.SendInviteWhisper(player.name, activity, role, not wasLeader)
     end
@@ -318,7 +319,7 @@ function Q.WhisperForResult(resultID)
     local isLeader = not IsInGroup or not IsInGroup()
         or (UnitIsGroupLeader and UnitIsGroupLeader("player"))
     return Q.SendInviteWhisper(player.name, Q.GetResultActivity(resultID, player.info),
-        Q.GetInviteRole(), not isLeader)
+        Q.GetInviteRole(player), not isLeader)
 end
 
 local function hasRole(flags, role)

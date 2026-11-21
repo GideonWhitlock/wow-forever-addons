@@ -3,6 +3,13 @@
 This changelog records released add-on versions. Changes that were later replaced
 or reverted remain listed under the version in which they shipped.
 
+## 1.0.25 — 2026-11-21
+
+- Keeps the gold controller attached to its own visible parent and restores its
+  frame level, mouse input, style and opacity during every out-of-combat layout.
+- Extends `/mbf reset` recovery to repair a changed parent as well as hidden or
+  transparent controller frames.
+
 ## 1.0.24 — 2026-11-20
 
 - Makes `/mbf reset` a complete controller recovery action.

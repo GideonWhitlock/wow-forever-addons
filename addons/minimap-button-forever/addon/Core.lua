@@ -1,6 +1,6 @@
 local _, F = ...
 
-F.VERSION = "1.0.24"
+F.VERSION = "1.0.25"
 F.MIN_SIZE = 20
 F.MAX_SIZE = 64
 F.MIN_SPACING = 0
@@ -419,16 +419,7 @@ function F.ResetLayout()
     -- Reset is also the recovery command. Explicitly undo any accidental
     -- visibility or alpha change so the gold controller cannot remain lost
     -- after its collected buttons have been hidden.
-    if F.container then
-        F.container:SetAlpha(1)
-        F.container:Show()
-    end
-    if F.launcher then
-        F.launcher:SetAlpha(1)
-        F.launcher:EnableMouse(true)
-        F.launcher:Show()
-    end
-    F.ApplyLauncherStyle()
+    if F.EnsureControllerVisible then F.EnsureControllerVisible() end
     F.ApplyPosition()
     F.ScanButtons()
     F.Layout()
