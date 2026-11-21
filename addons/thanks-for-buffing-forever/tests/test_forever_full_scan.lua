@@ -8,6 +8,8 @@ local printed = {}
 local helpfulAuras = {}
 local eventHandler
 local now = 900
+local playerInCombat = false
+local auraScanCalls = 0
 
 local units = {
     nameplate1 = { guid = "Player-Mage", name = "Magebuffer" },
@@ -38,6 +40,7 @@ C_Timer = {
 }
 C_UnitAuras = {
     GetAuraDataByIndex = function(unit, index, filter)
+        auraScanCalls = auraScanCalls + 1
         assert(unit == "player" and filter == "HELPFUL", "the fallback should scan player helpful auras")
         return helpfulAuras[index]
     end,
@@ -61,6 +64,7 @@ end
 function GetTime() return now end
 function GetBuildInfo() return "1.60.1.70205", "70205", "Oct 2026", 16001 end
 function InCombatLockdown() return false end
+function UnitAffectingCombat(unit) return unit == "player" and playerInCombat end
 function IsInGroup() return false end
 function issecretvalue() return false end
 function UnitExists(unit) return unit == "player" or units[unit] ~= nil end
@@ -127,5 +131,13 @@ for _, message in ipairs(printed) do
     end
 end
 assert(sawScanDebug, "debug output should explain the no-incremental-data fallback")
+
+-- Forever can protect aura access at the start of a fight before
+-- InCombatLockdown() flips. UnitAffectingCombat must block the fallback scan.
+playerInCombat = true
+local scanCallsBeforeCombatEvent = auraScanCalls
+eventHandler(nil, "UNIT_AURA", "player", nil)
+assert(auraScanCalls == scanCallsBeforeCombatEvent,
+    "the aura fallback must not scan while the player is already in combat")
 
 print("Forever full-scan spell-family tests passed")

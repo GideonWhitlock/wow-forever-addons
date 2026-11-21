@@ -1502,8 +1502,13 @@ local function ForEachHelpfulAura(callback)
     return false
 end
 
+local function IsAuraAccessRestricted()
+    return InCombatLockdown()
+        or (UnitAffectingCombat and UnitAffectingCombat("player"))
+end
+
 local function RefreshHelpfulAuraSnapshot(processNewAuras)
-    if InCombatLockdown() then
+    if IsAuraAccessRestricted() then
         return false
     end
 
@@ -1547,7 +1552,7 @@ local function HandleUnitAura(updateInfo)
         -- Aura events replay the character's existing buffs while login and
         -- world entry are still settling. Keep the baseline current, but do
         -- not treat any of those auras as a genuinely new application.
-        if not InCombatLockdown() then
+        if not IsAuraAccessRestricted() then
             RefreshHelpfulAuraSnapshot(false)
         end
         return
@@ -1571,7 +1576,7 @@ local function HandleUnitAura(updateInfo)
             -- and Mark of the Wild are not silently missed.
             local updatedAuraInstanceIDs = updateInfo.updatedAuraInstanceIDs
             if not IsSecret(updatedAuraInstanceIDs) and type(updatedAuraInstanceIDs) == "table"
-                and not InCombatLockdown()
+                and not IsAuraAccessRestricted()
                 and C_UnitAuras and C_UnitAuras.GetAuraDataByAuraInstanceID
             then
                 usedIncrementalUpdate = true
@@ -1585,7 +1590,7 @@ local function HandleUnitAura(updateInfo)
         end
     end
 
-    if InCombatLockdown() then
+    if IsAuraAccessRestricted() then
         -- Only readable incremental aura records are used in combat. The full
         -- snapshot is deliberately left at its pre-combat state so a safe
         -- post-combat scan can recover any lasting buff the client hid.

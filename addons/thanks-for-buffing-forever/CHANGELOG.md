@@ -2,6 +2,13 @@
 
 All notable changes to Thanks for Buffing: Forever are recorded here.
 
+## 1.0.24 — 2026-11-21
+
+- Prevents full helpful-aura scans when Forever marks the player as fighting before formal combat lockdown begins.
+- Avoids the `GetAuraDataByIndex()` protected-aura taint raised at the start of combat.
+- Keeps safe incremental aura handling during combat and the existing post-combat rescan.
+- Adds regression coverage for the early-combat window where `UnitAffectingCombat("player")` is true while `InCombatLockdown()` is still false.
+
 ## 1.0.23 — 2026-11-20
 
 - Keeps an ordinary minimap-button left-click reserved for opening the phrase editor.
