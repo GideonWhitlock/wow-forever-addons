@@ -11,7 +11,7 @@ Restart WoW fully if it was running when the add-on was installed, then enable
 
 WHAT IT DOES
 Minimap Button: Forever finds add-on buttons attached to the minimap and places
-them beside one gold controller icon. The bar can run horizontally or vertically.
+them beside one gold controller icon. The bar can run horizontally, vertically or as a grid.
 It opens inward from the nearest screen edge so collected icons stay visible.
 It collects buttons created by installed add-ons while leaving Blizzard controls,
 quest markers, resource nodes and other map-location pins on the minimap.
@@ -27,6 +27,8 @@ Alt-drag gold icon     Move freely, or around the minimap when rim mode is on.
 /mbf                   Open or close settings.
 /mbf horizontal        Use a horizontal bar.
 /mbf vertical          Use a vertical bar.
+/mbf grid              Use a grid.
+/mbf columns 4         Set the grid width from two to eight columns.
 /mbf size 40           Set the icon size from 20 to 64.
 /mbf spacing 4         Set the gap between icons from 0 to 16.
 /mbf shape circle      Use the circular gold controller; "square" restores it.

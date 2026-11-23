@@ -75,6 +75,8 @@ function Widget:GetCursorPosition() return self.cursorPosition or 0 end
 function Widget:ClearFocus() end
 function Widget:SetChecked(value) self.checked = value end
 function Widget:GetChecked() return self.checked end
+function Widget:Enable() self.enabled = true end
+function Widget:Disable() self.enabled = false end
 function Widget:GetFont() return "Fonts\\FRIZQT__.TTF", 14 end
 function Widget:SetMultiLine(value)
     self.multiLine = value
@@ -101,6 +103,11 @@ function CreateFrame(kind, name, parent, template)
 end
 
 function InputScrollFrame_OnLoad(frame) frame.inputScrollLoaded = true end
+function UIDropDownMenu_SetWidth(frame, width) frame.width = width end
+function UIDropDownMenu_SetText(frame, value) frame.dropdownText = value end
+function UIDropDownMenu_Initialize(frame, callback) frame.dropdownInitializer = callback end
+function UIDropDownMenu_CreateInfo() return {} end
+function UIDropDownMenu_AddButton() end
 
 Settings = {
     RegisterCanvasLayoutCategory = function(panel, name)
@@ -138,9 +145,17 @@ phraseEditor.scripts.OnEditFocusLost(phraseEditor)
 assert(not latestTexture:IsShown(), "fallback caret should hide when the editor loses focus")
 assert(buttons["Save phrases"], "options panel should contain a Save phrases button")
 assert(buttons["Restore defaults"], "options panel should contain a Restore defaults button")
+assert(buttons["Copy into editor"], "options panel should contain a copy-from-character button")
 
+ThanksForTheBuffForeverDB.characterMessages["Nightelfalt-ForeverRealm"] = {
+    "Borrowed phrase one", "Borrowed phrase two",
+}
 optionsPanel.scripts.OnShow()
 assert(string.find(phraseEditor:GetText(), "thanks!", 1, true), "opening options should load saved phrases")
+buttons["Copy into editor"].scripts.OnClick()
+assert(phraseEditor:GetText() == "Borrowed phrase one\nBorrowed phrase two",
+    "copying should load the selected character's phrases into the editor")
+assert(#messages() == 15, "copying into the editor should not overwrite saved phrases before Save")
 
 phraseEditor:SetText("First custom phrase\nSecond custom phrase\n")
 assert(phraseEditor.height == 252, "Forever editor sizing should not require GetStringHeight")

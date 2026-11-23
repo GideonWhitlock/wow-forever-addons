@@ -2,19 +2,20 @@
 
 **Repository identifier:** `minimap-button-forever`  
 **Issue label:** `addon:minimap-button-forever`  
-**Current release:** 1.0.25
+**Current release:** 1.0.26
 **Game flavour:** WoW: Forever 1.60.1, interface 16001
 
 Minimap Button: Forever gathers eligible add-on minimap buttons into one movable,
 collapsible bar. The gold controller stays visible while the collected buttons can
-be shown or hidden. The bar can run horizontally or vertically and expands inward
+be shown or hidden. The bar can run horizontally, vertically or as a configurable grid and expands inward
 from the nearest screen edge.
 
 It is deliberately limited to buttons created by installed add-ons. Blizzard
 controls, protected buttons, quest markers, resource nodes and other map-location
 pins remain untouched.
 
-Version 1.0.25 keeps the gold controller attached to its visible parent during
+Version 1.0.26 adds a saved grid layout with two to eight columns while preserving
+existing horizontal and vertical settings. It also keeps the gold controller attached to its visible parent during
 every layout and extends `/mbf reset` recovery to changed parents. It retains the 1.0.23 fix that stops controller
 movement cleanly when Alt or the left mouse button is released, even when opening
 the world map or entering combat interrupts the normal drag-stop callback. Frames
@@ -43,6 +44,8 @@ The add-on is packaged specifically for **WoW: Forever 1.60.1** and interface
 | `/mbf` | Open or close settings |
 | `/mbf horizontal` | Use a horizontal bar |
 | `/mbf vertical` | Use a vertical bar |
+| `/mbf grid` | Use a compact grid |
+| `/mbf columns 4` | Set the grid width from two to eight columns |
 | `/mbf size 40` | Set icon size from 20 to 64 |
 | `/mbf spacing 4` | Set spacing from 0 to 16 |
 | `/mbf shape circle` | Use the circular controller; `square` restores the original |
@@ -53,7 +56,7 @@ The add-on is packaged specifically for **WoW: Forever 1.60.1** and interface
 | `/mbf status` | Print the current version and layout |
 
 The settings window can enable or release collected buttons, keep selected named
-add-on buttons on the minimap, select horizontal or vertical layout, show or hide
+add-on buttons on the minimap, select horizontal, vertical or grid layout, show or hide
 the bar background, choose a square or circular
 controller, change controller idle opacity, change icon size and spacing, rescan,
 and reset the layout. Hovering always restores the controller to full opacity.

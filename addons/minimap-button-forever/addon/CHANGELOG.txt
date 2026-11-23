@@ -1,3 +1,8 @@
+1.0.26 - 2026-11-23
+- Adds a saved grid layout with a configurable two-to-eight-column width.
+- Adds /mbf grid and /mbf columns <number> commands.
+- Preserves existing horizontal and vertical settings during migration.
+
 1.0.25 - 2026-11-21
 - Keeps the gold controller attached to its own visible parent and restores its
   frame level, mouse input, style and opacity during every out-of-combat layout.

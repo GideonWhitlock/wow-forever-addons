@@ -2,6 +2,15 @@
 
 All notable changes to Thanks for Buffing: Forever are recorded here.
 
+## 1.0.26 — 2026-11-23
+
+- Adds a character picker to the phrase editor for quickly loading another
+  character's saved thank-you phrases.
+- Keeps copying non-destructive: the current character is not changed until the
+  existing **Save phrases** button is pressed.
+- Adds regression coverage for copying into the editor without prematurely
+  overwriting the current character's list.
+
 ## 1.0.25 — 2026-11-21
 
 - Safely catches protected helpful-aura reads without inspecting or stringifying WoW's secret error value.

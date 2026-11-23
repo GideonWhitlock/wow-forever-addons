@@ -91,6 +91,14 @@ local function CopyDefaultMessages()
     return messages
 end
 
+local function CopyMessages(messages)
+    local copy = {}
+    for index, message in ipairs(messages or {}) do
+        copy[index] = message
+    end
+    return copy
+end
+
 local function CurrentCharacterKey()
     local name, realm
     if type(UnitFullName) == "function" then
@@ -219,6 +227,23 @@ end
 
 local function MessagesToText()
     return table.concat(GetThankYouMessages(), "\n")
+end
+
+local function OtherCharacterKeys()
+    local keys = {}
+    local currentKey = CurrentCharacterKey()
+    local characterMessages = ThanksForTheBuffForeverDB and
+        ThanksForTheBuffForeverDB.characterMessages or {}
+    for key, messages in pairs(characterMessages) do
+        if key ~= currentKey and type(key) == "string" and type(messages) == "table" and
+                #messages > 0 then
+            keys[#keys + 1] = key
+        end
+    end
+    table.sort(keys, function(left, right)
+        return string.lower(left) < string.lower(right)
+    end)
+    return keys
 end
 
 local function RegisterOptionsPanel()
@@ -471,12 +496,72 @@ local function RegisterOptionsPanel()
         status:SetText("Restored the 15 default phrases.")
     end)
 
+    local copyLabel = panel:CreateFontString(nil, "ARTWORK", "GameFontNormal")
+    copyLabel:SetPoint("TOPLEFT", saveButton, "BOTTOMLEFT", 0, -20)
+    copyLabel:SetText("Copy phrases from another character")
+
+    local copyDropdown = CreateFrame("Frame", "ThanksForTheBuffForeverCopyDropdown", panel,
+        "UIDropDownMenuTemplate")
+    copyDropdown:SetPoint("TOPLEFT", copyLabel, "BOTTOMLEFT", -16, -4)
+    UIDropDownMenu_SetWidth(copyDropdown, 250)
+    local selectedCopyCharacter
+    local copyCharacters = {}
+
+    UIDropDownMenu_Initialize(copyDropdown, function()
+        for _, key in ipairs(copyCharacters) do
+            local info = UIDropDownMenu_CreateInfo()
+            info.text = key
+            info.checked = key == selectedCopyCharacter
+            info.func = function()
+                selectedCopyCharacter = key
+                UIDropDownMenu_SetText(copyDropdown, key)
+            end
+            UIDropDownMenu_AddButton(info)
+        end
+    end)
+
+    local copyButton = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    copyButton:SetSize(150, 24)
+    copyButton:SetPoint("LEFT", copyDropdown, "RIGHT", -8, 2)
+    copyButton:SetText("Copy into editor")
+    copyButton:SetScript("OnClick", function()
+        local source = selectedCopyCharacter and ThanksForTheBuffForeverDB.characterMessages[
+            selectedCopyCharacter]
+        if type(source) ~= "table" or #source == 0 then
+            status:SetTextColor(1, 0.3, 0.3)
+            status:SetText("Choose another character with saved phrases first.")
+            return
+        end
+        editor:SetText(table.concat(CopyMessages(source), "\n"))
+        editor:SetCursorPosition(0)
+        status:SetTextColor(0.3, 1, 0.3)
+        status:SetText("Loaded phrases from " .. selectedCopyCharacter ..
+            ". Press Save phrases to keep them on this character.")
+    end)
+
+    local function RefreshCopyCharacters()
+        copyCharacters = OtherCharacterKeys()
+        local selectedStillExists = false
+        for _, key in ipairs(copyCharacters) do
+            if key == selectedCopyCharacter then selectedStillExists = true; break end
+        end
+        if not selectedStillExists then selectedCopyCharacter = copyCharacters[1] end
+        if selectedCopyCharacter then
+            UIDropDownMenu_SetText(copyDropdown, selectedCopyCharacter)
+            copyButton:Enable()
+        else
+            UIDropDownMenu_SetText(copyDropdown, "No other saved characters")
+            copyButton:Disable()
+        end
+    end
+
     panel:SetScript("OnShow", function()
         enabled:SetChecked(IsEnabled())
         editor:SetText(MessagesToText())
         editor:SetCursorPosition(0)
         status:SetTextColor(0.8, 0.8, 0.8)
         status:SetText("Blank lines are ignored. Duplicate phrases are not saved.")
+        RefreshCopyCharacters()
     end)
 
     if Settings and Settings.RegisterCanvasLayoutCategory and Settings.RegisterAddOnCategory then

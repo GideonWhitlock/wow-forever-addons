@@ -8,6 +8,7 @@ It waits a random 3–10 seconds, chooses from a player-editable list of 15 defa
 
 - Sends thank-you messages by whisper only
 - Adds a normal Options → AddOns phrase editor for adding, editing, removing, reordering and resetting saved phrases
+- Copies saved phrases from another character into the editor, ready to review before saving
 - Adds a draggable minimap shortcut for opening settings or enabling and disabling automatic thanks
 - Uses 15 short, natural replies
 - Waits a random 3–10 seconds before replying
@@ -42,7 +43,7 @@ It waits a random 3–10 seconds, chooses from a player-editable list of 15 defa
 
 ## Supported clients
 
-Version 1.0.25 includes TOCs for:
+Version 1.0.26 includes TOCs for:
 
 | Client | Interface |
 | --- | ---: |
@@ -52,9 +53,9 @@ Version 1.0.25 includes TOCs for:
 | Burning Crusade Classic | 20506 |
 | Classic Era | 11509 |
 
-Only the Forever path is currently claimed for release targeting. Version 1.0.25 blocks protected full-aura scans during combat and safely retries the brief protected window that can remain after combat formally ends. It retains the exact aura-caster evidence requirement, local rolling audit, per-character phrase lists, caster/spell safeguards, Options → AddOns editor, Forever-safe text-height fallback and draggable minimap shortcut. Left-click opens the phrase editor, right-click enables or disables automatic thanks, and Alt-drag moves the shortcut around the minimap without swallowing a normal click. Live testing previously confirmed that Forever blocks combat-log registration, so that API remains disabled on this branch. The other manifests remain source-visible but are not live-verified release targets.
+Only the Forever path is currently claimed for release targeting. Version 1.0.26 adds non-destructive copying from another character's saved phrase list and retains the 1.0.25 protected-aura safeguards. It retains the exact aura-caster evidence requirement, local rolling audit, per-character phrase lists, caster/spell safeguards, Options → AddOns editor, Forever-safe text-height fallback and draggable minimap shortcut. Left-click opens the phrase editor, right-click enables or disables automatic thanks, and Alt-drag moves the shortcut around the minimap without swallowing a normal click. Live testing previously confirmed that Forever blocks combat-log registration, so that API remains disabled on this branch. The other manifests remain source-visible but are not live-verified release targets.
 
-The 1.0.25 source includes early- and post-combat aura-access regressions alongside the strict exact-caster, audit, Forever editor, phrase editing, multi-word recipient, protected-aura, grouped-buff and unsafe-attribution checks.
+The 1.0.26 source includes copy-from-character editor coverage plus early- and post-combat aura-access regressions alongside the strict exact-caster, audit, Forever editor, phrase editing, multi-word recipient, protected-aura, grouped-buff and unsafe-attribution checks.
 
 ## How detection works
 
@@ -78,7 +79,7 @@ The addon stores its enabled/disabled setting and per-character local phrase lis
 
 ## Repository layout
 
-- `addon/ThanksForTheBuffForever/` — the version 1.0.25 source and TOCs
+- `addon/ThanksForTheBuffForever/` — the version 1.0.26 source and TOCs
 - `tests/` — standalone Lua behaviour tests for Forever and Classic detection paths
 - `.github/ISSUE_TEMPLATE/` — the project-specific public bug-report form
 

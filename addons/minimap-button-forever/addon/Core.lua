@@ -1,6 +1,6 @@
 local _, F = ...
 
-F.VERSION = "1.0.25"
+F.VERSION = "1.0.26"
 F.MIN_SIZE = 20
 F.MAX_SIZE = 64
 F.MIN_SPACING = 0
@@ -14,6 +14,8 @@ local DEFAULTS = {
     y = 180,
     size = 32,
     spacing = 4,
+    layout = "horizontal",
+    gridColumns = 4,
     vertical = false,
     expanded = false,
     showBackground = true,
@@ -142,6 +144,7 @@ end
 function F.LoadSettings()
     if type(MinimapButtonForeverDB) ~= "table" then MinimapButtonForeverDB = {} end
     F.db = MinimapButtonForeverDB
+    local storedLayout = F.db.layout
     for key, value in pairs(DEFAULTS) do
         if F.db[key] == nil then F.db[key] = value end
     end
@@ -150,7 +153,18 @@ function F.LoadSettings()
     F.db.size = math.floor(F.Clamp(F.db.size, F.MIN_SIZE, F.MAX_SIZE) + 0.5)
     F.db.spacing = math.floor(F.Clamp(F.db.spacing, F.MIN_SPACING, F.MAX_SPACING) + 0.5)
     F.db.idleOpacity = F.Clamp(F.db.idleOpacity, F.MIN_IDLE_OPACITY, F.MAX_IDLE_OPACITY)
-    if type(F.db.vertical) ~= "boolean" then F.db.vertical = DEFAULTS.vertical end
+    -- Migrate the original vertical boolean without changing existing users'
+    -- chosen orientation. Keep it synchronized for older helper code and
+    -- SavedVariables readers while layout becomes the authoritative setting.
+    if storedLayout == nil then
+        F.db.layout = F.db.vertical == true and "vertical" or "horizontal"
+    end
+    if F.db.layout ~= "horizontal" and F.db.layout ~= "vertical" and
+            F.db.layout ~= "grid" then
+        F.db.layout = DEFAULTS.layout
+    end
+    F.db.vertical = F.db.layout == "vertical"
+    F.db.gridColumns = math.floor(F.Clamp(F.db.gridColumns, 2, 8) + 0.5)
     if type(F.db.expanded) ~= "boolean" then F.db.expanded = DEFAULTS.expanded end
     if type(F.db.showBackground) ~= "boolean" then F.db.showBackground = DEFAULTS.showBackground end
     if type(F.db.enabled) ~= "boolean" then F.db.enabled = DEFAULTS.enabled end
@@ -163,6 +177,30 @@ function F.LoadSettings()
         F.db.buttonShape = DEFAULTS.buttonShape
     end
     if type(F.db.excludedButtons) ~= "table" then F.db.excludedButtons = {} end
+end
+
+function F.GetLayoutMode()
+    if F.db and (F.db.layout == "horizontal" or F.db.layout == "vertical" or
+            F.db.layout == "grid") then
+        return F.db.layout
+    end
+    return F.db and F.db.vertical and "vertical" or "horizontal"
+end
+
+function F.SetLayoutMode(layout)
+    if layout ~= "horizontal" and layout ~= "vertical" and layout ~= "grid" then
+        return
+    end
+    F.db.layout = layout
+    F.db.vertical = layout == "vertical"
+    F.Layout()
+    F.SyncOptions()
+end
+
+function F.SetGridColumns(value)
+    F.db.gridColumns = math.floor(F.Clamp(value, 2, 8) + 0.5)
+    F.Layout()
+    F.SyncOptions()
 end
 
 function F.GetButtonIdentifier(button)
@@ -413,6 +451,7 @@ function F.ResetLayout()
     if InCombatLockdown() then return end
     F.db.x, F.db.y = DEFAULTS.x, DEFAULTS.y
     F.db.size, F.db.spacing = DEFAULTS.size, DEFAULTS.spacing
+    F.db.layout, F.db.gridColumns = DEFAULTS.layout, DEFAULTS.gridColumns
     F.db.vertical, F.db.expanded, F.db.showBackground, F.db.enabled = false, false, true, true
     F.db.buttonShape, F.db.idleOpacity = DEFAULTS.buttonShape, DEFAULTS.idleOpacity
     F.db.clampToMinimap, F.db.minimapAngle = DEFAULTS.clampToMinimap, DEFAULTS.minimapAngle
@@ -432,9 +471,13 @@ function F.Command(message)
     if command == "" or command == "settings" then
         F.ToggleOptions()
     elseif command == "horizontal" then
-        F.db.vertical = false; F.Layout(); F.SyncOptions()
+        F.SetLayoutMode("horizontal")
     elseif command == "vertical" then
-        F.db.vertical = true; F.Layout(); F.SyncOptions()
+        F.SetLayoutMode("vertical")
+    elseif command == "grid" then
+        F.SetLayoutMode("grid")
+    elseif command == "columns" and tonumber(value) then
+        F.SetGridColumns(value)
     elseif command == "size" and tonumber(value) then
         F.SetSize(value)
     elseif command == "spacing" and tonumber(value) then
@@ -460,11 +503,11 @@ function F.Command(message)
     elseif command == "status" then
         local count = F.collected and #F.collected or 0
         F.Print("Version " .. F.VERSION .. "; " .. count .. " button(s); " ..
-            (F.db.vertical and "vertical" or "horizontal") .. "; size " .. F.db.size ..
+            F.GetLayoutMode() .. "; size " .. F.db.size ..
             "; " .. F.db.buttonShape .. "; idle opacity " ..
             math.floor(F.db.idleOpacity * 100 + 0.5) .. "%; " ..
             (F.db.clampToMinimap and "minimap rim" or "free position") .. ".")
     else
-        F.Print("Commands: /mbf, /mbf exclusions, /mbf horizontal, /mbf vertical, /mbf size 40, /mbf spacing 4, /mbf shape circle, /mbf opacity 70, /mbf rim on|off, /mbf scan, /mbf reset, /mbf status")
+        F.Print("Commands: /mbf, /mbf exclusions, /mbf horizontal, /mbf vertical, /mbf grid, /mbf columns 4, /mbf size 40, /mbf spacing 4, /mbf shape circle, /mbf opacity 70, /mbf rim on|off, /mbf scan, /mbf reset, /mbf status")
     end
 end

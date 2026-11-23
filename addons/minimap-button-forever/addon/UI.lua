@@ -163,7 +163,8 @@ function F.ApplyPosition()
     local width, height = F.container:GetSize()
     local size = F.db.size
     local x, y = F.GetPositionOffsets()
-    if F.db.vertical then
+    local layout = F.GetLayoutMode()
+    if layout == "vertical" then
         local launcherOffsetY
         if y < 0 then
             launcherOffsetY = -height / 2 + 4 + size / 2
@@ -171,7 +172,7 @@ function F.ApplyPosition()
             launcherOffsetY = height / 2 - 4 - size / 2
         end
         y = y - launcherOffsetY
-    else
+    elseif layout == "horizontal" then
         local launcherOffsetX
         if x > 0 then
             launcherOffsetX = width / 2 - 4 - size / 2
@@ -179,6 +180,13 @@ function F.ApplyPosition()
             launcherOffsetX = -width / 2 + 4 + size / 2
         end
         x = x - launcherOffsetX
+    else
+        local launcherOffsetX = x > 0 and (width / 2 - 4 - size / 2) or
+            (-width / 2 + 4 + size / 2)
+        local launcherOffsetY = y < 0 and (-height / 2 + 4 + size / 2) or
+            (height / 2 - 4 - size / 2)
+        x = x - launcherOffsetX
+        y = y - launcherOffsetY
     end
     F.container:ClearAllPoints()
     F.container:SetPoint("CENTER", UIParent, "CENTER", x, y)
@@ -397,6 +405,20 @@ function F.ToggleExpanded()
     end
 end
 
+function F.GetLayoutDimensions(itemCount, size, spacing, layout, gridColumns)
+    itemCount = math.max(1, math.floor(tonumber(itemCount) or 1))
+    if layout == "grid" then
+        local columns = math.min(itemCount, math.max(2, math.floor(tonumber(gridColumns) or 4)))
+        local rows = math.ceil(itemCount / columns)
+        return columns * size + math.max(0, columns - 1) * spacing + 8,
+            rows * size + math.max(0, rows - 1) * spacing + 8,
+            columns
+    end
+    local length = itemCount * size + math.max(0, itemCount - 1) * spacing + 8
+    if layout == "vertical" then return size + 8, length, 1 end
+    return length, size + 8, itemCount
+end
+
 function F.Layout()
     if InCombatLockdown() or not F.container then return end
     F.EnsureControllerVisible()
@@ -415,18 +437,19 @@ function F.Layout()
     end
     local fullCount = 1 + #visible
     local count = F.db.expanded and fullCount or 1
-    local length = count * size + math.max(0, count - 1) * spacing + 8
-    local fullLength = fullCount * size + math.max(0, fullCount - 1) * spacing + 8
-    local thickness = size + 8
-    if F.db.vertical then F.container:SetSize(thickness, length) else F.container:SetSize(length, thickness) end
+    local layout = F.GetLayoutMode()
+    local width, height = F.GetLayoutDimensions(count, size, spacing, layout, F.db.gridColumns)
+    local fullWidth, fullHeight, fullColumns =
+        F.GetLayoutDimensions(fullCount, size, spacing, layout, F.db.gridColumns)
+    F.container:SetSize(width, height)
     F.background:SetBackdropColor(0.025, 0.02, 0.015, F.db.showBackground and 0.86 or 0)
     F.background:SetBackdropBorderColor(0.68, 0.48, 0.18, F.db.showBackground and 1 or 0)
 
     F.background:ClearAllPoints()
     F.buttonHolder:ClearAllPoints()
-    if F.db.vertical then
-        F.background:SetSize(thickness, fullLength)
-        F.buttonHolder:SetSize(thickness, fullLength)
+    if layout == "vertical" then
+        F.background:SetSize(fullWidth, fullHeight)
+        F.buttonHolder:SetSize(fullWidth, fullHeight)
         if positionY < 0 then
             F.background:SetPoint("BOTTOM", F.container, "BOTTOM")
             F.buttonHolder:SetPoint("BOTTOM", F.container, "BOTTOM")
@@ -434,9 +457,9 @@ function F.Layout()
             F.background:SetPoint("TOP", F.container, "TOP")
             F.buttonHolder:SetPoint("TOP", F.container, "TOP")
         end
-    else
-        F.background:SetSize(fullLength, thickness)
-        F.buttonHolder:SetSize(fullLength, thickness)
+    elseif layout == "horizontal" then
+        F.background:SetSize(fullWidth, fullHeight)
+        F.buttonHolder:SetSize(fullWidth, fullHeight)
         if positionX > 0 then
             F.background:SetPoint("RIGHT", F.container, "RIGHT")
             F.buttonHolder:SetPoint("RIGHT", F.container, "RIGHT")
@@ -444,6 +467,14 @@ function F.Layout()
             F.background:SetPoint("LEFT", F.container, "LEFT")
             F.buttonHolder:SetPoint("LEFT", F.container, "LEFT")
         end
+    else
+        F.background:SetSize(fullWidth, fullHeight)
+        F.buttonHolder:SetSize(fullWidth, fullHeight)
+        local horizontalPoint = positionX > 0 and "RIGHT" or "LEFT"
+        local verticalPoint = positionY < 0 and "BOTTOM" or "TOP"
+        local corner = verticalPoint .. horizontalPoint
+        F.background:SetPoint(corner, F.container, corner)
+        F.buttonHolder:SetPoint(corner, F.container, corner)
     end
 
     F.ApplyExpandedVisibility()
@@ -491,18 +522,30 @@ function F.Layout()
         button:SetFrameStrata("MEDIUM")
         button:SetFrameLevel(F.buttonHolder:GetFrameLevel() + 2)
         local offset = 4 + size / 2 + (index - 1) * (size + spacing)
-        if F.db.vertical then
+        if layout == "vertical" then
             if positionY < 0 then
                 anchor:SetPoint("CENTER", F.container, "BOTTOM", 0, offset)
             else
                 anchor:SetPoint("CENTER", F.container, "TOP", 0, -offset)
             end
-        else
+        elseif layout == "horizontal" then
             if positionX > 0 then
                 anchor:SetPoint("CENTER", F.container, "RIGHT", -offset, 0)
             else
                 anchor:SetPoint("CENTER", F.container, "LEFT", offset, 0)
             end
+        else
+            local zeroIndex = index - 1
+            local column = zeroIndex % fullColumns
+            local row = math.floor(zeroIndex / fullColumns)
+            local offsetX = 4 + size / 2 + column * (size + spacing)
+            local offsetY = 4 + size / 2 + row * (size + spacing)
+            local horizontalPoint = positionX > 0 and "RIGHT" or "LEFT"
+            local verticalPoint = positionY < 0 and "BOTTOM" or "TOP"
+            local corner = verticalPoint .. horizontalPoint
+            anchor:SetPoint("CENTER", F.container, corner,
+                positionX > 0 and -offsetX or offsetX,
+                positionY < 0 and offsetY or -offsetY)
         end
         if info then button:SetPoint("CENTER", anchor, "CENTER", 0, 0) end
     end
@@ -526,7 +569,8 @@ local function launcherTooltip()
     GameTooltip:AddLine(F.db.clampToMinimap and
         "Alt-drag: move around the minimap rim" or
         "Alt-drag: move the button bar", 0.72, 0.72, 0.72)
-    GameTooltip:AddLine((F.db.vertical and "Vertical" or "Horizontal") .. " layout - size " .. F.db.size, 0.72, 0.9, 0.72)
+    local layoutName = F.GetLayoutMode():gsub("^%l", string.upper)
+    GameTooltip:AddLine(layoutName .. " layout - size " .. F.db.size, 0.72, 0.9, 0.72)
     GameTooltip:AddLine((F.db.buttonShape == "circle" and "Circle" or "Square") ..
         " controller - " .. math.floor(F.db.idleOpacity * 100 + 0.5) .. "% idle opacity", 0.72, 0.9, 0.72)
     GameTooltip:Show()
@@ -691,7 +735,10 @@ function F.SyncOptions()
     if not F.options then return end
     F.syncingOptions = true
     F.options.enabled:SetChecked(F.db.enabled)
-    F.options.vertical:SetChecked(F.db.vertical)
+    local layout = F.GetLayoutMode()
+    F.options.layoutHorizontal:SetChecked(layout == "horizontal")
+    F.options.layoutVertical:SetChecked(layout == "vertical")
+    F.options.layoutGrid:SetChecked(layout == "grid")
     F.options.background:SetChecked(F.db.showBackground)
     F.options.rim:SetChecked(F.db.clampToMinimap)
     F.options.shapeSquare:SetChecked(F.db.buttonShape == "square")
@@ -700,6 +747,8 @@ function F.SyncOptions()
     F.options.size.label:SetText("Icon size: " .. F.db.size)
     F.options.spacing:SetValue(F.db.spacing)
     F.options.spacing.label:SetText("Spacing: " .. F.db.spacing)
+    F.options.gridColumns:SetValue(F.db.gridColumns)
+    F.options.gridColumns.label:SetText("Grid columns: " .. F.db.gridColumns)
     local opacityPercent = math.floor(F.db.idleOpacity * 100 + 0.5)
     F.options.opacity:SetValue(opacityPercent)
     F.options.opacity.label:SetText("Idle opacity: " .. opacityPercent .. "%")
@@ -711,7 +760,7 @@ function F.ToggleOptions()
     if not F.options then
         local panel = CreateFrame("Frame", "MinimapButtonForeverOptions", UIParent, "BackdropTemplate")
         F.options = panel
-        panel:SetSize(380, 600)
+        panel:SetSize(400, 650)
         panel:SetPoint("CENTER", UIParent, "CENTER", 250, 0)
         panel:SetFrameStrata("DIALOG")
         panel:SetClampedToScreen(true)
@@ -741,20 +790,30 @@ function F.ToggleOptions()
             F.db.enabled = checked
             if checked then F.ScanButtons(true) else F.ReleaseButtons() end
         end)
-        panel.vertical = checkbox(-124, "Use a vertical layout", function(checked)
-            F.db.vertical = checked; F.Layout()
-        end)
-        panel.background = checkbox(-156, "Show the bar background", function(checked)
+        local layoutLabel = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        layoutLabel:SetPoint("TOPLEFT", 30, -128); layoutLabel:SetText("Layout")
+        local function layoutRadio(x, label, value)
+            local radio = CreateFrame("CheckButton", nil, panel, "UIRadioButtonTemplate")
+            radio:SetPoint("TOPLEFT", x, -144)
+            local radioLabel = radio.Text or radio.text
+            if radioLabel then radioLabel:SetText(label) end
+            radio:SetScript("OnClick", function() F.SetLayoutMode(value) end)
+            return radio
+        end
+        panel.layoutHorizontal = layoutRadio(28, "Horizontal", "horizontal")
+        panel.layoutVertical = layoutRadio(148, "Vertical", "vertical")
+        panel.layoutGrid = layoutRadio(248, "Grid", "grid")
+        panel.background = checkbox(-180, "Show the bar background", function(checked)
             F.db.showBackground = checked; F.Layout()
         end)
-        panel.rim = checkbox(-188, "Clamp the controller to the minimap rim", function(checked)
+        panel.rim = checkbox(-212, "Clamp the controller to the minimap rim", function(checked)
             F.SetMinimapClamp(checked)
         end)
         local shapeLabel = panel:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        shapeLabel:SetPoint("TOPLEFT", 30, -230); shapeLabel:SetText("Button shape")
+        shapeLabel:SetPoint("TOPLEFT", 30, -254); shapeLabel:SetText("Button shape")
         local function shapeRadio(x, label, value)
             local radio = CreateFrame("CheckButton", nil, panel, "UIRadioButtonTemplate")
-            radio:SetPoint("TOPLEFT", x, -246)
+            radio:SetPoint("TOPLEFT", x, -270)
             local radioLabel = radio.Text or radio.text
             if radioLabel then radioLabel:SetText(label) end
             radio:SetScript("OnClick", function() F.SetButtonShape(value) end)
@@ -762,11 +821,13 @@ function F.ToggleOptions()
         end
         panel.shapeSquare = shapeRadio(28, "Square", "square")
         panel.shapeCircle = shapeRadio(138, "Circle", "circle")
-        panel.size = createSlider(panel, "MinimapButtonForeverSizeSlider", -312,
+        panel.size = createSlider(panel, "MinimapButtonForeverSizeSlider", -332,
             F.MIN_SIZE, F.MAX_SIZE, 1, F.SetSize)
-        panel.spacing = createSlider(panel, "MinimapButtonForeverSpacingSlider", -377,
+        panel.spacing = createSlider(panel, "MinimapButtonForeverSpacingSlider", -397,
             F.MIN_SPACING, F.MAX_SPACING, 1, F.SetSpacing)
-        panel.opacity = createSlider(panel, "MinimapButtonForeverOpacitySlider", -442,
+        panel.gridColumns = createSlider(panel, "MinimapButtonForeverGridColumnsSlider", -462,
+            2, 8, 1, F.SetGridColumns)
+        panel.opacity = createSlider(panel, "MinimapButtonForeverOpacitySlider", -527,
             20, 100, 1, function(value) F.SetIdleOpacity(value / 100) end)
 
         local exclusions = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")

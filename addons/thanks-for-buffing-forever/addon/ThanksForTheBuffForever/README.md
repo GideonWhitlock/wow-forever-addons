@@ -6,6 +6,7 @@ Thanks for Buffing: Forever notices when another player gives you a helpful buff
 
 - 15 short, natural thank-you messages selected at random
 - A persistent Options → AddOns phrase editor: add, edit, remove, reorder or restore phrases without remembering slash commands
+- A character picker that loads another character's saved phrases for review before saving
 - A genuinely random 3–10 second delay
 - Whispers only — never party, raid, say, or public chat
 - Coalesces several buffs from the same player into one thank-you

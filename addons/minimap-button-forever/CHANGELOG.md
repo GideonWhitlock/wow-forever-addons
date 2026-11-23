@@ -3,6 +3,14 @@
 This changelog records released add-on versions. Changes that were later replaced
 or reverted remain listed under the version in which they shipped.
 
+## 1.0.26 — 2026-11-23
+
+- Adds a saved grid layout alongside the existing horizontal and vertical bars.
+- Adds a configurable two-to-eight-column grid control in settings and
+  `/mbf grid` plus `/mbf columns <number>` commands.
+- Migrates existing horizontal and vertical layouts without moving or resetting
+  the controller.
+
 ## 1.0.25 — 2026-11-21
 
 - Keeps the gold controller attached to its own visible parent and restores its
