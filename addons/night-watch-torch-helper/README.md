@@ -7,8 +7,8 @@ The reminder appears only when:
 - Night Watchman's Torch is in a carried bag and is ready to use.
 - The torch buff is not already active.
 - The character is alive, out of combat and stationary for at least 0.75 seconds.
-- The character is not mounted, on a flight path, flying, in a vehicle, falling or swimming.
-- The character is not casting or channeling, and the merchant window is closed.
+- The character is not on a flight path, flying, in a vehicle, falling or swimming. A stationary ground mount is allowed.
+- The merchant window is closed. Casting and channeling no longer suppress the prompt.
 - The character is in Duskwood or Deadwind Pass, WoW reports night-time or active non-clear weather, or the temporary manual dim-area option is enabled.
 
 A real click or keypress is always required. WoW does not allow the add-on to use the item automatically.
@@ -17,14 +17,14 @@ A real click or keypress is always required. WoW does not allow the add-on to us
 
 | Item | Value |
 | --- | --- |
-| Current release | 1.0.4 |
+| Current release | 1.0.5 |
 | Game flavour | WoW: Forever |
 | Game version | 1.60.1 |
 | Interface | 16001 |
 | Dependencies | None |
 | License | All Rights Reserved |
 
-The released source, package and installed files were last checked against Forever build 1.60.1.70205. This is a compatibility record, not a promise that undocumented beta changes cannot affect the add-on.
+The released source, package and installed files were last checked against Forever build 1.60.1.71139. This is a compatibility record, not a promise that undocumented beta changes cannot affect the add-on.
 
 ## Installation
 
@@ -71,7 +71,7 @@ Settings are saved per character. The temporary dim-area option clears on a zone
 - The torch must be in the backpack or another carried bag. Bank and account-bank copies do not qualify.
 - Night-time and weather depend on WoW: Forever's reported data. Rain, snow, sandstorms and miscellaneous non-clear weather qualify when the reported intensity is greater than zero.
 - The weather API has no separate fog or mist category and no ambient-light measurement. Visual fog, caves, shade and permanently dark areas may require `/nwt dim on`.
-- The button is intentionally hidden during combat, movement, travel, casting, item cooldowns and an existing torch buff.
+- The button is intentionally hidden during combat, movement, flying, taxi or vehicle travel, item cooldowns and an existing torch buff. A stationary ground mount and casting or channeling are allowed.
 - WoW: Forever is a beta game flavour. Undocumented client changes can affect item records, protected actions, events or APIs before documentation is available.
 
 ## Support and source

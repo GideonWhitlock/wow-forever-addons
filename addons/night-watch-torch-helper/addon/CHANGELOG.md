@@ -1,3 +1,10 @@
+# 1.0.5 — 26 November 2026
+
+- Restored the torch prompt while stationary on a ground mount and while
+  casting or channeling, matching Blizzard's 25 November Forever hotfix.
+- Flying, taxi, vehicle, movement, combat, death, cooldown and active-buff
+  safeguards remain in place.
+
 # 1.0.4 — 16 November 2026
 
 - Added saved reminder toggles for always-dark zones, night-time and bad weather.

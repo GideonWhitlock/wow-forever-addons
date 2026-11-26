@@ -16,13 +16,14 @@ real click or keypress for item use; this add-on cannot apply it automatically.
 - Both known torch buffs (spells 1309410 and 1321139) are absent. Active helpful
   buffs are also checked by the torch's name, including localized names.
 - You are alive, out of combat, and stationary for at least 0.75 seconds.
-- You are not mounted, on a flight path, flying, in a vehicle, falling or swimming.
-- You are not casting or channeling, and the item is unlocked and off cooldown.
+- You are not on a flight path, flying, in a vehicle, falling or swimming. A
+  stationary ground mount is allowed.
+- The item is unlocked and off cooldown. Casting and channeling are allowed.
 - The merchant window is closed so clicking cannot accidentally sell the torch.
 
 The checks run when relevant game events arrive and every 0.2 seconds. They run
 again at the actual click, with a fresh carried-bag scan. Running and walking both
-block the button, and a stationary mount still blocks it. It does not cancel a
+block the button, but a stationary ground mount does not. It does not cancel a
 torch buff you already have when you move or when the weather clears.
 
 ## Darkness and mist

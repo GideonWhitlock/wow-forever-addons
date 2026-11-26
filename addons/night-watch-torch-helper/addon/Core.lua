@@ -166,7 +166,6 @@ local function evaluate(forceBags)
     end
     if UnitIsDeadOrGhost("player") then N.stillSince = nil; return false, "Dead or ghost" end
     if UnitOnTaxi("player") then N.stillSince = nil; return false, "On a flight path" end
-    if IsMounted() then N.stillSince = nil; return false, "Mounted" end
     if IsFlying() then N.stillSince = nil; return false, "Flying" end
     if UnitInVehicle and UnitInVehicle("player") then N.stillSince = nil; return false, "In a vehicle" end
     if IsFalling() or IsSwimming() then N.stillSince = nil; return false, "Jumping, falling or swimming" end
@@ -179,7 +178,6 @@ local function evaluate(forceBags)
     local now = GetTime()
     N.stillSince = N.stillSince or now
     if now - N.stillSince < N.STILL_DELAY then return false, "Waiting for you to stop" end
-    if UnitCastingInfo("player") or UnitChannelInfo("player") then return false, "Casting or channeling" end
     if now < (N.retryAfter or 0) then return false, "Waiting for torch use" end
     if MerchantFrame and MerchantFrame:IsShown() then return false, "Merchant window open" end
 

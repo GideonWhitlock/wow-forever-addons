@@ -2,6 +2,16 @@
 
 All released versions of Night Watch Torch Helper: Forever are listed here. The in-game add-on name is **Night Watch Torch**.
 
+## [1.0.5] — 2026-11-26
+
+### Fixed
+
+- Restored the torch prompt while stationary on a ground mount and while casting or channeling, matching Blizzard's 25 November Forever hotfix.
+
+### Preserved
+
+- Kept flying, taxi, vehicle, movement, combat, death, cooldown and active-buff safeguards.
+
 ## [1.0.4] — 2026-11-16
 
 ### Added

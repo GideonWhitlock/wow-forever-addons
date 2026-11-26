@@ -1,6 +1,6 @@
 local addonName, N = ...
 local fallbackIcon = "Interface\\Icons\\INV_Torch_Lit"
-local macro = "/use [nocombat,nomounted,noflying,novehicleui,nodead] item:" .. N.ITEM_ID
+local macro = "/use [nocombat,noflying,novehicleui,nodead] item:" .. N.ITEM_ID
 
 BINDING_HEADER_NIGHTWATCHTORCH = "Night Watch Torch"
 _G["BINDING_NAME_CLICK NightWatchTorchButton:LeftButton"] = "Use torch when eligible"
@@ -124,7 +124,7 @@ function N.BuildUI()
         if newstate == "1" then self:Hide() else self:Show() end
     ]])
     -- Secure state handling can hide and disarm immediately during lockdown.
-    RegisterStateDriver(gate, "blocked", "[combat][dead][mounted][flying][vehicleui] 1; 0")
+    RegisterStateDriver(gate, "blocked", "[combat][dead][flying][vehicleui] 1; 0")
     N.ApplyPosition()
     N.BuildMinimap()
 end
